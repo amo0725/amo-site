@@ -33,10 +33,15 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
     label: c.sections[s.key].nav,
   }));
 
+  const github =
+    c.contact.links.find((l) => l.label === "GitHub")?.href ??
+    "https://github.com/amo0725";
+
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: c.profile.fullName,
+    alternateName: c.profile.nativeName,
     jobTitle: c.profile.role,
     url: `${site.url}/${lang}`,
     email: `mailto:${c.contact.email}`,
@@ -52,18 +57,35 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         name={c.profile.name}
         nav={nav}
         navLabel={c.ui.mainNav}
-        contactLabel={c.ui.contactShort}
+        menu={c.ui.menu}
+        motion={{
+          label: c.ui.hero.motionLabel,
+          on: c.ui.hero.motionOn,
+          off: c.ui.hero.motionOff,
+        }}
         language={c.ui.switchLanguage}
       />
       <EchoLegend nav={nav} label={c.ui.sectionNav} />
       <main id="main">
-        <Hero profile={c.profile} ui={c.ui.hero} />
+        <Hero
+          profile={c.profile}
+          ui={c.ui.hero}
+          caseCount={c.work.entries.length}
+          githubHref={github}
+        />
         {/* Suspense boundaries let React hydrate below-the-fold sections in separate, interruptible tasks. */}
         <Suspense fallback={null}>
           <Signal profile={c.profile} copy={c.sections.signal} locale={lang} />
         </Suspense>
         <Suspense fallback={null}>
-          <Reel copy={c.reel} />
+          <Work
+            entries={c.work.entries}
+            tracks={c.experience.map((t) => ({ id: t.id, label: t.short }))}
+            categories={c.work.categories}
+            colors={categoryColor}
+            copy={c.sections.work}
+            ui={c.ui.work}
+          />
         </Suspense>
         <Suspense fallback={null}>
           <Experience
@@ -84,16 +106,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           />
         </Suspense>
         <Suspense fallback={null}>
-          <Work
-            entries={c.work.entries}
-            tracks={c.experience.map((t) => ({ id: t.id, label: t.short }))}
-            categories={c.work.categories}
-            colors={categoryColor}
-            copy={c.sections.work}
-            ui={c.ui.work}
-          />
-        </Suspense>
-        <Suspense fallback={null}>
           <Principles principles={c.principles} copy={c.sections.principles} />
         </Suspense>
         <Suspense fallback={null}>
@@ -101,6 +113,9 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         </Suspense>
         <Suspense fallback={null}>
           <Projects projects={c.projects} copy={c.sections.projects} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Reel copy={c.reel} />
         </Suspense>
         <Suspense fallback={null}>
           <OffDuty

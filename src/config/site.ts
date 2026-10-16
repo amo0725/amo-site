@@ -2,7 +2,7 @@ import type { SectionKey, WorkCategory } from "@/content/types";
 
 /** Global, language-independent settings. */
 export const site = {
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://amo.example.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://amo-site.vercel.app",
 } as const;
 
 export const copyrightYear = 2026;
@@ -14,9 +14,9 @@ export const copyrightYear = 2026;
  */
 export const sections = [
   { id: "signal", key: "signal", colorVar: "--band-1" },
-  { id: "experience", key: "experience", colorVar: "--band-2" },
-  { id: "systems", key: "systems", colorVar: "--band-3" },
-  { id: "work", key: "work", colorVar: "--band-4" },
+  { id: "work", key: "work", colorVar: "--band-2" },
+  { id: "experience", key: "experience", colorVar: "--band-3" },
+  { id: "systems", key: "systems", colorVar: "--band-4" },
   { id: "principles", key: "principles", colorVar: "--band-5" },
   { id: "ai", key: "ai", colorVar: "--band-6" },
   { id: "projects", key: "projects", colorVar: "--band-7" },

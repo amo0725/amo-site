@@ -34,7 +34,9 @@ export function Contact({ contact, copy, ui }: ContactProps) {
           {ui.headline}
         </p>
 
-        <p className="mt-8 text-lg">
+        <p className="mt-6 max-w-[36rem] text-lg text-paper/80">{ui.status}</p>
+
+        <p className="mt-6 text-lg">
           <a
             href={`mailto:${contact.email}`}
             className="underline decoration-paper/40 decoration-1 underline-offset-[6px] transition-colors hover:decoration-paper"
@@ -49,6 +51,12 @@ export function Contact({ contact, copy, ui }: ContactProps) {
             className="inline-flex h-14 items-center rounded-full bg-paper px-8 text-lg font-semibold text-ink transition-transform active:scale-95"
           >
             {ui.write}
+          </a>
+          <a
+            href={`mailto:${contact.email}?subject=${encodeURIComponent(ui.resumeSubject)}`}
+            className="inline-flex h-14 items-center rounded-full border border-paper/40 px-7 text-lg transition-colors hover:border-paper"
+          >
+            {ui.resume}
           </a>
           <CopyEmailButton
             email={contact.email}

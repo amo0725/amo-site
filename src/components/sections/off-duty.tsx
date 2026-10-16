@@ -39,17 +39,28 @@ export function OffDuty({ content, copy, ui }: OffDutyProps) {
             <p className="mt-2 max-w-[30rem] text-ink-soft">
               {content.rig.note}
             </p>
-            <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-graticule pt-5 text-sm">
-              {content.rig.specs.map((spec) => (
-                <div key={spec.label} className="contents">
-                  <dt className="text-ink-soft">{spec.label}</dt>
-                  <dd className="font-medium">{spec.value}</dd>
-                </div>
-              ))}
-            </dl>
-            <div className="mt-10">
-              <FrametimeChart ui={ui} />
-            </div>
+            <details className="group/rig mt-6 border-t border-graticule">
+              <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                {ui.details}
+                <span
+                  aria-hidden="true"
+                  className="text-2xl leading-none font-light text-ink-soft transition-transform duration-300 group-open/rig:rotate-45"
+                >
+                  +
+                </span>
+              </summary>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
+                {content.rig.specs.map((spec) => (
+                  <div key={spec.label} className="contents">
+                    <dt className="text-ink-soft">{spec.label}</dt>
+                    <dd className="font-medium">{spec.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="mt-10">
+                <FrametimeChart ui={ui} />
+              </div>
+            </details>
           </article>
         </div>
       </div>

@@ -34,7 +34,7 @@ export function Work({
     >
       <div className="mx-auto max-w-[90rem] lg:grid lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-3">
-          <div className="lg:sticky lg:top-24">
+          <div className="sticky-heading lg:sticky lg:top-24">
             <SectionHeading
               id={meta.id}
               colorVar={meta.colorVar}

@@ -22,7 +22,8 @@ const BASE_WEIGHT = 800;
 export function KineticName({ text, className }: KineticNameProps) {
   const rootRef = useRef<HTMLSpanElement>(null);
   const preference = useMotionPreference();
-  const letters = Array.from(text);
+  // A plain space would collapse inside an inline-block, so it becomes a no-break space.
+  const letters = Array.from(text).map((ch) => (ch === " " ? "\u00a0" : ch));
 
   useEffect(() => {
     const root = rootRef.current;

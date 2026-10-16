@@ -21,7 +21,8 @@ function cells() {
   for (let r = 0; r < ROWS; r += 1) {
     for (let c = 0; c < COLS; c += 1) {
       const n = fbm(c * 0.17 + 9.1, r * 0.17 + 2.4);
-      const fade = Math.min(1, c / 14); // keep the left side clear for the name
+      // Keep the left two thirds clear: the name and role sit there on plain paper.
+      const fade = Math.max(0, Math.min(1, (c - 23) / 7));
       const intensity = Math.max(0, (n - 0.5) / 0.3) * fade;
       if (intensity < 0.14) continue;
       const band = Math.min(5, Math.floor(((intensity - 0.14) / 0.86) * 6));
@@ -42,6 +43,18 @@ async function loadFonts() {
   return { regular: new Uint8Array(regular), heavy: new Uint8Array(heavy) };
 }
 
+/**
+ * The exact bytes of a font. A cached Uint8Array can come back as a view
+ * into a larger buffer, so handing over `.buffer` as is would pass the
+ * renderer bytes that are not the font (it then fails on the signature).
+ */
+function fontBytes(view: Uint8Array): ArrayBuffer {
+  return view.buffer.slice(
+    view.byteOffset,
+    view.byteOffset + view.byteLength,
+  ) as ArrayBuffer;
+}
+
 export async function generateImageMetadata({
   params,
 }: {
@@ -60,7 +73,7 @@ export default async function Image({
   await params;
   const { regular, heavy } = await loadFonts();
   // The OG font only carries Latin glyphs, so the subtitle uses the English role line.
-  const role = getContent("en").meta.ogRole;
+  const { profile } = getContent("en");
 
   return new ImageResponse(
     <div
@@ -99,9 +112,9 @@ export default async function Image({
           style={{
             fontFamily: "Archivo",
             fontWeight: 800,
-            fontSize: 200,
+            fontSize: 150,
             lineHeight: 0.85,
-            letterSpacing: -6,
+            letterSpacing: -4,
           }}
         >
           Amo Feng
@@ -109,12 +122,23 @@ export default async function Image({
         <div
           style={{
             fontFamily: "Archivo",
-            fontWeight: 400,
+            fontWeight: 800,
             fontSize: 40,
-            marginTop: 28,
+            marginTop: 32,
           }}
         >
-          {role}
+          {`${profile.role} · ${profile.place}`}
+        </div>
+        <div
+          style={{
+            fontFamily: "Archivo",
+            fontWeight: 400,
+            fontSize: 32,
+            marginTop: 8,
+            maxWidth: 660,
+          }}
+        >
+          {profile.positioning}
         </div>
       </div>
     </div>,
@@ -123,13 +147,13 @@ export default async function Image({
       fonts: [
         {
           name: "Archivo",
-          data: regular.buffer as ArrayBuffer,
+          data: fontBytes(regular),
           weight: 400,
           style: "normal",
         },
         {
           name: "Archivo",
-          data: heavy.buffer as ArrayBuffer,
+          data: fontBytes(heavy),
           weight: 800,
           style: "normal",
         },

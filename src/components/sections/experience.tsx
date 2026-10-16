@@ -2,7 +2,13 @@ import { InView } from "@/components/motion/in-view";
 import { MetricBars } from "@/components/ui/metric-bars";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
-import type { ExperienceTrack, SectionCopy, UiStrings } from "@/content/types";
+import type {
+  ExperienceTrack,
+  ScopeArea,
+  SectionCopy,
+  UiStrings,
+} from "@/content/types";
+import { fill } from "@/lib/i18n";
 
 interface ExperienceProps {
   tracks: readonly ExperienceTrack[];
@@ -11,6 +17,44 @@ interface ExperienceProps {
 }
 
 const TRACK_COLORS = ["--band-2", "--band-6"];
+/** Areas shown before the "more" fold; the rest are one click away. */
+const SHOWN = 3;
+
+function AreaItem({
+  area,
+  index,
+  ui,
+}: {
+  area: ScopeArea;
+  index: number;
+  ui: UiStrings["experience"];
+}) {
+  return (
+    <li className="grid gap-2 border-b border-graticule py-5 sm:grid-cols-[3rem_1fr]">
+      <span
+        aria-hidden="true"
+        className="index-ink text-sm font-semibold text-ink-soft tabular"
+      >
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <div>
+        <p className="font-bold">{area.title}</p>
+        <p className="mt-1.5 max-w-[40rem] text-ink-soft">{area.body}</p>
+        {area.impact ? (
+          <p className="mt-3 flex max-w-[40rem] gap-3 text-sm">
+            <span className="shrink-0 font-semibold text-ink">{ui.impact}</span>
+            <span className="text-ink-soft">{area.impact}</span>
+          </p>
+        ) : null}
+        {area.metric ? (
+          <InView className="metric-play mt-4 max-w-[34rem]">
+            <MetricBars metrics={[area.metric]} />
+          </InView>
+        ) : null}
+      </div>
+    </li>
+  );
+}
 
 /**
  * Bodies of work, one after the other. Described by domain and scope,
@@ -69,39 +113,38 @@ export function Experience({ tracks, copy, ui }: ExperienceProps) {
 
                   <h4 className="sr-only">{ui.scope}</h4>
                   <ol className="mt-8 border-t border-graticule">
-                    {track.areas.map((area, i) => (
-                      <li
+                    {track.areas.slice(0, SHOWN).map((area, i) => (
+                      <AreaItem
                         key={area.title}
-                        className="grid gap-2 border-b border-graticule py-5 sm:grid-cols-[3rem_1fr]"
-                      >
-                        <span
-                          aria-hidden="true"
-                          className="index-ink text-sm font-semibold text-ink-soft tabular"
-                        >
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <div>
-                          <p className="font-bold">{area.title}</p>
-                          <p className="mt-1.5 max-w-[40rem] text-ink-soft">
-                            {area.body}
-                          </p>
-                          {area.impact ? (
-                            <p className="mt-3 flex max-w-[40rem] gap-3 text-sm">
-                              <span className="shrink-0 font-semibold text-ink">
-                                {ui.impact}
-                              </span>
-                              <span className="text-ink-soft">{area.impact}</span>
-                            </p>
-                          ) : null}
-                          {area.metric ? (
-                            <InView className="metric-play mt-4 max-w-[34rem]">
-                              <MetricBars metrics={[area.metric]} />
-                            </InView>
-                          ) : null}
-                        </div>
-                      </li>
+                        area={area}
+                        index={i}
+                        ui={ui}
+                      />
                     ))}
                   </ol>
+                  {track.areas.length > SHOWN ? (
+                    <details className="group/more">
+                      <summary className="flex cursor-pointer list-none items-center justify-between border-b border-graticule py-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                        {fill(ui.more, { count: track.areas.length - SHOWN })}
+                        <span
+                          aria-hidden="true"
+                          className="text-2xl leading-none font-light text-ink-soft transition-transform duration-300 group-open/more:rotate-45"
+                        >
+                          +
+                        </span>
+                      </summary>
+                      <ol start={SHOWN + 1}>
+                        {track.areas.slice(SHOWN).map((area, i) => (
+                          <AreaItem
+                            key={area.title}
+                            area={area}
+                            index={SHOWN + i}
+                            ui={ui}
+                          />
+                        ))}
+                      </ol>
+                    </details>
+                  ) : null}
 
                   <div className="mt-6">
                     <h4 className="text-sm text-ink-soft">{ui.stack}</h4>

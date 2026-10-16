@@ -31,25 +31,25 @@ export function AiWorkflowSection({ workflow, copy }: AiWorkflowProps) {
           className="pipe relative"
           style={{ "--steps": steps.length } as React.CSSProperties}
         >
-          {/* Track and fill: vertical on phones, horizontal from md up. */}
+          {/* Track and fill: vertical up to tablets, horizontal from lg up. */}
           <span
             aria-hidden="true"
-            className="absolute top-5 bottom-5 left-5 w-px bg-graticule md:hidden"
+            className="absolute top-5 bottom-5 left-5 w-px bg-graticule lg:hidden"
           >
             <span className="pipe-fill-y absolute inset-0 bg-echo-2" />
           </span>
           <span
             aria-hidden="true"
-            className="absolute top-5 right-[10%] left-[10%] hidden h-px bg-graticule md:block"
+            className="absolute top-5 right-[8%] left-[8%] hidden h-px bg-graticule lg:block"
           >
             <span className="pipe-fill-x absolute inset-0 bg-echo-2" />
           </span>
 
-          <ol className="relative grid gap-10 md:grid-cols-5 md:gap-6">
+          <ol className="relative grid gap-10 lg:grid-cols-6 lg:gap-5">
             {steps.map((step, i) => (
               <li
                 key={step.id}
-                className="grid grid-cols-[2.5rem_1fr] gap-4 md:grid-cols-1 md:justify-items-center md:text-center"
+                className="grid grid-cols-[2.5rem_1fr] gap-4 lg:grid-cols-1 lg:justify-items-center lg:text-center"
               >
                 <span
                   className="pipe-dot relative z-10 flex size-10 items-center justify-center rounded-full border border-coast bg-paper text-sm font-bold tabular"
@@ -58,8 +58,8 @@ export function AiWorkflowSection({ workflow, copy }: AiWorkflowProps) {
                   {i + 1}
                 </span>
                 <div>
-                  <h3 className="text-lg font-bold md:text-xl">{step.title}</h3>
-                  <p className="mt-1 text-ink-soft md:mx-auto md:max-w-[15rem]">
+                  <h3 className="text-lg font-bold">{step.title}</h3>
+                  <p className="mt-1 text-ink-soft lg:mx-auto lg:max-w-[14rem]">
                     {step.body}
                   </p>
                 </div>

@@ -3,6 +3,7 @@
 import { AnimatePresence, LayoutGroup, m } from "motion/react";
 import { useState } from "react";
 import type { UiStrings, WorkCategory, WorkEntry } from "@/content/types";
+import { InView } from "@/components/motion/in-view";
 import { MetricBars, metricHeadline } from "@/components/ui/metric-bars";
 import { cn } from "@/lib/cn";
 import { useMotionPreference } from "@/lib/motion/preference";
@@ -183,7 +184,13 @@ export function WorkLog({
               transition={reduced ? { duration: 0 } : { duration: 0.35, ease }}
               className="border-b border-graticule"
             >
-              <details className="log-entry group">
+              {/* Featured cases start open; their figures play when scrolled
+                  into view instead of on page load (see data-featured in CSS). */}
+              <details
+                className="log-entry group"
+                open={entry.featured}
+                data-featured={entry.featured ? "" : undefined}
+              >
                 <summary className="grid grid-cols-[auto_1fr_auto] items-baseline gap-x-4 py-5 md:grid-cols-[7rem_1fr_auto] md:gap-x-8 md:py-6">
                   <span className="flex items-center gap-2 text-sm text-ink-soft">
                     <span
@@ -202,6 +209,10 @@ export function WorkLog({
                       {entry.metrics?.[0] ? (
                         <span className="metric-headline font-semibold text-ink tabular">
                           {metricHeadline(entry.metrics[0])}
+                        </span>
+                      ) : entry.outcome ? (
+                        <span className="metric-headline font-semibold text-ink">
+                          {entry.outcome}
                         </span>
                       ) : null}
                     </span>
@@ -246,51 +257,59 @@ export function WorkLog({
                           {ui.result}
                         </h4>
                         {entry.metrics ? (
-                          <MetricBars
-                            metrics={entry.metrics}
-                            className="metric-play mt-3 mb-4"
-                          />
+                          entry.featured ? (
+                            <InView className="metric-play mt-3 mb-4">
+                              <MetricBars metrics={entry.metrics} />
+                            </InView>
+                          ) : (
+                            <MetricBars
+                              metrics={entry.metrics}
+                              className="metric-play mt-3 mb-4"
+                            />
+                          )
                         ) : null}
                         {entry.result ? (
                           <p className="mt-1">{entry.result}</p>
                         ) : null}
                         {entry.evidence ? (
-                          <ul className="mt-3 space-y-1.5 tabular">
-                            {entry.evidence.map((line, i) => (
-                              <li
-                                key={line}
-                                className="evidence flex gap-3"
-                                style={{ "--i": i } as React.CSSProperties}
-                              >
-                                <svg
-                                  aria-hidden="true"
-                                  viewBox="0 0 16 16"
-                                  className="mt-[0.2em] size-4 shrink-0 text-echo-2"
-                                  fill="none"
-                                  stroke="currentColor"
+                          <InView threshold={0.4}>
+                            <ul className="mt-3 space-y-1.5 tabular">
+                              {entry.evidence.map((line, i) => (
+                                <li
+                                  key={line}
+                                  className="evidence flex gap-3"
+                                  style={{ "--i": i } as React.CSSProperties}
                                 >
-                                  <rect
-                                    className="evidence-box"
-                                    x="1.5"
-                                    y="1.5"
-                                    width="13"
-                                    height="13"
-                                    pathLength={1}
-                                    strokeWidth="1.5"
-                                  />
-                                  <path
-                                    className="evidence-check"
-                                    d="M4.5 8.5 L7 11 L11.5 5.5"
-                                    pathLength={1}
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                                {line}
-                              </li>
-                            ))}
-                          </ul>
+                                  <svg
+                                    aria-hidden="true"
+                                    viewBox="0 0 16 16"
+                                    className="mt-[0.2em] size-4 shrink-0 text-echo-2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                  >
+                                    <rect
+                                      className="evidence-box"
+                                      x="1.5"
+                                      y="1.5"
+                                      width="13"
+                                      height="13"
+                                      pathLength={1}
+                                      strokeWidth="1.5"
+                                    />
+                                    <path
+                                      className="evidence-check"
+                                      d="M4.5 8.5 L7 11 L11.5 5.5"
+                                      pathLength={1}
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                  </svg>
+                                  {line}
+                                </li>
+                              ))}
+                            </ul>
+                          </InView>
                         ) : null}
                       </div>
                     ) : null}

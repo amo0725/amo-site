@@ -3,6 +3,11 @@ import { sectionMeta } from "@/config/site";
 import type { SectionCopy, SideProject } from "@/content/types";
 import { ProjectVisualView } from "./project-visuals";
 
+/** "github.com/owner/repo" from a repository URL. */
+function repoLabel(href: string) {
+  return href.replace(/^https?:\/\//, "").replace(/\/$/, "");
+}
+
 interface ProjectsProps {
   projects: readonly SideProject[];
   copy: SectionCopy;
@@ -39,12 +44,39 @@ export function Projects({ projects, copy }: ProjectsProps) {
               </div>
               <div className="md:col-span-5">
                 <h3 className="text-3xl leading-tight font-extrabold md:text-4xl">
-                  {project.name}
+                  {project.href ? (
+                    <a
+                      href={project.href}
+                      target="_blank"
+                      rel="noopener"
+                      className="underline decoration-coast decoration-2 underline-offset-[6px] transition-colors hover:decoration-ink"
+                    >
+                      {project.name}
+                    </a>
+                  ) : (
+                    project.name
+                  )}
                 </h3>
                 <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-soft">
                   {project.alias ? <span>{project.alias}</span> : null}
                   {project.year ? (
                     <span className="tabular">{project.year}</span>
+                  ) : null}
+                  {project.href ? (
+                    <a
+                      href={project.href}
+                      target="_blank"
+                      rel="noopener"
+                      className="group/repo inline-flex items-center gap-1 rounded-full border border-ink px-2.5 py-0.5 text-xs font-semibold text-ink"
+                    >
+                      {repoLabel(project.href)}
+                      <span
+                        aria-hidden="true"
+                        className="transition-transform group-hover/repo:translate-x-0.5 group-hover/repo:-translate-y-0.5"
+                      >
+                        ↗
+                      </span>
+                    </a>
                   ) : null}
                   {project.status ? (
                     <span className="rounded-full border border-echo-4 px-2.5 py-0.5 text-xs font-semibold text-ink">

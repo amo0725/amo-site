@@ -9,19 +9,26 @@
 export type Locale = "zh-TW" | "en";
 
 export interface Profile {
-  /** Display name used in the hero. */
+  /** Short display name, used in the header. */
   name: string;
   fullName: string;
+  /** Name in Chinese characters, shown next to the full name. */
+  nativeName: string;
+  /** Title as it appears on the résumé, e.g. "Full-stack engineer". */
   role: string;
+  /** What the role leans towards, shown after the title. */
+  specialty: string;
   place: string;
   /** Bold lead-in before the summary, e.g. "Full-stack engineer in Taiwan." */
   headline: string;
   /** Full text of the hero heading for assistive tech. */
   a11yName: string;
   timeZone: string;
-  /** Current focus shown under the hero clock (never an employer name). */
+  /** Main stack in one line, shown under the hero summary. */
   focus: string;
-  /** One-sentence positioning shown under the name. */
+  /** The hero headline: one sentence of positioning. */
+  positioning: string;
+  /** Two or three sentences of evidence under the headline. */
   summary: string;
   /** Long-form statement revealed word by word on scroll. */
   statement: string;
@@ -133,6 +140,10 @@ export interface WorkEntry {
   result?: string;
   /** Measured before → after; the first one also shows on the collapsed row. */
   metrics?: readonly Metric[];
+  /** Short result for the collapsed row when there is no measurement. */
+  outcome?: string;
+  /** Open by default: the cases to read first. */
+  featured?: boolean;
   /** How the result was verified, one check per line. */
   evidence?: readonly string[];
   lesson?: string;
@@ -257,12 +268,15 @@ export interface UiStrings {
   mainNav: string;
   sectionNav: string;
   contactShort: string;
+  /** Section menu below the desktop breakpoint. */
+  menu: { open: string; close: string };
   /** Link to the other language. */
   switchLanguage: { label: string; href: string; hrefLang: Locale };
   hero: {
     timeLabel: string;
-    legendWeak: string;
-    legendStrong: string;
+    /** {count} */
+    ctaWork: string;
+    ctaGithub: string;
     motionLabel: string;
     motionOn: string;
     motionOff: string;
@@ -273,6 +287,8 @@ export interface UiStrings {
     stack: string;
     earlier: string;
     impact: string;
+    /** {count} */
+    more: string;
   };
   systems: {
     emptyTitle: string;
@@ -301,6 +317,8 @@ export interface UiStrings {
     chartLabel: string;
     chart21: string;
     chart11: string;
+    /** Summary of the fold holding the specs and the frame-time chart. */
+    details: string;
   };
   contact: {
     headline: string;
@@ -308,6 +326,11 @@ export interface UiStrings {
     copy: string;
     copied: string;
     copyFailed: string;
+    /** What kind of role I'm open to. */
+    status: string;
+    resume: string;
+    /** Subject line of the résumé request email. */
+    resumeSubject: string;
   };
   footer: { now: string; backToTop: string };
 }

@@ -11,10 +11,17 @@ interface MotionToggleProps {
   label: string;
   on: string;
   off: string;
+  /** Header use: the label and state text are visually hidden on phones. */
+  compact?: boolean;
 }
 
 /** Lets a visitor override the system motion setting in either direction. */
-export function MotionToggle({ label, on, off }: MotionToggleProps) {
+export function MotionToggle({
+  label,
+  on,
+  off,
+  compact = false,
+}: MotionToggleProps) {
   const preference = useMotionPreference();
   const enabled = preference === "full";
 
@@ -34,7 +41,7 @@ export function MotionToggle({ label, on, off }: MotionToggleProps) {
       }}
       className="group inline-flex items-center gap-2.5 text-sm"
     >
-      <span>{label}</span>
+      <span className={cn(compact && "sr-only xl:not-sr-only")}>{label}</span>
       <span
         aria-hidden="true"
         className={cn(
@@ -50,7 +57,13 @@ export function MotionToggle({ label, on, off }: MotionToggleProps) {
           )}
         />
       </span>
-      <span className="w-6 text-left text-ink tabular" suppressHydrationWarning>
+      <span
+        className={cn(
+          "w-6 text-left text-ink tabular",
+          compact && "sr-only xl:not-sr-only",
+        )}
+        suppressHydrationWarning
+      >
         {enabled ? on : off}
       </span>
     </button>

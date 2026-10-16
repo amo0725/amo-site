@@ -414,26 +414,26 @@
     --lit: calc(var(--row, 0s) + var(--i) * 9ms);
     --wave: calc(var(--row, 0s) + 0.55s + var(--j) * 13ms);
   }
-  & :is(.log-entry[open] .metric-play, .metric-play[data-in]) .echo-drop {
+  & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .echo-drop {
     animation:
       echo-lit 0.22s ease-out var(--lit) both,
       echo-cool 0.5s linear var(--wave) forwards;
   }
-  & :is(.log-entry[open] .metric-play, .metric-play[data-in]) .echo-keep {
+  & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .echo-keep {
     animation:
       echo-lit 0.22s ease-out var(--lit) both,
       echo-settle 0.4s ease-out var(--wave) forwards;
   }
-  & :is(.log-entry[open] .metric-play, .metric-play[data-in]) .metric-before::after {
+  & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .metric-before::after {
     transform-origin: left center;
     animation: strike 0.35s cubic-bezier(0.16, 1, 0.3, 1)
       calc(var(--row, 0s) + 0.45s) both;
   }
-  & :is(.log-entry[open] .metric-play, .metric-play[data-in]) .metric-new {
+  & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .metric-new {
     animation: wipe-in 0.5s cubic-bezier(0.16, 1, 0.3, 1)
       calc(var(--row, 0s) + 0.55s + (var(--cells) - var(--keep)) * 13ms) both;
   }
-  & :is(.log-entry[open] .metric-play, .metric-play[data-in]) .metric-factor {
+  & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .metric-factor {
     animation: wipe-in 0.45s cubic-bezier(0.16, 1, 0.3, 1)
       calc(var(--row, 0s) + 0.75s + (var(--cells) - var(--keep)) * 13ms) both;
   }
@@ -446,10 +446,10 @@
   }
 
   /* Evidence: each box draws itself, then its check, one after another. */
-  & .log-entry[open] .evidence-box {
+  & :is(.log-entry[open]:not([data-featured]), .log-entry [data-in]) .evidence-box {
     animation: stroke-draw 0.35s ease-in-out calc(0.25s + var(--i) * 0.16s) both;
   }
-  & .log-entry[open] .evidence-check {
+  & :is(.log-entry[open]:not([data-featured]), .log-entry [data-in]) .evidence-check {
     animation: stroke-draw 0.25s cubic-bezier(0.16, 1, 0.3, 1)
       calc(0.5s + var(--i) * 0.16s) both;
   }
@@ -649,6 +649,13 @@
     animation: scan-swatch linear both;
     animation-timeline: view();
     animation-range: entry 30% cover 32%;
+  }
+  /* A sticky heading barely moves while its section scrolls, so a view
+     timeline would leave it half-scanned. Show it whole instead. */
+  @media (min-width: 64rem) {
+    .sticky-heading :is(.scan-text, .scan-swatch) {
+      animation: none;
+    }
   }
 
   /* Integration edges draw themselves in. */
@@ -906,10 +913,10 @@
 }
 
 /* ---------- Hero bottom scrim ----------
-   Phones: full width, the text is one column. From md up it covers only
-   the md:col-span-7 text column (page gutter + 7 of 12 columns + 6 gaps of
+   Phones and tablets: full width. From lg up it covers only
+   the lg:col-span-7 text column (page gutter + 7 of 12 columns + 6 gaps of
    2rem) and feathers out over 8rem past it, leaving the field open. */
-@media (min-width: 48rem) {
+@media (min-width: 64rem) {
   .hero-scrim {
     --gutter: max(2.5rem, (100% - 90rem) / 2 + 2.5rem);
     --column: (min(100%, 90rem) - 5rem - 22rem) / 12;

@@ -1,12 +1,17 @@
 # Amo Feng — personal site
 
+[![CI](https://github.com/amo0725/amo-site/actions/workflows/ci.yml/badge.svg)](https://github.com/amo0725/amo-site/actions/workflows/ci.yml)
+
+Live: **https://amo-site.vercel.app** ([中文](https://amo-site.vercel.app/zh-TW) · [English](https://amo-site.vercel.app/en))
+
 Next.js 16 (App Router, Cache Components, React Compiler) · React 19 · Tailwind CSS 4 · three.js · Motion · Lenis.
 Bilingual: Traditional Chinese at `/zh-TW`, English at `/en`.
 
 The visual idea is a weather-radar echo map: chart-paper background, map ink, and the radar
 reflectivity scale as the palette. The hero is a live 3D echo field; each section owns one band
-of the scale, which the header, the side legend and the section swatches reuse. A 30-second
-showreel, generated in code, sits right after the intro.
+of the scale, which the header, the side legend and the section swatches reuse. The page leads
+with the case log (the three cases to read first start open); a 30-second showreel, generated in
+code, sits with the side projects.
 
 ## Run
 
@@ -16,7 +21,24 @@ npm run dev        # http://localhost:3000  → redirects to /zh-TW or /en
 npm run build && npm start
 ```
 
-Set `NEXT_PUBLIC_SITE_URL` to the production URL (canonical, hreflang, OG, sitemap, JSON-LD).
+`NEXT_PUBLIC_SITE_URL` sets the production URL (canonical, hreflang, OG, sitemap, JSON-LD);
+it defaults to https://amo-site.vercel.app.
+
+## Checks
+
+```bash
+npm run lint
+npm run typecheck
+npm run build && npm start -- -p 3100 &   # then:
+npm run smoke                              # BASE_URL, CHROME_PATH
+```
+
+`scripts/smoke.mjs` loads both languages at desktop and phone widths against the production
+build and fails on what a first visit depends on: the page and h1, the call to action into the
+case log, the featured cases being open, every public project linking to its repository, the
+phone section menu, console errors, a placeholder domain in canonical/sitemap/robots, and the
+Open Graph images. GitHub Actions runs lint, typecheck, build and the smoke test on every push
+and pull request (`.github/workflows/ci.yml`).
 
 ## Exporting the showreel
 
