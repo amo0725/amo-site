@@ -6,7 +6,6 @@ import type { UiStrings, WorkCategory, WorkEntry } from "@/content/types";
 import { metricHeadline } from "@/components/ui/metric-bars";
 import { cn } from "@/lib/cn";
 import { useMotionPreference } from "@/lib/motion/preference";
-import { useIsPhone } from "@/lib/hooks/use-is-phone";
 import { PhoneFold } from "@/components/ui/phone-fold";
 
 export interface TrackOption {
@@ -25,6 +24,11 @@ interface WorkLogProps {
 }
 
 const ALL = "__all__";
+
+/** Opens a featured case on md-and-up screens when it mounts. */
+function openWhenWide(el: HTMLDetailsElement | null) {
+  if (el && window.matchMedia("(min-width: 48rem)").matches) el.open = true;
+}
 const ease = [0.16, 1, 0.3, 1] as const;
 const easeInOutQuart = [0.76, 0, 0.24, 1] as const;
 /* Rows are wiped in and out, never faded: in from the left edge, out by the
@@ -152,10 +156,6 @@ export function WorkLog({
   // Motion's reducedMotion setting only drops transforms and layout, so the
   // clip-path wipes are switched off here.
   const reduced = useMotionPreference() === "reduced";
-  // Phones get the list as an outline: every case starts closed (the
-  // featured ones are open from md up). False on the server, so the first
-  // paint is the desktop markup; the work log is far below the first screen.
-  const phone = useIsPhone();
 
   const visible = entries.filter(
     (e) =>
@@ -243,7 +243,9 @@ export function WorkLog({
                   into view instead of on page load (see data-featured in CSS). */}
               <details
                 className="log-entry group"
-                open={entry.featured && !phone}
+                // Served closed: phones get the list as an outline. From
+                // md up the featured cases open as they mount (no re-render).
+                ref={entry.featured ? openWhenWide : undefined}
                 data-featured={entry.featured ? "" : undefined}
               >
                 {/* Phones: two columns, the category joins the line under the

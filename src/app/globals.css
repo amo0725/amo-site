@@ -899,8 +899,10 @@
 }
 
 /* ---------- Phone folds ----------
-   details.phone-fold: a toggle on phones, always open from md up, where
-   the summary reads as a plain heading (see PhoneFold). */
+   details.phone-fold (PhoneFold) is closed in the HTML: a toggle on phones.
+   From md up its content is shown whatever the open state and the summary
+   is a plain heading. Browsers without ::details-content keep a working
+   toggle on desktop instead. */
 .phone-fold > summary {
   list-style: none;
   cursor: pointer;
@@ -914,13 +916,18 @@
 .phone-fold[open] > summary .fold-icon {
   rotate: 45deg;
 }
-@media (min-width: 48rem) {
-  .phone-fold > summary {
-    cursor: auto;
-    pointer-events: none;
-  }
-  .phone-fold > summary .fold-icon {
-    display: none;
+@supports selector(::details-content) {
+  @media (min-width: 48rem) {
+    .phone-fold::details-content {
+      content-visibility: visible;
+    }
+    .phone-fold > summary {
+      cursor: auto;
+      pointer-events: none;
+    }
+    .phone-fold > summary .fold-icon {
+      display: none;
+    }
   }
 }
 

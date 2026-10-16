@@ -1,8 +1,5 @@
-"use client";
-
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { useIsPhone } from "@/lib/hooks/use-is-phone";
 
 interface PhoneFoldProps {
   /** Always-visible line: a toggle on phones, a plain heading from md up. */
@@ -13,10 +10,11 @@ interface PhoneFoldProps {
 }
 
 /**
- * Progressive disclosure for phones. Served open (desktops, no-JS visitors
- * and crawlers read everything); on a phone-width screen it closes after
- * hydration, so the reader sees one line per item with the detail a tap
- * away. Always below the first screen, so nothing in view moves.
+ * Progressive disclosure for phones, with no JavaScript. Served closed:
+ * on a phone the reader sees one line per item with the detail a tap away.
+ * From md up CSS shows the content anyway and the summary reads as a
+ * heading (see .phone-fold in globals.css), so desktops lay out as before.
+ * The content stays in the HTML either way, for search and find-in-page.
  */
 export function PhoneFold({
   summary,
@@ -24,20 +22,9 @@ export function PhoneFold({
   className,
   children,
 }: PhoneFoldProps) {
-  const phone = useIsPhone();
-  // What the reader chose on a phone; wide screens are always open.
-  const [opened, setOpened] = useState(false);
   return (
-    <details
-      className={cn("phone-fold", className)}
-      open={phone ? opened : true}
-      onToggle={(e) => {
-        const d = e.currentTarget;
-        if (phone) setOpened(d.open);
-        else if (!d.open) d.open = true;
-      }}
-    >
-      <summary className={summaryClassName} tabIndex={phone ? 0 : -1}>
+    <details className={cn("phone-fold", className)}>
+      <summary className={summaryClassName}>
         {summary}
         <span
           aria-hidden="true"
