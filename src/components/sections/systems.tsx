@@ -34,7 +34,7 @@ export function Systems({
     <section
       id={meta.id}
       aria-labelledby={`${meta.id}-title`}
-      className="border-t border-graticule px-5 pt-24 md:px-10 md:pt-32"
+      className="border-t border-graticule px-5 pt-16 md:px-10 md:pt-32"
     >
       <div className="mx-auto max-w-[90rem]">
         <SectionHeading id={meta.id} colorVar={meta.colorVar} lead={copy.lead}>
@@ -49,7 +49,7 @@ export function Systems({
         />
       </div>
 
-      <div className="-mx-5 mt-20 border-t border-graticule px-5 py-10 md:-mx-10 md:px-10 md:py-14">
+      <div className="-mx-5 mt-14 border-t border-graticule px-5 py-10 md:-mx-10 md:px-10 md:py-14">
         <div className="mx-auto max-w-[90rem]">
           <h3 className="mb-6 text-sm font-semibold">{ui.skillsTitle}</h3>
           <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">

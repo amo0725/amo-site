@@ -49,7 +49,7 @@ export function FrametimeChart({ ui }: { ui: UiStrings["offDuty"] }) {
         <div
           role="group"
           aria-label={ui.ratioLabel}
-          className="flex rounded-full border border-coast p-0.5"
+          className="flex gap-1 rounded-full border border-control p-1"
         >
           {(["2:1", "1:1"] as const).map((r) => (
             <button
@@ -58,7 +58,7 @@ export function FrametimeChart({ ui }: { ui: UiStrings["offDuty"] }) {
               aria-pressed={ratio === r}
               onClick={() => setRatio(r)}
               className={cn(
-                "rounded-full px-3 py-0.5 text-sm tabular transition-colors",
+                "min-h-10 rounded-full px-3.5 text-sm tabular transition-colors",
                 ratio === r
                   ? "bg-ink text-paper"
                   : "text-ink-soft hover:text-ink",

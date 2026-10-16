@@ -30,7 +30,9 @@ export function Contact({ contact, copy, ui }: ContactProps) {
           {copy.label}
         </SectionHeading>
 
-        <p className="max-w-[16em] text-[clamp(2.25rem,7vw,5.5rem)] leading-[1.05] font-extrabold tracking-[-0.02em] font-expanded">
+        {/* Han glyphs need more leading than the expanded Latin face, and
+            keep-all stops a break inside a word like 「哪裡」. */}
+        <p className="max-w-[16em] text-[clamp(2.25rem,7vw,5.5rem)] leading-[1.05] font-extrabold tracking-[-0.02em] text-balance font-expanded [word-break:keep-all] [:lang(zh)_&]:leading-[1.25]">
           {ui.headline}
         </p>
 
@@ -39,7 +41,7 @@ export function Contact({ contact, copy, ui }: ContactProps) {
         <p className="mt-6 text-lg">
           <a
             href={`mailto:${contact.email}`}
-            className="underline decoration-paper/40 decoration-1 underline-offset-[6px] transition-colors hover:decoration-paper"
+            className="-my-2 inline-block py-2 underline decoration-paper/40 decoration-1 underline-offset-[6px] transition-colors hover:decoration-paper"
           >
             {contact.email}
           </a>
@@ -71,7 +73,7 @@ export function Contact({ contact, copy, ui }: ContactProps) {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="group inline-flex items-center gap-2 underline decoration-paper/40 underline-offset-4 hover:decoration-paper"
+                  className="group inline-flex min-h-11 items-center gap-2 underline decoration-paper/40 underline-offset-4 hover:decoration-paper"
                   rel="me noopener"
                   target="_blank"
                 >

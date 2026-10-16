@@ -67,6 +67,12 @@ export default function ReelStage({
       const { width, height } = frame.getBoundingClientRect();
       const scale = Math.min(width / STAGE_W, height / STAGE_H) || 0.1;
       stage.style.transform = `translate(${(width - STAGE_W * scale) / 2}px, ${(height - STAGE_H * scale) / 2}px) scale(${scale})`;
+      // Small captions grow on small stages (up to 1.45×), so a phone shows
+      // them at about 13px or more instead of 9.
+      stage.style.setProperty(
+        "--reel-boost",
+        String(Math.min(1.45, Math.max(1, 0.32 / scale))),
+      );
       const density = Math.min(2, scale * window.devicePixelRatio);
       const w = Math.round(STAGE_W * density);
       const h = Math.round(STAGE_H * density);

@@ -204,7 +204,7 @@ export function GraphView({
                   "px-3 py-1 text-[0.8rem] md:px-4 md:py-1.5 md:text-sm",
                   hub
                     ? "border-ink bg-ink font-semibold text-paper"
-                    : "border-coast bg-paper text-ink hover:border-ink",
+                    : "border-control bg-paper text-ink hover:border-ink",
                   isActive && "scale-110 shadow-[0_0_0_4px_var(--echo-2)]",
                   dimmed && "opacity-40",
                 )}
@@ -226,7 +226,7 @@ export function GraphView({
             setPositions({ ...layout.positions });
             setRearranged(false);
           }}
-          className="absolute top-0 right-0 rounded-full border border-coast px-3 py-1 text-sm hover:border-ink"
+          className="absolute top-0 right-0 rounded-full border border-control px-3 py-1 text-sm hover:border-ink"
         >
           {resetLabel}
         </button>

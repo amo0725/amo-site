@@ -8,22 +8,28 @@ interface ScrubTextProps {
 }
 
 /**
- * Paragraph whose words ink in as they scroll through the viewport.
- * Pure CSS scroll-driven animation: no JavaScript, no main-thread work.
+ * Paragraphs whose words ink in as they scroll through the viewport.
+ * A blank line in `text` starts a new paragraph, which gives a long
+ * statement a place to pause. Pure CSS scroll-driven animation: no
+ * JavaScript, no main-thread work.
  */
 export function ScrubText({ text, locale, className }: ScrubTextProps) {
-  const words = segmentWords(text, locale);
+  const paragraphs = text.split(/\n\s*\n/);
   return (
-    <p className={className}>
-      {words.map((word, i) =>
-        word.trim() === "" ? (
-          <span key={i}>{word}</span>
-        ) : (
-          <span key={i} className="scrub-word">
-            {word}
-          </span>
-        ),
-      )}
-    </p>
+    <div className={className}>
+      {paragraphs.map((paragraph, p) => (
+        <p key={p} className={p > 0 ? "mt-[0.9em]" : undefined}>
+          {segmentWords(paragraph.trim(), locale).map((word, i) =>
+            word.trim() === "" ? (
+              <span key={i}>{word}</span>
+            ) : (
+              <span key={i} className="scrub-word">
+                {word}
+              </span>
+            ),
+          )}
+        </p>
+      ))}
+    </div>
   );
 }

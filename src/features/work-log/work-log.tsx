@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, LayoutGroup, m } from "motion/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { UiStrings, WorkCategory, WorkEntry } from "@/content/types";
 import { InView } from "@/components/motion/in-view";
 import { MetricBars, metricHeadline } from "@/components/ui/metric-bars";
@@ -54,7 +54,20 @@ function FilterGroup({
   onChange: (value: string) => void;
 }) {
   return (
-    <div role="group" aria-label={label} className="flex flex-wrap gap-2">
+    // A visible group name: two rows of pills that both start with "All"
+    // otherwise read as one row with two "All" buttons.
+    <div
+      role="group"
+      aria-labelledby={`filter-${id}-label`}
+      className="md:flex md:items-baseline md:gap-4"
+    >
+      <p
+        id={`filter-${id}-label`}
+        className="mb-2 text-xs font-semibold text-ink-soft md:mb-0 md:w-24 md:shrink-0"
+      >
+        {label}
+      </p>
+      <div className="flex flex-wrap gap-2">
       {options.map((opt) => {
         const on = value === opt.value;
         return (
@@ -64,8 +77,8 @@ function FilterGroup({
             aria-pressed={on}
             onClick={() => onChange(opt.value)}
             className={cn(
-              "relative isolate flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm transition-colors",
-              on ? "border-ink text-paper" : "border-coast hover:border-ink",
+              "relative isolate flex min-h-10 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors",
+              on ? "border-ink text-paper" : "border-control hover:border-ink",
             )}
           >
             {on ? (
@@ -91,7 +104,18 @@ function FilterGroup({
           </button>
         );
       })}
+      </div>
     </div>
+  );
+}
+
+function CategoryMark({ color }: { color: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-block size-2.5 shrink-0"
+      style={{ background: `var(${color})` }}
+    />
   );
 }
 
@@ -116,6 +140,21 @@ export function WorkLog({
   // Motion's reducedMotion setting only drops transforms and layout, so the
   // clip-path wipes are switched off here.
   const reduced = useMotionPreference() === "reduced";
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // Featured cases are served open. On a phone three open cases are about
+  // five screens of reading before the rest of the list, so there only the
+  // first stays open. This runs once, well below the first screen.
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 47.99rem)").matches) return;
+    const featured =
+      listRef.current?.querySelectorAll<HTMLDetailsElement>(
+        "details[data-featured]",
+      ) ?? [];
+    featured.forEach((d, i) => {
+      if (i > 0) d.open = false;
+    });
+  }, []);
 
   const visible = entries.filter(
     (e) =>
@@ -151,7 +190,7 @@ export function WorkLog({
 
   return (
     <LayoutGroup>
-      <div className="mb-8 space-y-3">
+      <div className="mb-8 space-y-4">
         <FilterGroup
           id="type"
           label={ui.byType}
@@ -168,7 +207,7 @@ export function WorkLog({
         />
       </div>
 
-      <m.ul layout className="border-t border-graticule">
+      <m.ul ref={listRef} layout className="border-t border-graticule">
         <AnimatePresence initial={false} mode="popLayout">
           {visible.map((entry) => (
             <m.li
@@ -192,20 +231,22 @@ export function WorkLog({
                 open={entry.featured}
                 data-featured={entry.featured ? "" : undefined}
               >
-                <summary className="grid grid-cols-[auto_1fr_auto] items-baseline gap-x-4 py-5 md:grid-cols-[7rem_1fr_auto] md:gap-x-8 md:py-6">
-                  <span className="flex items-center gap-2 text-sm text-ink-soft">
-                    <span
-                      aria-hidden="true"
-                      className="inline-block size-2.5"
-                      style={{ background: `var(${colors[entry.category]})` }}
-                    />
+                {/* Phones: two columns, the category joins the line under the
+                    title so the title gets the full width. */}
+                <summary className="grid grid-cols-[1fr_auto] items-baseline gap-x-4 py-5 md:grid-cols-[7rem_1fr_auto] md:gap-x-8 md:py-6">
+                  <span className="hidden items-center gap-2 text-sm text-ink-soft md:flex">
+                    <CategoryMark color={colors[entry.category]} />
                     {categories[entry.category]}
                   </span>
                   <span>
-                    <span className="block text-lg font-semibold md:text-xl">
+                    <span className="block text-lg font-semibold text-balance md:text-xl">
                       {entry.title}
                     </span>
-                    <span className="flex flex-wrap gap-x-3 text-sm text-ink-soft">
+                    <span className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-ink-soft md:mt-0">
+                      <span className="flex items-center gap-2 md:hidden">
+                        <CategoryMark color={colors[entry.category]} />
+                        {categories[entry.category]}
+                      </span>
                       <span>{trackLabel.get(entry.track)}</span>
                       {entry.metrics?.[0] ? (
                         <span className="metric-headline font-semibold text-ink tabular">
@@ -326,6 +367,23 @@ export function WorkLog({
                         <span key={s}>{s}</span>
                       ))}
                     </p>
+                    {/* A long case is one or two screens on a phone; this
+                        closes it from the bottom and brings its row back. */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        const details = e.currentTarget.closest("details");
+                        if (!details) return;
+                        details.open = false;
+                        if (details.getBoundingClientRect().top < 0) {
+                          details.scrollIntoView({ block: "start" });
+                        }
+                      }}
+                      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-control px-5 text-sm font-semibold transition-colors hover:border-ink"
+                    >
+                      {ui.collapse}
+                      <span aria-hidden="true">↑</span>
+                    </button>
                   </div>
                 </div>
               </details>

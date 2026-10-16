@@ -25,10 +25,15 @@ export const zhTW: SiteContent = {
     timeZone: "Asia/Taipei",
     focus: "NestJS・React・PHP・MySQL／PostgreSQL／MongoDB・RabbitMQ・Kubernetes",
     positioning: "讓牽涉到錢的系統，每一步都算得對。",
+    proof: [
+      { figure: "2,000+", label: "企業在用的客服平台，預付點數計費由我主寫" },
+      { figure: "0 張", label: "換定價模型時，需要重算的已簽約報價" },
+      { figure: "44 ms", label: "預約查詢原本 6.3\u00a0s：找回被\u00a0ORM\u00a0刪掉的\u00a0index" },
+    ],
     summary:
       "做過服務 2,000+ 企業的客服平台上的預付點數計費、AI 與通路整合，和一條從 3D 報價、簽約、付款到 Stripe 訂閱計費，並與 HubSpot、NetSuite 同步的 quote-to-cash 鏈。追到根因之後，修在讓同一類 bug 進不來的那個點。",
     statement:
-      "我最擅長找出看起來正常、其實已經壞掉的問題。socket 還連著，卻沒有人在處理事件；migration 紀錄說跑過了，index 卻不在資料庫裡；框架升級順利，middleware 卻默默不再執行；測試全綠，測的卻是 production 不存在的狀態。這些都不會出現在儀表板上，要從程式碼、佇列和資料庫一路追下去。追到之後，我要的修法是找到那一個關鍵點，讓同一類 bug 再也進不來。",
+      "我最擅長找出看起來正常、其實已經壞掉的問題。\n\nsocket 還連著，卻沒有人在處理事件；migration 紀錄說跑過了，index 卻不在資料庫裡；框架升級順利，middleware 卻默默不再執行；測試全綠，測的卻是 production 不存在的狀態。\n\n這些都不會出現在儀表板上，要從程式碼、佇列和資料庫一路追下去。追到之後，我要的修法是找到那一個關鍵點，讓同一類 bug 再也進不來。",
     aside:
       "遠端加入過香港與美國的團隊，文件、code review 和會議都用英文。也習慣把 standup 裡的技術細節翻成 PM、業務和會計讀得懂的版本。架構決策要讓依賴它的人都看得懂，才算做完。",
   },
@@ -38,12 +43,13 @@ export const zhTW: SiteContent = {
     mainNav: "主要",
     sectionNav: "段落",
     contactShort: "聯絡",
-    menu: { open: "目錄", close: "關閉目錄" },
+    menu: { open: "目錄", close: "關閉" },
     switchLanguage: { label: "EN", href: "/en", hrefLang: "en" },
     hero: {
       timeLabel: "台灣時間",
       ctaWork: "看 {count} 則真實案例",
       ctaGithub: "GitHub",
+      ctaContact: "聯絡／索取履歷",
       motionLabel: "動態效果",
       motionOn: "開",
       motionOff: "關",
@@ -65,6 +71,7 @@ export const zhTW: SiteContent = {
       actions: "怎麼處理",
       result: "結果",
       lesson: "學到的事",
+      collapse: "收合這則",
     },
     offDuty: {
       hold: "按住踩油門",

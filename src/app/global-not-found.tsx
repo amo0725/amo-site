@@ -39,7 +39,7 @@ export default function GlobalNotFound() {
             <Link
               href="/en"
               lang="en"
-              className="rounded-full border border-coast px-6 py-3 font-semibold"
+              className="rounded-full border border-control px-6 py-3 font-semibold"
             >
               Go to the home page
             </Link>
