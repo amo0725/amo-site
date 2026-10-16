@@ -40,8 +40,9 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
       {/* The field is a region of its own. Below lg it is a block in the flow
           that takes the height left between the clock and the copy; on short
           phones (where it would be a sliver) it is dropped. From lg it is
-          pinned to the right five twelfths of the section. */}
-      <div className="hero-field relative -z-10 min-h-[14svh] flex-1 [@media(max-height:700px)]:hidden lg:absolute lg:inset-y-0 lg:right-0 lg:left-[58.333%] lg:min-h-0 lg:[@media(max-height:700px)]:block">
+          pinned to the right half of the section, its left fifth fading out
+          before the copy. */}
+      <div className="hero-field relative -z-10 min-h-[14svh] flex-1 [@media(max-height:700px)]:hidden lg:absolute lg:inset-y-0 lg:right-0 lg:left-[52%] lg:min-h-0 lg:[@media(max-height:700px)]:block">
         <HeroVisual poster={<RadarPoster />} />
       </div>
 
