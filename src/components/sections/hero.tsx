@@ -23,7 +23,7 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative isolate flex min-h-[100svh] touch-pan-y flex-col justify-end overflow-hidden"
+      className="relative isolate flex min-h-[100svh] touch-pan-y flex-col overflow-hidden pt-[var(--header-h)]"
     >
       <div className="absolute inset-0 -z-10">
         <HeroVisual poster={<RadarPoster />} />
@@ -34,16 +34,23 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
         <div className="hero-scrim pointer-events-none absolute bottom-0 left-0 h-[88%] w-full bg-gradient-to-t from-paper from-70% via-paper/95 to-transparent" />
       </div>
 
-      <p className="load-wipe absolute top-[calc(var(--header-h)+1rem)] left-5 text-sm text-ink-soft tabular md:left-10">
-        {ui.timeLabel}{" "}
-        <LocalClock
-          id="hero-clock"
-          timeZone={profile.timeZone}
-          className="text-ink"
-        />
-      </p>
+      {/* In flow and in the content column: it lines up with the text at any
+          width and can never sit under the name. */}
+      <div className="mx-auto w-full max-w-[90rem] px-5 pt-4 md:px-10">
+        <p className="load-wipe text-sm text-ink-soft tabular">
+          {ui.timeLabel}{" "}
+          <LocalClock
+            id="hero-clock"
+            timeZone={profile.timeZone}
+            className="text-ink"
+          />
+        </p>
+      </div>
 
-      <div className="mx-auto grid w-full max-w-[90rem] gap-y-7 px-5 pb-10 md:grid-cols-12 md:gap-x-8 md:px-10 md:pb-14">
+      {/* mt-auto keeps the block at the bottom of the first screen; when the
+          screen is too short for it, the section grows instead of letting the
+          name ride up under the header. */}
+      <div className="mx-auto mt-auto grid w-full max-w-[90rem] gap-y-6 px-5 pt-6 pb-8 md:grid-cols-12 md:gap-x-8 md:px-10 md:pb-12">
         <div className="md:col-span-12">
           <h1 id="hero-title" className="leading-[0.8] tracking-[-0.04em]">
             <span className="sr-only">{profile.a11yName}</span>
@@ -51,7 +58,7 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
               text={profile.fullName}
               // Size containment makes the name its own layout root, so the width
               // animation never re-lays out the rest of the page.
-              className="flex h-[0.86em] w-full items-end [contain:size_layout_style] text-[clamp(3.25rem,10.5vw,9.5rem)]"
+              className="flex h-[0.86em] w-full items-end [contain:size_layout_style] text-[clamp(3.25rem,min(10.5vw,15svh),9.5rem)]"
             />
           </h1>
           <p className="load-wipe mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-base md:text-lg">
@@ -61,24 +68,28 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
             </span>
             <span className="font-semibold">{profile.role}</span>
             <span className="text-ink-soft">{profile.specialty}</span>
-            <span aria-hidden="true" className="text-coast">
+            <span aria-hidden="true" className="hidden text-coast sm:inline">
               /
             </span>
-            <span className="text-ink-soft">{profile.place}</span>
+            <span className="hidden text-ink-soft sm:inline">
+              {profile.place}
+            </span>
           </p>
         </div>
 
         <div className="md:col-span-9 lg:col-span-7">
-          <p className="load-wipe max-w-[16em] text-[clamp(1.75rem,3.6vw,3.25rem)] leading-[1.15] font-extrabold tracking-[-0.01em]">
+          {/* keep-all: Chinese breaks at the comma rather than mid-phrase;
+              balance evens out the English lines. */}
+          <p className="load-wipe max-w-[16em] text-[clamp(1.625rem,min(3.6vw,6svh),3.25rem)] leading-[1.15] font-extrabold tracking-[-0.01em] text-balance [word-break:keep-all]">
             {profile.positioning}
           </p>
-          <p className="load-wipe mt-5 max-w-[38rem] text-lg leading-relaxed">
+          <p className="load-wipe mt-4 max-w-[38rem] text-base leading-relaxed text-pretty md:mt-5 md:text-lg">
             {profile.summary}
           </p>
-          <p className="load-wipe mt-3 max-w-[38rem] text-sm text-ink-soft">
+          <p className="load-wipe mt-3 hidden max-w-[38rem] text-sm text-ink-soft sm:block">
             {profile.focus}
           </p>
-          <div className="load-wipe mt-8 flex flex-wrap gap-3">
+          <div className="load-wipe mt-6 flex flex-wrap gap-3 md:mt-8">
             <a
               href="#work"
               className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-6 font-semibold text-paper transition-transform active:scale-95"
