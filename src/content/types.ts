@@ -31,7 +31,8 @@ export interface Profile {
   /** Two or three sentences of evidence (meta description, About). */
   summary: string;
   /** Three proof points under the hero headline: a figure and what it measures. */
-  proof: readonly { figure: string; label: string }[];
+  /** `short` is the phone label, under the figure in a three-column strip. */
+  proof: readonly { figure: string; label: string; short: string }[];
   /** Long-form statement revealed word by word on scroll. */
   statement: string;
   /** Secondary note shown after the statement. */
@@ -302,6 +303,14 @@ export interface UiStrings {
     impact: string;
     /** {count} */
     more: string;
+    /** Phone fold over an earlier job's bullet list. {count} */
+    highlights: string;
+    /** Phone fold with a track's team context and stack. */
+    teamStack: string;
+  };
+  projects: {
+    /** Phone fold over a project's build notes. */
+    details: string;
   };
   systems: {
     emptyTitle: string;
@@ -312,6 +321,8 @@ export interface UiStrings {
     skillsTitle: string;
   };
   work: {
+    /** Phone fold over the two filter rows. */
+    filter: string;
     byType: string;
     byTrack: string;
     all: string;
@@ -319,8 +330,6 @@ export interface UiStrings {
     actions: string;
     result: string;
     lesson: string;
-    /** Button at the end of an open case that closes it. */
-    collapse: string;
   };
   offDuty: {
     hold: string;

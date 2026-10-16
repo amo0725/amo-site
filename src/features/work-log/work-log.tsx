@@ -1,13 +1,13 @@
 "use client";
 
 import { AnimatePresence, LayoutGroup, m } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useState, type ReactNode } from "react";
 import type { UiStrings, WorkCategory, WorkEntry } from "@/content/types";
-import { InView } from "@/components/motion/in-view";
-import { MetricBars, metricHeadline } from "@/components/ui/metric-bars";
+import { metricHeadline } from "@/components/ui/metric-bars";
 import { cn } from "@/lib/cn";
-import { CaseFlows } from "./case-flows";
 import { useMotionPreference } from "@/lib/motion/preference";
+import { useIsPhone } from "@/lib/hooks/use-is-phone";
+import { PhoneFold } from "@/components/ui/phone-fold";
 
 export interface TrackOption {
   id: string;
@@ -20,6 +20,8 @@ interface WorkLogProps {
   categories: Readonly<Record<WorkCategory, string>>;
   colors: Readonly<Record<WorkCategory, string>>;
   ui: UiStrings["work"];
+  /** Each case's body, rendered on the server (CaseBody), by entry id. */
+  bodies: Readonly<Record<string, ReactNode>>;
 }
 
 const ALL = "__all__";
@@ -68,42 +70,47 @@ function FilterGroup({
         {label}
       </p>
       <div className="flex flex-wrap gap-2">
-      {options.map((opt) => {
-        const on = value === opt.value;
-        return (
-          <button
-            key={opt.value}
-            type="button"
-            aria-pressed={on}
-            onClick={() => onChange(opt.value)}
-            className={cn(
-              "relative isolate flex min-h-10 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors",
-              on ? "border-ink text-paper" : "border-control hover:border-ink",
-            )}
-          >
-            {on ? (
-              <m.span
-                layoutId={`pill-${id}`}
-                className="absolute inset-0 -z-10 rounded-full bg-ink"
-                transition={{ duration: 0.35, ease }}
-              />
-            ) : null}
-            {opt.colorVar ? (
-              <span
-                aria-hidden="true"
-                className="size-2"
-                style={{ background: `var(${opt.colorVar})` }}
-              />
-            ) : null}
-            <span>{opt.label}</span>
-            <span
-              className={cn("tabular", on ? "text-paper/70" : "text-ink-soft")}
+        {options.map((opt) => {
+          const on = value === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              aria-pressed={on}
+              onClick={() => onChange(opt.value)}
+              className={cn(
+                "relative isolate flex min-h-10 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors",
+                on
+                  ? "border-ink text-paper"
+                  : "border-control hover:border-ink",
+              )}
             >
-              {opt.count}
-            </span>
-          </button>
-        );
-      })}
+              {on ? (
+                <m.span
+                  layoutId={`pill-${id}`}
+                  className="absolute inset-0 -z-10 rounded-full bg-ink"
+                  transition={{ duration: 0.35, ease }}
+                />
+              ) : null}
+              {opt.colorVar ? (
+                <span
+                  aria-hidden="true"
+                  className="size-2"
+                  style={{ background: `var(${opt.colorVar})` }}
+                />
+              ) : null}
+              <span>{opt.label}</span>
+              <span
+                className={cn(
+                  "tabular",
+                  on ? "text-paper/70" : "text-ink-soft",
+                )}
+              >
+                {opt.count}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -134,27 +141,21 @@ export function WorkLog({
   categories,
   colors,
   ui,
+  bodies,
 }: WorkLogProps) {
   const [type, setType] = useState<string>(ALL);
   const [track, setTrack] = useState<string>(ALL);
+  // Layout animation only once a filter has been used: before that there
+  // is nothing to animate, and measuring a dozen rows on load forces a
+  // layout of the whole page while it is still hydrating.
+  const [filtered, setFiltered] = useState(false);
   // Motion's reducedMotion setting only drops transforms and layout, so the
   // clip-path wipes are switched off here.
   const reduced = useMotionPreference() === "reduced";
-  const listRef = useRef<HTMLUListElement>(null);
-
-  // Featured cases are served open. On a phone three open cases are about
-  // five screens of reading before the rest of the list, so there only the
-  // first stays open. This runs once, well below the first screen.
-  useEffect(() => {
-    if (!window.matchMedia("(max-width: 47.99rem)").matches) return;
-    const featured =
-      listRef.current?.querySelectorAll<HTMLDetailsElement>(
-        "details[data-featured]",
-      ) ?? [];
-    featured.forEach((d, i) => {
-      if (i > 0) d.open = false;
-    });
-  }, []);
+  // Phones get the list as an outline: every case starts closed (the
+  // featured ones are open from md up). False on the server, so the first
+  // paint is the desktop markup; the work log is far below the first screen.
+  const phone = useIsPhone();
 
   const visible = entries.filter(
     (e) =>
@@ -190,29 +191,43 @@ export function WorkLog({
 
   return (
     <LayoutGroup>
-      <div className="mb-8 space-y-4">
-        <FilterGroup
-          id="type"
-          label={ui.byType}
-          options={typeOptions}
-          value={type}
-          onChange={setType}
-        />
-        <FilterGroup
-          id="track"
-          label={ui.byTrack}
-          options={trackOptions}
-          value={track}
-          onChange={setTrack}
-        />
-      </div>
+      {/* Phones: the filters wait behind one line, so the list itself is
+          what the section opens with. */}
+      <PhoneFold
+        className="mb-8"
+        summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:sr-only"
+        summary={ui.filter}
+      >
+        <div className="space-y-4 pt-4 md:pt-0">
+          <FilterGroup
+            id="type"
+            label={ui.byType}
+            options={typeOptions}
+            value={type}
+            onChange={(v) => {
+              setFiltered(true);
+              setType(v);
+            }}
+          />
+          <FilterGroup
+            id="track"
+            label={ui.byTrack}
+            options={trackOptions}
+            value={track}
+            onChange={(v) => {
+              setFiltered(true);
+              setTrack(v);
+            }}
+          />
+        </div>
+      </PhoneFold>
 
-      <m.ul ref={listRef} layout className="border-t border-graticule">
+      <m.ul layout={filtered} className="border-t border-graticule">
         <AnimatePresence initial={false} mode="popLayout">
           {visible.map((entry) => (
             <m.li
               key={entry.id}
-              layout
+              layout={filtered}
               initial={{ clipPath: CLIP_BEFORE }}
               animate={{ clipPath: CLIP_SHOWN }}
               exit={{
@@ -228,7 +243,7 @@ export function WorkLog({
                   into view instead of on page load (see data-featured in CSS). */}
               <details
                 className="log-entry group"
-                open={entry.featured}
+                open={entry.featured && !phone}
                 data-featured={entry.featured ? "" : undefined}
               >
                 {/* Phones: two columns, the category joins the line under the
@@ -238,11 +253,11 @@ export function WorkLog({
                     <CategoryMark color={colors[entry.category]} />
                     {categories[entry.category]}
                   </span>
-                  <span>
-                    <span className="block text-lg font-semibold text-balance md:text-xl">
+                  <div>
+                    <h3 className="text-lg font-semibold text-balance md:text-xl">
                       {entry.title}
-                    </span>
-                    <span className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-ink-soft md:mt-0">
+                    </h3>
+                    <span className="log-meta mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-ink-soft md:mt-0">
                       <span className="flex items-center gap-2 md:hidden">
                         <CategoryMark color={colors[entry.category]} />
                         {categories[entry.category]}
@@ -258,7 +273,7 @@ export function WorkLog({
                         </span>
                       ) : null}
                     </span>
-                  </span>
+                  </div>
                   <span
                     aria-hidden="true"
                     className="log-chevron text-2xl leading-none font-light text-ink-soft"
@@ -266,126 +281,9 @@ export function WorkLog({
                     +
                   </span>
                 </summary>
-                <div className="grid gap-6 pb-8 md:grid-cols-[7rem_1fr] md:gap-x-8">
-                  <div className="max-w-[44rem] space-y-5 md:col-start-2">
-                    <p className="text-lg">{entry.problem}</p>
-                    {entry.cause ? (
-                      <div>
-                        <h4 className="text-sm font-semibold text-ink-soft">
-                          {ui.cause}
-                        </h4>
-                        <p className="mt-1">{entry.cause}</p>
-                      </div>
-                    ) : null}
-                    <div>
-                      <h4 className="text-sm font-semibold text-ink-soft">
-                        {ui.actions}
-                      </h4>
-                      <ul className="mt-1 space-y-1.5">
-                        {entry.actions.map((action) => (
-                          <li key={action} className="flex gap-3">
-                            <span
-                              aria-hidden="true"
-                              className="mt-[0.8em] h-px w-3 shrink-0 bg-ink"
-                            />
-                            {action}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    {entry.flows ? <CaseFlows flows={entry.flows} /> : null}
-                    {entry.result || entry.metrics || entry.evidence ? (
-                      <div>
-                        <h4 className="text-sm font-semibold text-ink-soft">
-                          {ui.result}
-                        </h4>
-                        {entry.metrics ? (
-                          entry.featured ? (
-                            <InView className="metric-play mt-3 mb-4">
-                              <MetricBars metrics={entry.metrics} />
-                            </InView>
-                          ) : (
-                            <MetricBars
-                              metrics={entry.metrics}
-                              className="metric-play mt-3 mb-4"
-                            />
-                          )
-                        ) : null}
-                        {entry.result ? (
-                          <p className="mt-1">{entry.result}</p>
-                        ) : null}
-                        {entry.evidence ? (
-                          <InView threshold={0.4}>
-                            <ul className="mt-3 space-y-1.5 tabular">
-                              {entry.evidence.map((line, i) => (
-                                <li
-                                  key={line}
-                                  className="evidence flex gap-3"
-                                  style={{ "--i": i } as React.CSSProperties}
-                                >
-                                  <svg
-                                    aria-hidden="true"
-                                    viewBox="0 0 16 16"
-                                    className="mt-[0.2em] size-4 shrink-0 text-echo-2"
-                                    fill="none"
-                                    stroke="currentColor"
-                                  >
-                                    <rect
-                                      className="evidence-box"
-                                      x="1.5"
-                                      y="1.5"
-                                      width="13"
-                                      height="13"
-                                      pathLength={1}
-                                      strokeWidth="1.5"
-                                    />
-                                    <path
-                                      className="evidence-check"
-                                      d="M4.5 8.5 L7 11 L11.5 5.5"
-                                      pathLength={1}
-                                      strokeWidth="2"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    />
-                                  </svg>
-                                  {line}
-                                </li>
-                              ))}
-                            </ul>
-                          </InView>
-                        ) : null}
-                      </div>
-                    ) : null}
-                    {entry.lesson ? (
-                      <blockquote className="border-l-2 border-echo-2 pl-4 text-lg font-medium">
-                        <span className="sr-only">{ui.lesson}: </span>
-                        {entry.lesson}
-                      </blockquote>
-                    ) : null}
-                    <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
-                      {entry.stack.map((s) => (
-                        <span key={s}>{s}</span>
-                      ))}
-                    </p>
-                    {/* A long case is one or two screens on a phone; this
-                        closes it from the bottom and brings its row back. */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        const details = e.currentTarget.closest("details");
-                        if (!details) return;
-                        details.open = false;
-                        if (details.getBoundingClientRect().top < 0) {
-                          details.scrollIntoView({ block: "start" });
-                        }
-                      }}
-                      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-control px-5 text-sm font-semibold transition-colors hover:border-ink"
-                    >
-                      {ui.collapse}
-                      <span aria-hidden="true">↑</span>
-                    </button>
-                  </div>
-                </div>
+                {/* Server-rendered body in its own Suspense boundary: React
+                    hydrates each case as a separate, interruptible task. */}
+                <Suspense fallback={null}>{bodies[entry.id]}</Suspense>
               </details>
             </m.li>
           ))}

@@ -1,6 +1,7 @@
+import { PhoneFold } from "@/components/ui/phone-fold";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
-import type { SectionCopy, SideProject } from "@/content/types";
+import type { SectionCopy, SideProject, UiStrings } from "@/content/types";
 import { ProjectVisualView } from "./project-visuals";
 
 /** "github.com/owner/repo" from a repository URL. */
@@ -11,9 +12,10 @@ function repoLabel(href: string) {
 interface ProjectsProps {
   projects: readonly SideProject[];
   copy: SectionCopy;
+  ui: UiStrings["projects"];
 }
 
-export function Projects({ projects, copy }: ProjectsProps) {
+export function Projects({ projects, copy, ui }: ProjectsProps) {
   const meta = sectionMeta("projects");
   return (
     <section
@@ -30,20 +32,20 @@ export function Projects({ projects, copy }: ProjectsProps) {
           {projects.map((project, i) => (
             <li
               key={project.id}
-              className="group relative isolate grid gap-6 border-b border-graticule py-10 md:grid-cols-12 md:gap-8 md:py-12"
+              className="group relative isolate grid gap-4 border-b border-graticule py-8 md:grid-cols-12 md:gap-8 md:py-12"
             >
               {/* Hover wash: wipes in from the left in the section's band colour. */}
               <span
                 aria-hidden="true"
                 className="absolute inset-y-0 -right-5 -left-5 -z-10 origin-left scale-x-0 bg-paper-raised transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-100 md:-right-10 md:-left-10"
               />
-              <div className="size-24 md:col-span-2 md:size-auto md:max-w-32">
+              <div className="size-14 md:col-span-2 md:size-auto md:max-w-32">
                 <div className="aspect-square">
                   <ProjectVisualView visual={project.visual} seed={i * 7 + 3} />
                 </div>
               </div>
               <div className="md:col-span-5">
-                <h3 className="text-3xl leading-tight font-extrabold md:text-4xl">
+                <h3 className="text-2xl leading-tight font-extrabold md:text-4xl">
                   {project.href ? (
                     <a
                       href={project.href}
@@ -86,19 +88,25 @@ export function Projects({ projects, copy }: ProjectsProps) {
                 </p>
               </div>
               <div className="max-w-[34rem] md:col-span-5">
-                <p className="text-lg">{project.description}</p>
+                <p className="md:text-lg">{project.description}</p>
                 {project.details.length > 0 ? (
-                  <ul className="mt-4 space-y-1.5 text-ink-soft">
-                    {project.details.map((d) => (
-                      <li key={d} className="flex gap-3">
-                        <span
-                          aria-hidden="true"
-                          className="mt-[0.75em] h-px w-3 shrink-0 bg-coast"
-                        />
-                        {d}
-                      </li>
-                    ))}
-                  </ul>
+                  <PhoneFold
+                    className="mt-3 md:mt-4"
+                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:sr-only"
+                    summary={<>{ui.details}</>}
+                  >
+                    <ul className="mt-3 space-y-1.5 text-ink-soft md:mt-0">
+                      {project.details.map((d) => (
+                        <li key={d} className="flex gap-3">
+                          <span
+                            aria-hidden="true"
+                            className="mt-[0.75em] h-px w-3 shrink-0 bg-coast"
+                          />
+                          {d}
+                        </li>
+                      ))}
+                    </ul>
+                  </PhoneFold>
                 ) : null}
                 <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
                   {project.stack.map((s) => (

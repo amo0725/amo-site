@@ -26,9 +26,9 @@ export const en: SiteContent = {
     focus: "NestJS · React · PHP · MySQL / PostgreSQL / MongoDB · RabbitMQ · Kubernetes",
     positioning: "Systems that touch money should add up at every step.",
     proof: [
-      { figure: "2,000+", label: "businesses on the support platform whose prepaid billing I wrote" },
-      { figure: "0", label: "signed quotes repriced when the pricing model changed" },
-      { figure: "44 ms", label: "booking query, from 6.3\u00a0s: found the indexes the ORM had dropped" },
+      { figure: "2,000+", label: "businesses on the support platform whose prepaid billing I wrote", short: "businesses; I wrote the billing" },
+      { figure: "0", label: "signed quotes repriced when the pricing model changed", short: "signed quotes repriced" },
+      { figure: "44 ms", label: "booking query, from 6.3\u00a0s: found the indexes the ORM had dropped", short: "booking query, was 6.3\u00a0s" },
     ],
     summary:
       "Prepaid credit billing, AI and channel integrations on a customer-messaging platform used by 2,000+ businesses, and a quote-to-cash chain from 3D quote and contract to Stripe subscriptions, synced with HubSpot and NetSuite. When I find a root cause, I fix it at the point that keeps the whole class of bug out.",
@@ -54,7 +54,8 @@ export const en: SiteContent = {
       motionOn: "On",
       motionOff: "Off",
     },
-    experience: { role: "Role", scope: "Scope", stack: "Stack", earlier: "Earlier work", impact: "Impact", more: "{count} more areas" },
+    experience: { role: "Role", scope: "Scope", stack: "Stack", earlier: "Earlier work", impact: "Impact", more: "{count} more areas", highlights: "{count} highlights", teamStack: "Team and stack" },
+    projects: { details: "How it's built" },
     systems: {
       emptyTitle: "Pick a node to see what flows through it.",
       emptyBody:
@@ -64,6 +65,7 @@ export const en: SiteContent = {
       skillsTitle: "Stack and tooling",
     },
     work: {
+      filter: "Filter",
       byType: "Filter by type",
       byTrack: "Filter by experience",
       all: "All",
@@ -71,7 +73,6 @@ export const en: SiteContent = {
       actions: "What I did",
       result: "Result",
       lesson: "Lesson",
-      collapse: "Close this case",
     },
     offDuty: {
       hold: "Hold to rev",

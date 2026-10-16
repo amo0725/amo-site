@@ -1,3 +1,4 @@
+import { PhoneFold } from "@/components/ui/phone-fold";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
 import type { Principle, SectionCopy } from "@/content/types";
@@ -118,31 +119,40 @@ export function Principles({ principles, copy }: PrinciplesProps) {
               // Column index in the md (2-up) and lg (3-up) grids, so cards in
               // one row draw a beat apart.
               style={{ "--c2": i % 2, "--c3": i % 3 } as React.CSSProperties}
-              className="glyph-card group relative grid grid-cols-[2.75rem_1fr] gap-x-4 overflow-hidden rounded-sm border border-graticule bg-paper-raised p-5 md:flex md:flex-col md:justify-between md:gap-10 md:p-8"
+              className="glyph-card group relative overflow-hidden rounded-sm border border-graticule bg-paper-raised md:p-8"
             >
               <span
                 aria-hidden="true"
                 className="absolute inset-x-0 top-0 h-1"
                 style={{ background: `var(${meta.colorVar})` }}
               />
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 64 64"
-                className="glyph mt-1 size-11 text-ink md:mt-0 md:size-20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              {/* Phones: glyph and title as one row, the body a tap away. */}
+              <PhoneFold
+                summaryClassName="grid grid-cols-[2.25rem_1fr_auto] items-center gap-x-3 p-4 pt-5 md:block md:p-0"
+                summary={
+                  <>
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 64 64"
+                      className="glyph size-9 text-ink md:size-20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      {glyphFor(p.id, i)}
+                    </svg>
+                    <h3 className="text-lg leading-tight font-extrabold text-balance font-expanded md:mt-10 md:text-[1.75rem]">
+                      {p.title}
+                    </h3>
+                  </>
+                }
               >
-                {glyphFor(p.id, i)}
-              </svg>
-              <div>
-                <h3 className="text-xl leading-tight font-extrabold text-balance font-expanded md:text-[1.75rem]">
-                  {p.title}
-                </h3>
-                <p className="mt-2 text-ink-soft md:mt-3">{p.body}</p>
-              </div>
+                <p className="px-4 pb-5 text-ink-soft md:mt-3 md:p-0">
+                  {p.body}
+                </p>
+              </PhoneFold>
             </li>
           ))}
         </ul>

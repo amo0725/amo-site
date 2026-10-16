@@ -343,6 +343,22 @@
 .echo-drop {
   background: var(--graticule);
 }
+/* The bar before its cells exist (or with motion off): the same end state
+   painted as one element. A colour split at the "after" length, cut into
+   cells by a repeating mask with the cells' 2px gaps. */
+.echo-track:not(:has(.echo-cell)) {
+  --pitch: calc((100% + 2px) / var(--cells));
+  background: linear-gradient(
+    90deg,
+    var(--echo-2) 0 calc(var(--pitch) * var(--keep)),
+    var(--graticule) 0
+  );
+  mask-image: repeating-linear-gradient(
+    90deg,
+    #000 0 calc(var(--pitch) - 2px),
+    transparent 0 var(--pitch)
+  );
+}
 .echo-keep {
   background: var(--echo-2);
 }
@@ -470,11 +486,11 @@
     animation-timeline: view();
     animation-range: entry 30% cover 35%;
   }
-  /* A phone screen is short: finish as the row comes fully into view, so a
-     reader who stops never sees half a result. */
+  /* Phones: the result line is the point of the row, so it is simply
+     there, not wiped in with the scroll. */
   @media (max-width: 47.99rem) {
     :root:not([data-motion="reduced"]) .metric-headline {
-      animation-range: entry 0% entry 100%;
+      animation: none;
     }
   }
 }
@@ -568,11 +584,15 @@
       color: var(--ink);
     }
   }
-  .scrub-word {
-    color: var(--unread);
-    animation: ink-in linear both;
-    animation-timeline: view();
-    animation-range: cover 18% cover 42%;
+  /* From md up only: on a phone the statement is the reading itself, and
+     text that changes with scroll is harder to read on a small screen. */
+  @media (min-width: 48rem) {
+    .scrub-word {
+      color: var(--unread);
+      animation: ink-in linear both;
+      animation-timeline: view();
+      animation-range: cover 18% cover 42%;
+    }
   }
 
   /* Experience: the scope index numbers ink in as their rows arrive. */
@@ -878,6 +898,32 @@
   }
 }
 
+/* ---------- Phone folds ----------
+   details.phone-fold: a toggle on phones, always open from md up, where
+   the summary reads as a plain heading (see PhoneFold). */
+.phone-fold > summary {
+  list-style: none;
+  cursor: pointer;
+}
+.phone-fold > summary::-webkit-details-marker {
+  display: none;
+}
+.phone-fold .fold-icon {
+  transition: rotate 0.3s var(--ease-out-expo);
+}
+.phone-fold[open] > summary .fold-icon {
+  rotate: 45deg;
+}
+@media (min-width: 48rem) {
+  .phone-fold > summary {
+    cursor: auto;
+    pointer-events: none;
+  }
+  .phone-fold > summary .fold-icon {
+    display: none;
+  }
+}
+
 /* ---------- Principles ---------- */
 .glyph * {
   stroke-dasharray: 1;
@@ -1062,6 +1108,29 @@
 }
 .log-entry[open] .log-chevron {
   transform: rotate(45deg);
+}
+/* Phones: while a case is open its title stays pinned under the header
+   (or the top edge, when the header has stepped aside), so it can be
+   closed from wherever the reader is. Pinned, it drops to one compact row. */
+@media (max-width: 47.99rem) {
+  .log-entry[open] > summary {
+    position: sticky;
+    top: var(--pin-top, var(--header-h));
+    z-index: 5;
+    padding-block: 0.75rem;
+    background: var(--paper);
+    box-shadow: 0 1px 0 var(--graticule);
+    transition: top 0.5s var(--ease-out-expo);
+  }
+  .log-entry[open] > summary h3 {
+    font-size: var(--text-base);
+  }
+  .log-entry[open] > summary .log-meta {
+    display: none;
+  }
+}
+:root[data-header-hidden] {
+  --pin-top: 0px;
 }
 
 /* ---------- Reduced motion: keep every state change, drop the movement ---------- */

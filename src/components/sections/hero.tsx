@@ -26,7 +26,9 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
       aria-labelledby="hero-title"
       className="relative isolate flex min-h-[100svh] touch-pan-y flex-col overflow-hidden pt-[var(--header-h)]"
     >
-      <div className="mx-auto w-full max-w-[90rem] px-5 pt-4 md:px-10">
+      {/* Below lg the clock sits over the faded top edge of the field
+          instead of taking a row of its own. */}
+      <div className="z-10 mx-auto w-full max-w-[90rem] px-5 pt-4 max-lg:absolute max-lg:inset-x-0 max-lg:top-[var(--header-h)] md:px-10">
         <p className="load-wipe text-sm text-ink-soft tabular">
           {ui.timeLabel}{" "}
           <LocalClock
@@ -38,17 +40,17 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
       </div>
 
       {/* The field is a region of its own. Below lg it is a block in the flow
-          that takes the height left between the clock and the copy; on short
-          phones (where it would be a sliver) it is dropped. From lg it is
-          pinned to the right half of the section, its left fifth fading out
-          before the copy. */}
-      <div className="hero-field relative -z-10 min-h-[14svh] flex-1 [@media(max-height:700px)]:hidden lg:absolute lg:inset-y-0 lg:right-0 lg:left-[52%] lg:min-h-0 lg:[@media(max-height:700px)]:block">
+          that takes the height left above the copy (at least a third of a
+          phone screen; less on short phones). From lg it is pinned to the
+          right half of the section, its left fifth fading out before the
+          copy. */}
+      <div className="hero-field relative -z-10 min-h-[34svh] flex-1 [@media(max-height:700px)]:min-h-[24svh] lg:absolute lg:inset-y-0 lg:right-0 lg:left-[52%] lg:min-h-0 lg:[@media(max-height:700px)]:min-h-0">
         <HeroVisual poster={<RadarPoster />} />
       </div>
 
       {/* Short screens (a 1280×720 laptop, an iPhone SE) tighten the
           vertical rhythm so the calls to action stay on the first screen. */}
-      <div className="mx-auto grid w-full max-w-[90rem] px-5 pt-2 pb-8 md:px-10 md:pb-12 lg:mt-auto lg:grid-cols-12 lg:gap-x-8 [@media(max-height:700px)]:pt-6 [@media(max-height:760px)]:md:pb-6">
+      <div className="mx-auto grid w-full max-w-[90rem] px-5 pt-2 pb-8 md:px-10 md:pb-12 lg:mt-auto lg:grid-cols-12 lg:gap-x-8 [@media(max-height:760px)]:md:pb-6">
         <div className="lg:col-span-7">
           {/* The separators are real text, so a screen reader hears the
               title line as three parts rather than one run-on phrase. */}
@@ -82,17 +84,20 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
 
           {/* Each row is its own grid with a fixed figure column (wide
               enough for "2,000+"), so the rule above a row runs unbroken. */}
-          <dl className="load-wipe load-wipe-early mt-6 max-w-[38rem] md:mt-7 [@media(max-height:760px)]:mt-4">
+          {/* Phones: a three-column strip, figure over a short label. From
+              md: one row per figure with the full label. */}
+          <dl className="load-wipe load-wipe-early mt-5 grid max-w-[38rem] grid-cols-3 gap-x-4 border-t border-graticule pt-3 md:mt-7 md:block md:border-0 md:pt-0 [@media(max-height:760px)]:mt-4">
             {profile.proof.map((p) => (
               <div
                 key={p.figure}
-                className="grid grid-cols-[5.5rem_1fr] items-baseline gap-x-3 border-t border-graticule py-2.5 md:grid-cols-[7.75rem_1fr] md:py-3 [@media(max-height:760px)]:py-2"
+                className="min-w-0 md:grid md:grid-cols-[7.75rem_1fr] md:items-baseline md:gap-x-3 md:border-t md:border-graticule md:py-3 [@media(max-height:760px)]:md:py-2"
               >
-                <dt className="text-xl leading-none font-extrabold text-echo-2 tabular md:text-2xl">
+                <dt className="text-xl leading-none font-extrabold whitespace-nowrap text-echo-2 tabular md:text-2xl">
                   {p.figure}
                 </dt>
-                <dd className="text-[0.9375rem] leading-snug text-balance [word-break:keep-all] md:text-base">
-                  {p.label}
+                <dd className="mt-1.5 text-[0.8125rem] leading-snug text-ink-soft [word-break:keep-all] [overflow-wrap:anywhere] md:mt-0 md:text-base md:text-balance md:text-ink">
+                  <span className="md:hidden">{p.short}</span>
+                  <span className="hidden md:inline">{p.label}</span>
                 </dd>
               </div>
             ))}
@@ -101,7 +106,7 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
           <div className="load-wipe load-wipe-early mt-6 flex flex-wrap items-center gap-x-3 gap-y-3 md:mt-7 [@media(max-height:760px)]:mt-5">
             <a
               href="#work"
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-5 font-semibold text-paper transition-transform active:scale-95 sm:px-6"
+              className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-4 font-semibold text-paper transition-transform active:scale-95 min-[380px]:px-5 sm:px-6"
             >
               {fill(ui.ctaWork, { count: caseCount })}
               <span aria-hidden="true">↓</span>
@@ -110,7 +115,7 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
               href={githubHref}
               target="_blank"
               rel="me noopener"
-              className="group inline-flex h-12 items-center gap-2 rounded-full border border-ink px-5 font-semibold transition-colors hover:bg-paper-raised sm:px-6"
+              className="group inline-flex h-12 items-center gap-2 rounded-full border border-ink px-4 font-semibold transition-colors hover:bg-paper-raised min-[380px]:px-5 sm:px-6"
             >
               {ui.ctaGithub}
               <span
@@ -122,7 +127,7 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
             </a>
             <a
               href="#contact"
-              className="inline-flex h-12 items-center gap-1.5 px-2 font-semibold underline decoration-graticule decoration-2 underline-offset-4 transition-colors hover:decoration-ink"
+              className="hidden h-12 items-center gap-1.5 md:inline-flex px-2 font-semibold underline decoration-graticule decoration-2 underline-offset-4 transition-colors hover:decoration-ink"
             >
               {ui.ctaContact}
               <span aria-hidden="true">→</span>

@@ -6,6 +6,7 @@ import type {
   WorkCategory,
   WorkEntry,
 } from "@/content/types";
+import { CaseBody } from "@/features/work-log/case-body";
 import { type TrackOption, WorkLog } from "@/features/work-log/work-log";
 
 interface WorkProps {
@@ -51,6 +52,12 @@ export function Work({
             categories={categories}
             colors={colors}
             ui={ui}
+            bodies={Object.fromEntries(
+              entries.map((e) => [
+                e.id,
+                <CaseBody key={e.id} entry={e} ui={ui} />,
+              ]),
+            )}
           />
         </div>
       </div>
