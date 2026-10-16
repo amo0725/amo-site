@@ -25,7 +25,7 @@ export function AiWorkflowSection({ workflow, copy }: AiWorkflowProps) {
         <SectionHeading id={meta.id} colorVar={meta.colorVar} lead={copy.lead}>
           {copy.label}
         </SectionHeading>
-        <p className="mb-14 max-w-[40rem] text-lg">{workflow.intro}</p>
+        <p className="mb-10 max-w-[40rem] md:mb-14 md:text-lg">{workflow.intro}</p>
 
         <div
           className="pipe relative"
@@ -45,7 +45,7 @@ export function AiWorkflowSection({ workflow, copy }: AiWorkflowProps) {
             <span className="pipe-fill-x absolute inset-0 bg-echo-2" />
           </span>
 
-          <ol className="relative grid gap-10 lg:grid-cols-6 lg:gap-5">
+          <ol className="relative grid gap-7 md:gap-10 lg:grid-cols-6 lg:gap-5">
             {steps.map((step, i) => (
               <li
                 key={step.id}

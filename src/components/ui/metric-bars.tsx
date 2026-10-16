@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Metric } from "@/content/types";
 import { cn } from "@/lib/cn";
+import { EchoCells } from "./echo-cells";
 
 /** Cells in one echo bar. Lengths are linear from zero, at cell precision. */
 const CELLS = 48;
@@ -33,7 +34,10 @@ export function MetricBars({
         const keep =
           m.after <= 0
             ? 0
-            : Math.max(1, Math.min(CELLS, Math.round((m.after / m.before) * CELLS)));
+            : Math.max(
+                1,
+                Math.min(CELLS, Math.round((m.after / m.before) * CELLS)),
+              );
         return (
           <div
             key={m.label}
@@ -56,18 +60,7 @@ export function MetricBars({
                   </span>
                 ) : null}
               </p>
-              <span aria-hidden="true" className="mt-2 flex h-2 gap-[2px]">
-                {Array.from({ length: CELLS }, (_, i) => (
-                  <span
-                    key={i}
-                    className={cn(
-                      "echo-cell flex-1",
-                      i < keep ? "echo-keep" : "echo-drop",
-                    )}
-                    style={{ "--i": i, "--j": CELLS - 1 - i } as CSSProperties}
-                  />
-                ))}
-              </span>
+              <EchoCells cells={CELLS} keep={keep} />
             </dd>
           </div>
         );

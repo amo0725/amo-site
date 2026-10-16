@@ -5,7 +5,7 @@
  * Checks what a recruiter's first visit depends on, in both languages and
  * at desktop and phone widths: the page answers, the first screen names
  * the person and the role, the call to action points at the case log, the
- * featured cases are open (one on phones), the hero carries its three
+ * featured cases are open (none on phones), the hero carries its three
  * proof figures, nothing scrolls sideways, every public project links to its repository,
  * the phone menu opens, and nothing logs an error. Also checks the
  * sitemap, robots and the Open Graph image, and that no URL still points
@@ -82,13 +82,22 @@ for (const lang of ["zh-TW", "en"]) {
     const cta = page.locator('main a[href="#work"]').first();
     check(await cta.isVisible(), `${label}: case-log call to action is visible`);
 
-    // Phones keep only the first featured case open (see WorkLog).
-    const want = vp.mobile ? 1 : 3;
-    const open = await page.locator("#work details[open]").count();
+    // Phones get the log as an outline: every case starts closed (see WorkLog).
+    const want = vp.mobile ? 0 : 3;
+    const open = await page.locator("#work details.log-entry[open]").count();
     check(open === want, `${label}: ${open} featured cases open (want ${want})`);
 
     const proof = await page.locator("#hero-title ~ dl > div").count();
     check(proof === 3, `${label}: ${proof} proof figures under the headline`);
+
+    // Phones fold the detail of the experience, principles and projects.
+    if (vp.mobile) {
+      const folds = await page.$$eval("details.phone-fold", (ds) => [
+        ds.length,
+        ds.filter((d) => d.open).length,
+      ]);
+      check(folds[0] > 0 && folds[1] === 0, `${label}: ${folds[0]} phone folds, ${folds[1]} open (want 0)`);
+    }
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - window.innerWidth,

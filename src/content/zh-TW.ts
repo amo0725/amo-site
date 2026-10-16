@@ -26,9 +26,9 @@ export const zhTW: SiteContent = {
     focus: "NestJS・React・PHP・MySQL／PostgreSQL／MongoDB・RabbitMQ・Kubernetes",
     positioning: "讓牽涉到錢的系統，每一步都算得對。",
     proof: [
-      { figure: "2,000+", label: "企業在用的客服平台，預付點數計費由我主寫" },
-      { figure: "0 張", label: "換定價模型時，需要重算的已簽約報價" },
-      { figure: "44 ms", label: "預約查詢原本 6.3\u00a0s：找回被\u00a0ORM\u00a0刪掉的\u00a0index" },
+      { figure: "2,000+", label: "企業在用的客服平台，預付點數計費由我主寫", short: "家企業在用，計費由我主寫" },
+      { figure: "0 張", label: "換定價模型時，需要重算的已簽約報價", short: "換定價模型時\u200b重算的報價" },
+      { figure: "44 ms", label: "預約查詢原本 6.3\u00a0s：找回被\u00a0ORM\u00a0刪掉的\u00a0index", short: "預約查詢，原本 6.3\u00a0s" },
     ],
     summary:
       "做過服務 2,000+ 企業的客服平台上的預付點數計費、AI 與通路整合，和一條從 3D 報價、簽約、付款到 Stripe 訂閱計費，並與 HubSpot、NetSuite 同步的 quote-to-cash 鏈。追到根因之後，修在讓同一類 bug 進不來的那個點。",
@@ -54,7 +54,8 @@ export const zhTW: SiteContent = {
       motionOn: "開",
       motionOff: "關",
     },
-    experience: { role: "角色", scope: "負責範圍", stack: "技術", earlier: "更早的工作", impact: "影響", more: "其餘 {count} 項負責範圍" },
+    experience: { role: "角色", scope: "負責範圍", stack: "技術", earlier: "更早的工作", impact: "影響", more: "其餘 {count} 項負責範圍", highlights: "{count} 項重點", teamStack: "團隊與技術" },
+    projects: { details: "做法與細節" },
     systems: {
       emptyTitle: "選一個節點，看看資料怎麼流動。",
       emptyBody:
@@ -64,6 +65,7 @@ export const zhTW: SiteContent = {
       skillsTitle: "技術範圍",
     },
     work: {
+      filter: "篩選",
       byType: "依類型篩選",
       byTrack: "依經歷篩選",
       all: "全部",
@@ -71,7 +73,6 @@ export const zhTW: SiteContent = {
       actions: "怎麼處理",
       result: "結果",
       lesson: "學到的事",
-      collapse: "收合這則",
     },
     offDuty: {
       hold: "按住踩油門",

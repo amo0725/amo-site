@@ -56,6 +56,15 @@ export function SiteHeader({
     };
   }, []);
 
+  // Lets pinned elements (an open case's title) sit under the header, or
+  // at the top edge while the header is away.
+  useEffect(() => {
+    document.documentElement.toggleAttribute(
+      "data-header-hidden",
+      hidden && !open,
+    );
+  }, [hidden, open]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {

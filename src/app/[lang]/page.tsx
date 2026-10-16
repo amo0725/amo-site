@@ -112,7 +112,11 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           <AiWorkflowSection workflow={c.ai} copy={c.sections.ai} />
         </Suspense>
         <Suspense fallback={null}>
-          <Projects projects={c.projects} copy={c.sections.projects} />
+          <Projects
+            projects={c.projects}
+            copy={c.sections.projects}
+            ui={c.ui.projects}
+          />
         </Suspense>
         <Suspense fallback={null}>
           <Reel copy={c.reel} />
