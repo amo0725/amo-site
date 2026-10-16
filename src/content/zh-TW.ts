@@ -498,6 +498,18 @@ export const zhTW: SiteContent = {
           "NetSuite 沿用既有 item，零新 SKU",
         ],
         lesson: "定價的邏輯和數字要一起版本化，放在 code 裡才有稽核和回滾。",
+        flows: [
+          {
+            label: "報價引擎的分層",
+            steps: ["Domain", "Catalog", "費用政策", "毛利", "Orchestrator", "Output adapter"],
+            note: "每條 line item 都附 cost trace",
+          },
+          {
+            label: "選哪一版定價",
+            steps: ["報價自己的 stamp", "全域 active pointer", "預設版本"],
+            note: "找不到版本就 fail-closed；翻 pointer 就是切換或回滾",
+          },
+        ],
         stack: ["NestJS", "MongoDB", "Strategy / Registry", "Avalara", "Stripe", "NetSuite", "Next.js"],
       },
       {
@@ -586,6 +598,18 @@ export const zhTW: SiteContent = {
           "改動前的 46 個舊測試原封不動跑綠，證明旗標關閉等於今天的行為",
         ],
         lesson: "錢的路徑 fail-closed：沒有證據就不扣款。日期不是開關，扣掉的錢退不回來。",
+        flows: [
+          {
+            label: "一筆扣款怎麼產生",
+            steps: ["純函式政策 decide(term, history, today)", "append-only 事件 log", "登記表：每台每段一個單位", "Stripe writer"],
+            note: "partial unique index 保證同一台同時只有一個未結束的單位",
+          },
+          {
+            label: "Stripe writer 內部",
+            steps: ["planner", "先寫 pending ledger", "executor（每次嘗試一把冪等鍵）", "reconciler", "recorder"],
+            note: "沒有兩封提醒信的事件 id，就不會扣卡",
+          },
+        ],
         stack: ["Event sourcing", "PostgreSQL", "Stripe", "BullMQ", "AWS SES", "dbt"],
       },
       {

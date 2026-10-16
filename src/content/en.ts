@@ -498,6 +498,18 @@ export const en: SiteContent = {
           "NetSuite reuses existing items: zero new SKUs",
         ],
         lesson: "Pricing logic and pricing numbers get versioned together, in code, where they have an audit trail and a rollback.",
+        flows: [
+          {
+            label: "Layers of the quote engine",
+            steps: ["Domain", "Catalog", "Fee policies", "Margin", "Orchestrator", "Output adapter"],
+            note: "Every line item carries a cost trace",
+          },
+          {
+            label: "Which pricing version applies",
+            steps: ["The quote's own stamp", "Global active pointer", "Default version"],
+            note: "An unknown version fails closed; flipping the pointer switches or rolls back",
+          },
+        ],
         stack: ["NestJS", "MongoDB", "Strategy / Registry", "Avalara", "Stripe", "NetSuite", "Next.js"],
       },
       {
@@ -586,6 +598,18 @@ export const en: SiteContent = {
           "46 pre-existing tests passed untouched, proving flag-off equals today's behaviour",
         ],
         lesson: "Money paths fail closed: no evidence, no charge. A date is not a switch; a charge cannot be rolled back.",
+        flows: [
+          {
+            label: "How a charge comes about",
+            steps: ["Pure policy decide(term, history, today)", "Append-only event log", "Register: one unit per controller per term", "Stripe writer"],
+            note: "A partial unique index allows one open unit per controller at a time",
+          },
+          {
+            label: "Inside the Stripe writer",
+            steps: ["Planner", "Pending ledger written first", "Executor (one idempotency key per attempt)", "Reconciler", "Recorder"],
+            note: "No card is charged without the event ids of both reminder emails",
+          },
+        ],
         stack: ["Event sourcing", "PostgreSQL", "Stripe", "BullMQ", "AWS SES", "dbt"],
       },
       {

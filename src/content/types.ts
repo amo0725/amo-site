@@ -125,6 +125,13 @@ export interface SkillGroup {
 
 /* ---------- Work log ---------- */
 
+/** One labelled row of a case diagram: steps in order, plus an optional rule under it. */
+export interface CaseFlow {
+  label: string;
+  steps: readonly string[];
+  note?: string;
+}
+
 export type WorkCategory =
   "incident" | "payments" | "integration" | "architecture" | "data" | "product";
 
@@ -144,6 +151,8 @@ export interface WorkEntry {
   outcome?: string;
   /** Open by default: the cases to read first. */
   featured?: boolean;
+  /** How the fix is shaped, as labelled flows of steps (drawn left to right). */
+  flows?: readonly CaseFlow[];
   /** How the result was verified, one check per line. */
   evidence?: readonly string[];
   lesson?: string;

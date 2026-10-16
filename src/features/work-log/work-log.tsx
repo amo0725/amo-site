@@ -6,6 +6,7 @@ import type { UiStrings, WorkCategory, WorkEntry } from "@/content/types";
 import { InView } from "@/components/motion/in-view";
 import { MetricBars, metricHeadline } from "@/components/ui/metric-bars";
 import { cn } from "@/lib/cn";
+import { CaseFlows } from "./case-flows";
 import { useMotionPreference } from "@/lib/motion/preference";
 
 export interface TrackOption {
@@ -251,6 +252,7 @@ export function WorkLog({
                         ))}
                       </ul>
                     </div>
+                    {entry.flows ? <CaseFlows flows={entry.flows} /> : null}
                     {entry.result || entry.metrics || entry.evidence ? (
                       <div>
                         <h4 className="text-sm font-semibold text-ink-soft">
