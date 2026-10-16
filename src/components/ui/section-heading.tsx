@@ -26,7 +26,7 @@ export function SectionHeading({
   className,
 }: SectionHeadingProps) {
   return (
-    <header className={cn("mb-10 max-w-[40rem] md:mb-14", className)}>
+    <header className={cn("mb-8 max-w-[40rem] md:mb-14", className)}>
       <h2
         id={`${id}-title`}
         className="flex items-center gap-4 text-2xl font-bold tracking-tight font-expanded md:text-3xl"

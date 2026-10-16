@@ -5,7 +5,8 @@
  * Checks what a recruiter's first visit depends on, in both languages and
  * at desktop and phone widths: the page answers, the first screen names
  * the person and the role, the call to action points at the case log, the
- * featured cases are open, every public project links to its repository,
+ * featured cases are open (one on phones), the hero carries its three
+ * proof figures, nothing scrolls sideways, every public project links to its repository,
  * the phone menu opens, and nothing logs an error. Also checks the
  * sitemap, robots and the Open Graph image, and that no URL still points
  * at a placeholder domain.
@@ -81,8 +82,18 @@ for (const lang of ["zh-TW", "en"]) {
     const cta = page.locator('main a[href="#work"]').first();
     check(await cta.isVisible(), `${label}: case-log call to action is visible`);
 
+    // Phones keep only the first featured case open (see WorkLog).
+    const want = vp.mobile ? 1 : 3;
     const open = await page.locator("#work details[open]").count();
-    check(open >= 3, `${label}: ${open} featured cases open (want 3+)`);
+    check(open === want, `${label}: ${open} featured cases open (want ${want})`);
+
+    const proof = await page.locator("#hero-title ~ dl > div").count();
+    check(proof === 3, `${label}: ${proof} proof figures under the headline`);
+
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    );
+    check(overflow <= 0, `${label}: no horizontal scroll (${overflow}px over)`);
 
     const repos = await page.$$eval("#projects h3 a", (as) =>
       as.map((a) => a.getAttribute("href")),

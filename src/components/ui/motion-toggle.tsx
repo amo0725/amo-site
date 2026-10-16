@@ -11,7 +11,7 @@ interface MotionToggleProps {
   label: string;
   on: string;
   off: string;
-  /** Header use: the label and state text are visually hidden on phones. */
+  /** Header use: a taller tap target, and the on/off word is visually hidden below xl. */
   compact?: boolean;
 }
 
@@ -39,14 +39,20 @@ export function MotionToggle({
         }
         setMotionPreference(enabled ? "reduced" : "full");
       }}
-      className="group inline-flex items-center gap-2.5 text-sm"
+      className={cn(
+        "group inline-flex items-center gap-2 text-sm whitespace-nowrap",
+        // Header use: at least 44px tall to tap.
+        compact && "min-h-11",
+      )}
     >
-      <span className={cn(compact && "sr-only xl:not-sr-only")}>{label}</span>
+      {/* The label always shows, so the switch never reads as a bare knob;
+          the header hides only the on/off word until there is room. */}
+      <span className={cn(compact && "text-ink-soft")}>{label}</span>
       <span
         aria-hidden="true"
         className={cn(
           "relative h-5 w-9 rounded-full border transition-colors duration-300",
-          enabled ? "border-ink bg-ink" : "border-coast bg-transparent",
+          enabled ? "border-ink bg-ink" : "border-control bg-transparent",
         )}
       >
         <span

@@ -19,7 +19,7 @@ export function Projects({ projects, copy }: ProjectsProps) {
     <section
       id={meta.id}
       aria-labelledby={`${meta.id}-title`}
-      className="border-t border-graticule px-5 py-24 md:px-10 md:py-32"
+      className="border-t border-graticule px-5 py-16 md:px-10 md:py-32"
     >
       <div className="mx-auto max-w-[90rem]">
         <SectionHeading id={meta.id} colorVar={meta.colorVar} lead={copy.lead}>

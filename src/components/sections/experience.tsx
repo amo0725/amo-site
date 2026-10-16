@@ -30,7 +30,7 @@ function AreaItem({
   ui: UiStrings["experience"];
 }) {
   return (
-    <li className="grid gap-2 border-b border-graticule py-5 sm:grid-cols-[3rem_1fr]">
+    <li className="grid grid-cols-[2.25rem_1fr] items-baseline gap-x-2 border-b border-graticule py-5 sm:grid-cols-[3rem_1fr]">
       <span
         aria-hidden="true"
         className="index-ink text-sm font-semibold text-ink-soft tabular"
@@ -68,7 +68,7 @@ export function Experience({ tracks, copy, ui }: ExperienceProps) {
     <section
       id={meta.id}
       aria-labelledby={`${meta.id}-title`}
-      className="border-t border-graticule px-5 py-24 md:px-10 md:py-32"
+      className="border-t border-graticule px-5 py-16 md:px-10 md:py-32"
     >
       <div className="mx-auto max-w-[90rem]">
         <SectionHeading id={meta.id} colorVar={meta.colorVar} lead={copy.lead}>

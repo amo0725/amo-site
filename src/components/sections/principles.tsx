@@ -95,8 +95,7 @@ function glyphFor(id: string, index: number): React.ReactNode {
 }
 
 /**
- * The principles as cards. On phones they sit in a native horizontal
- * scroller with snap points; from md up they are a static grid.
+ * The principles as cards: a single column on phones, a grid from md up.
  */
 export function Principles({ principles, copy }: PrinciplesProps) {
   const meta = sectionMeta("principles");
@@ -104,52 +103,49 @@ export function Principles({ principles, copy }: PrinciplesProps) {
     <section
       id={meta.id}
       aria-labelledby={`${meta.id}-title`}
-      className="border-t border-graticule px-5 py-24 md:px-10 md:py-32"
+      className="border-t border-graticule px-5 py-16 md:px-10 md:py-32"
     >
       <div className="mx-auto max-w-[90rem]">
         <SectionHeading id={meta.id} colorVar={meta.colorVar} lead={copy.lead}>
           {copy.label}
         </SectionHeading>
-        <div
-          className="hscroll-viewport -mx-5 md:mx-0"
-          data-lenis-prevent-horizontal
-        >
-          <ul className="flex w-max gap-4 px-5 pb-2 md:grid md:w-auto md:grid-cols-2 md:gap-6 md:px-0 md:pb-0 lg:grid-cols-3">
-            {principles.map((p, i) => (
-              <li
-                key={p.id}
-                // Column index in the md (2-up) and lg (3-up) grids, so cards in
-                // one row draw a beat apart.
-                style={{ "--c2": i % 2, "--c3": i % 3 } as React.CSSProperties}
-                className="glyph-card group relative flex w-[min(82vw,24rem)] shrink-0 snap-start flex-col justify-between gap-10 overflow-hidden rounded-sm border border-graticule bg-paper-raised p-6 md:w-auto md:p-8"
+        {/* One column on phones (a sideways scroller hid seven of the
+            eight), two from md, three from lg. */}
+        <ul className="grid gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+          {principles.map((p, i) => (
+            <li
+              key={p.id}
+              // Column index in the md (2-up) and lg (3-up) grids, so cards in
+              // one row draw a beat apart.
+              style={{ "--c2": i % 2, "--c3": i % 3 } as React.CSSProperties}
+              className="glyph-card group relative grid grid-cols-[2.75rem_1fr] gap-x-4 overflow-hidden rounded-sm border border-graticule bg-paper-raised p-5 md:flex md:flex-col md:justify-between md:gap-10 md:p-8"
+            >
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 h-1"
+                style={{ background: `var(${meta.colorVar})` }}
+              />
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 64 64"
+                className="glyph mt-1 size-11 text-ink md:mt-0 md:size-20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-x-0 top-0 h-1"
-                  style={{ background: `var(${meta.colorVar})` }}
-                />
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 64 64"
-                  className="glyph size-16 text-ink md:size-20"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  {glyphFor(p.id, i)}
-                </svg>
-                <div>
-                  <h3 className="text-2xl leading-tight font-extrabold font-expanded md:text-[1.75rem]">
-                    {p.title}
-                  </h3>
-                  <p className="mt-3 text-ink-soft">{p.body}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+                {glyphFor(p.id, i)}
+              </svg>
+              <div>
+                <h3 className="text-xl leading-tight font-extrabold text-balance font-expanded md:text-[1.75rem]">
+                  {p.title}
+                </h3>
+                <p className="mt-2 text-ink-soft md:mt-3">{p.body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

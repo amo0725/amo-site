@@ -35,6 +35,9 @@
   /* Not-yet-read words in the scrubbed statement; keeps ≥3:1 for large text. */
   --unread: color-mix(in oklab, var(--ink) 56%, var(--paper));
   --header-h: 3.5rem;
+  /* Outline of a control (pill, header button, switch): ≥3:1 on paper in
+     both themes, which --coast is not. */
+  --control: color-mix(in oklab, var(--ink) 45%, var(--paper));
 
   color-scheme: light;
 }
@@ -76,6 +79,7 @@
   --color-ink-soft: var(--ink-soft);
   --color-graticule: var(--graticule);
   --color-coast: var(--coast);
+  --color-control: var(--control);
   --color-echo-1: var(--echo-1);
   --color-echo-2: var(--echo-2);
   --color-echo-3: var(--echo-3);
@@ -242,6 +246,10 @@
 .load-wipe {
   animation: wipe-in 0.8s var(--ease-out-expo) both;
   animation-delay: 1s;
+}
+/* First-screen copy: in with the page, not after the name has finished. */
+.load-wipe-early {
+  animation-delay: 0.25s;
 }
 
 /* Hero poster: uncovered by the radar's own reveal front. Same 2.2 s and
@@ -461,6 +469,13 @@
     animation: wipe-in linear both;
     animation-timeline: view();
     animation-range: entry 30% cover 35%;
+  }
+  /* A phone screen is short: finish as the row comes fully into view, so a
+     reader who stops never sees half a result. */
+  @media (max-width: 47.99rem) {
+    :root:not([data-motion="reduced"]) .metric-headline {
+      animation-range: entry 0% entry 100%;
+    }
   }
 }
 
@@ -777,6 +792,24 @@
     animation-timeline: view();
     animation-range: entry 0% entry 100%;
   }
+  /* Below lg the section is about one screen tall, so a ring from the
+     bottom would leave the white heading on paper for most of the entry.
+     There it opens from the top edge, ahead of the text, and is done by
+     the time half the section is in. */
+  @keyframes ring-open-top {
+    from {
+      clip-path: circle(8% at 50% 0%);
+    }
+    to {
+      clip-path: circle(150% at 50% 0%);
+    }
+  }
+  @media (max-width: 63.99rem) {
+    .ring-open {
+      animation-name: ring-open-top;
+      animation-range: entry 0% entry 40%;
+    }
+  }
 
   /* The section border is the sweep: a rule in the section's own band
      draws across its top edge from the right (where the side legend sits)
@@ -845,25 +878,7 @@
   }
 }
 
-/* ---------- Principles ----------
-   Phones: a native horizontal scroller with snap points.
-   From md up the cards sit in a static grid. */
-.hscroll-viewport {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: 1.25rem;
-  scrollbar-width: none;
-}
-.hscroll-viewport::-webkit-scrollbar {
-  display: none;
-}
-@media (min-width: 48rem) {
-  .hscroll-viewport {
-    overflow: visible;
-    scroll-snap-type: none;
-  }
-}
+/* ---------- Principles ---------- */
 .glyph * {
   stroke-dasharray: 1;
   stroke-dashoffset: 0;
@@ -876,19 +891,16 @@
 /* The line drawings draw themselves in as their card enters, cards in one
    row a beat apart (--i = column). The timeline is the card's own: the card
    is overflow-hidden, i.e. a scroll container, so an anonymous view() on
-   the strokes would bind to it and never move. On phones the cards sit in
-   a horizontal scroller, so the card's timeline runs on the inline axis and
-   each glyph draws as its card is swiped in. Without support, or with
+   the strokes would bind to it and never move. Without support, or with
    reduced motion, the drawings are simply there. */
 @supports (animation-timeline: view()) {
   .glyph-card {
     --i: 0;
-    view-timeline: --glyph-card inline;
+    view-timeline: --glyph-card block;
   }
   @media (min-width: 48rem) {
     .glyph-card {
       --i: var(--c2, 0);
-      view-timeline: --glyph-card block;
     }
   }
   @media (min-width: 64rem) {
@@ -912,16 +924,25 @@
   animation-range: normal;
 }
 
-/* ---------- Hero bottom scrim ----------
-   Phones and tablets: full width. From lg up it covers only
-   the lg:col-span-7 text column (page gutter + 7 of 12 columns + 6 gaps of
-   2rem) and feathers out over 8rem past it, leaving the field open. */
+/* ---------- Hero field ----------
+   The radar owns one region and its edges fade into the paper: the space
+   above the copy on phones and tablets, the right of the section from lg
+   up. A mask, not a paper overlay, so the field keeps its colours. */
+.hero-field {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 18%,
+    #000 72%,
+    transparent
+  );
+}
 @media (min-width: 64rem) {
-  .hero-scrim {
-    --gutter: max(2.5rem, (100% - 90rem) / 2 + 2.5rem);
-    --column: (min(100%, 90rem) - 5rem - 22rem) / 12;
-    width: calc(var(--gutter) + 7 * var(--column) + 12rem + 8rem);
-    mask-image: linear-gradient(to right, #000 calc(100% - 8rem), transparent);
+  .hero-field {
+    mask-image:
+      linear-gradient(to right, transparent, #000 20%),
+      linear-gradient(to bottom, transparent, #000 14%, #000 84%, transparent);
+    mask-composite: intersect;
   }
 }
 

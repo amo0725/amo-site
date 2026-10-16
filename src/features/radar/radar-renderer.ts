@@ -49,6 +49,8 @@ export interface RadarRendererOptions {
 
 const WORLD_WIDTH = 16;
 const WORLD_DEPTH = 10;
+/** tan(half horizontal FOV) a tall frame keeps: what a 30° lens gives at 3:4. */
+const TALL_HALF_WIDTH = 0.75 * Math.tan((15 * Math.PI) / 180);
 const REVEAL_MS = 2200;
 const SWEEP_SPEED = 0.85; // radians per second
 const TRAIL_INTERVAL = 0.07; // seconds between pointer trail samples
@@ -328,16 +330,24 @@ export class RadarRenderer implements HeroRenderer {
     return geometry;
   }
 
-  /** Landscape screens look across the scope; portrait screens look down into it. */
+  /**
+   * Wide frames (the band above the copy on phones and tablets) look across
+   * the whole scope. Tall frames (the desktop panel beside the copy) move in
+   * close on the storm so it fills the panel and runs off its edges; the
+   * vertical field of view opens up on very tall panels so the frame never
+   * narrows to a sliver.
+   */
   private frameCamera(aspect: number): void {
-    const portrait = aspect < 1;
-    this.camera.fov = portrait ? 40 : 30;
+    const tall = aspect < 1;
     this.camera.aspect = aspect;
+    this.camera.fov = tall
+      ? Math.max(30, (2 * Math.atan(TALL_HALF_WIDTH / aspect) * 180) / Math.PI)
+      : 30;
     this.camera.updateProjectionMatrix();
-    const base = portrait
-      ? new Vector3(0, 21, 12.5)
-      : new Vector3(0, 9.2, 13.5);
-    this.cameraLook.set(0, 0, portrait ? 2.6 : 1.1);
+    const base = tall ? new Vector3(0, 8.8, 11.8) : new Vector3(0, 9.2, 13.5);
+    // Looking slightly left of centre puts the storm right of the panel's
+    // middle, away from the copy and off the screen edge.
+    this.cameraLook.set(tall ? -0.5 : 0, 0, tall ? 0.9 : 1.1);
     this.orbit.setFromVector3(base.sub(this.cameraLook));
     this.placeCamera(this.material.uniforms.uReveal.value);
   }

@@ -30,7 +30,7 @@ export function Work({
     <section
       id={meta.id}
       aria-labelledby={`${meta.id}-title`}
-      className="border-t border-graticule px-5 py-24 md:px-10 md:py-32"
+      className="border-t border-graticule px-5 py-16 md:px-10 md:py-32"
     >
       <div className="mx-auto max-w-[90rem] lg:grid lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-3">

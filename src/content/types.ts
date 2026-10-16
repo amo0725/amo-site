@@ -28,8 +28,10 @@ export interface Profile {
   focus: string;
   /** The hero headline: one sentence of positioning. */
   positioning: string;
-  /** Two or three sentences of evidence under the headline. */
+  /** Two or three sentences of evidence (meta description, About). */
   summary: string;
+  /** Three proof points under the hero headline: a figure and what it measures. */
+  proof: readonly { figure: string; label: string }[];
   /** Long-form statement revealed word by word on scroll. */
   statement: string;
   /** Secondary note shown after the statement. */
@@ -286,6 +288,8 @@ export interface UiStrings {
     /** {count} */
     ctaWork: string;
     ctaGithub: string;
+    /** Quiet text link to the contact section. */
+    ctaContact: string;
     motionLabel: string;
     motionOn: string;
     motionOff: string;
@@ -315,6 +319,8 @@ export interface UiStrings {
     actions: string;
     result: string;
     lesson: string;
+    /** Button at the end of an open case that closes it. */
+    collapse: string;
   };
   offDuty: {
     hold: string;

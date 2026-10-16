@@ -200,8 +200,26 @@ export function ReelPlayer({ copy }: { copy: ReelCopy }) {
   const fullscreen = () => {
     const frame = frameRef.current;
     if (!frame) return;
-    if (document.fullscreenElement) void document.exitFullscreen();
-    else void frame.requestFullscreen?.().catch(() => {});
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+      return;
+    }
+    // iOS Safari cannot put an element in full screen, only a video:
+    // there the exported film opens in the system player instead.
+    if (!frame.requestFullscreen) {
+      window.open(copy.video.src, "_blank", "noopener");
+      return;
+    }
+    void frame
+      .requestFullscreen()
+      .then(() => {
+        // Phones: turn to landscape where the browser allows it.
+        const orientation = screen.orientation as ScreenOrientation & {
+          lock?: (o: string) => Promise<void>;
+        };
+        return orientation.lock?.("landscape");
+      })
+      .catch(() => {});
   };
 
   const label =
@@ -314,7 +332,7 @@ export function ReelPlayer({ copy }: { copy: ReelCopy }) {
           onClick={fullscreen}
           disabled={!ready}
           aria-label={copy.fullscreen}
-          className="hidden size-11 shrink-0 items-center justify-center rounded-full border border-coast hover:border-ink disabled:opacity-40 sm:flex"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full border border-control hover:border-ink disabled:opacity-40"
         >
           <svg
             viewBox="0 0 24 24"
@@ -348,7 +366,7 @@ export function ReelPlayer({ copy }: { copy: ReelCopy }) {
                   "flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm transition-colors disabled:opacity-40",
                   chapter === i && status !== "idle"
                     ? "border-ink bg-ink text-paper"
-                    : "border-coast hover:border-ink",
+                    : "border-control hover:border-ink",
                 )}
               >
                 <span className="tabular opacity-70">

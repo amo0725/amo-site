@@ -846,6 +846,15 @@ const text = (
   ...extra,
 });
 
+/** A free-standing caption (not inside a fixed-size box). On a phone the
+ *  stage is drawn at about a fifth of its size, so these grow by
+ *  --reel-boost (set by the stage fit) to stay readable. */
+const caption = (
+  size: number,
+  extra: React.CSSProperties = {},
+): React.CSSProperties =>
+  text(size, { fontSize: `calc(${size}px * var(--reel-boost, 1))`, ...extra });
+
 export function ReelStageMarkup({ copy }: { copy: ReelCopy }) {
   const node = (label: string) => (
     <div
@@ -918,7 +927,7 @@ export function ReelStageMarkup({ copy }: { copy: ReelCopy }) {
       <El id="s1-line" className="font-extrabold" style={text(132)}>
         {copy.s1.line}
       </El>
-      <El id="s1-sub" style={text(58, { color: C.dim })}>
+      <El id="s1-sub" style={caption(58, { color: C.dim })}>
         {copy.s1.sub}
       </El>
 
@@ -961,7 +970,7 @@ export function ReelStageMarkup({ copy }: { copy: ReelCopy }) {
       <El
         id="s2-checktext"
         className="font-semibold"
-        style={text(46, { color: C.e2 })}
+        style={caption(46, { color: C.e2 })}
       >
         {copy.s2.check}
       </El>
@@ -1053,7 +1062,7 @@ export function ReelStageMarkup({ copy }: { copy: ReelCopy }) {
         </svg>
       </El>
       <El id="s4-socket">
-        <div className="flex items-center gap-4 font-semibold" style={text(46)}>
+        <div className="flex items-center gap-4 font-semibold" style={caption(46)}>
           <span
             className="block size-5 rounded-full"
             style={{ background: C.e2 }}
@@ -1061,7 +1070,7 @@ export function ReelStageMarkup({ copy }: { copy: ReelCopy }) {
           {copy.s4.socket}
         </div>
       </El>
-      <El id="s4-events-label" style={text(40, { color: C.dim })}>
+      <El id="s4-events-label" style={caption(40, { color: C.dim })}>
         {copy.s4.events}
       </El>
       <El id="s4-count" className="font-extrabold tabular" style={text(96)}>
@@ -1070,7 +1079,7 @@ export function ReelStageMarkup({ copy }: { copy: ReelCopy }) {
       <El
         id="s4-stalled"
         className="font-bold"
-        style={text(46, { color: C.e5 })}
+        style={caption(46, { color: C.e5 })}
       >
         {copy.s4.stalled}
       </El>
@@ -1147,10 +1156,10 @@ export function ReelStageMarkup({ copy }: { copy: ReelCopy }) {
       <El id="s5-name" style={text(196, { letterSpacing: "-0.03em" })}>
         Amo Feng
       </El>
-      <El id="s5-role" className="font-semibold" style={text(60)}>
+      <El id="s5-role" className="font-semibold" style={caption(60)}>
         {copy.s5.role}
       </El>
-      <El id="s5-tagline" style={text(48, { color: C.dim, whiteSpace: "pre" })}>
+      <El id="s5-tagline" style={caption(48, { color: C.dim, whiteSpace: "pre" })}>
         {copy.s5.tagline}
       </El>
       <El id="s5-bar" className="flex" style={{ width: 420, height: 12 }}>

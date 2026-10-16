@@ -126,21 +126,31 @@ export function SiteHeader({
             aria-expanded={open}
             aria-controls="section-menu"
             onClick={() => setOpen((o) => !o)}
-            className="rounded-full border border-coast px-3 py-0.5 font-semibold transition-colors hover:border-ink lg:hidden"
+            // Drawn at 28px, but the ::before stretches the tap target to 44.
+            className="relative py-1 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] rounded-full border border-control px-3 font-semibold whitespace-nowrap transition-colors hover:border-ink lg:hidden"
           >
             {open ? menu.close : menu.open}
           </button>
+          {/* Carries the current section, so switching language mid-read
+              lands on the same part of the page. */}
           <a
-            href={language.href}
+            href={active ? `${language.href}#${active}` : language.href}
             hrefLang={language.hrefLang}
             lang={language.hrefLang}
-            className="rounded-full border border-coast px-3 py-0.5 font-semibold transition-colors hover:border-ink"
+            className="relative py-1 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] rounded-full border border-control px-3 font-semibold whitespace-nowrap transition-colors hover:border-ink"
           >
             {language.label}
           </a>
         </div>
       </nav>
 
+      {/* Scrim under the open menu: dims the page and closes on a tap. */}
+      <div
+        aria-hidden="true"
+        hidden={!open}
+        onClick={() => setOpen(false)}
+        className="fixed inset-x-0 top-[var(--header-h)] bottom-0 bg-paper/70 backdrop-blur-[2px] lg:hidden"
+      />
       <div
         id="section-menu"
         hidden={!open}
@@ -153,11 +163,17 @@ export function SiteHeader({
                 href={`#${s.id}`}
                 onClick={() => setOpen(false)}
                 aria-current={active === s.id ? "location" : undefined}
-                className="flex items-center gap-3 border-b border-graticule py-3 text-lg"
+                className={cn(
+                  "flex items-center gap-3 border-b border-graticule py-3 text-lg",
+                  active === s.id && "font-semibold",
+                )}
               >
                 <span
                   aria-hidden="true"
-                  className="h-3.5 w-1.5 shrink-0"
+                  className={cn(
+                    "h-3.5 shrink-0 transition-[width]",
+                    active === s.id ? "w-3" : "w-1.5",
+                  )}
                   style={{ background: `var(${s.colorVar})` }}
                 />
                 {s.label}

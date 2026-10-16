@@ -62,7 +62,7 @@ export function Signal({ profile, copy, locale }: SignalProps) {
     <section
       id={meta.id}
       aria-labelledby={`${meta.id}-title`}
-      className="relative isolate overflow-clip px-5 py-28 md:px-10 md:py-44"
+      className="relative isolate overflow-clip px-5 py-20 md:px-10 md:py-44"
     >
       <RangeRings />
       <div className="mx-auto grid max-w-[90rem] md:grid-cols-12">
@@ -73,7 +73,7 @@ export function Signal({ profile, copy, locale }: SignalProps) {
           <ScrubText
             text={profile.statement}
             locale={locale}
-            className="max-w-[24em] text-[1.6rem] leading-[1.6] font-medium tracking-tight md:text-[2.15rem] md:leading-[1.55]"
+            className="max-w-[24em] text-[1.375rem] leading-[1.55] font-medium tracking-tight md:text-[2.15rem] md:leading-[1.55]"
           />
           <p className="mt-12 max-w-[32rem] text-ink-soft md:ml-[30%]">
             {profile.aside}

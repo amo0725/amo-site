@@ -25,10 +25,15 @@ export const en: SiteContent = {
     timeZone: "Asia/Taipei",
     focus: "NestJS · React · PHP · MySQL / PostgreSQL / MongoDB · RabbitMQ · Kubernetes",
     positioning: "Systems that touch money should add up at every step.",
+    proof: [
+      { figure: "2,000+", label: "businesses on the support platform whose prepaid billing I wrote" },
+      { figure: "0", label: "signed quotes repriced when the pricing model changed" },
+      { figure: "44 ms", label: "booking query, from 6.3\u00a0s: found the indexes the ORM had dropped" },
+    ],
     summary:
       "Prepaid credit billing, AI and channel integrations on a customer-messaging platform used by 2,000+ businesses, and a quote-to-cash chain from 3D quote and contract to Stripe subscriptions, synced with HubSpot and NetSuite. When I find a root cause, I fix it at the point that keeps the whole class of bug out.",
     statement:
-      "I am best at finding things that look healthy and are already broken. The socket is still connected, yet nothing consumes the events. The migration log says it ran, yet the index is gone from the database. The framework upgrade went fine, yet a middleware quietly stopped running. The test suite is green, yet it tests a state production never reaches. None of that shows up on a dashboard. You find it by following the code, the queue and the database. Once I have it, the fix I want is the one choke point that keeps the whole class of bug out.",
+      "I am best at finding things that look healthy and are already broken.\n\nThe socket is still connected, yet nothing consumes the events. The migration log says it ran, yet the index is gone from the database. The framework upgrade went fine, yet a middleware quietly stopped running. The test suite is green, yet it tests a state production never reaches.\n\nNone of that shows up on a dashboard. You find it by following the code, the queue and the database. Once I have it, the fix I want is the one choke point that keeps the whole class of bug out.",
     aside:
       "I have joined teams in Hong Kong and the US remotely, working in English for docs, code review and meetings. I also turn the technical detail from a standup into something product, sales and accounting can act on. An architecture decision is finished when the people who depend on it understand it.",
   },
@@ -38,12 +43,13 @@ export const en: SiteContent = {
     mainNav: "Main",
     sectionNav: "Sections",
     contactShort: "Contact",
-    menu: { open: "Menu", close: "Close menu" },
+    menu: { open: "Menu", close: "Close" },
     switchLanguage: { label: "中文", href: "/zh-TW", hrefLang: "zh-TW" },
     hero: {
       timeLabel: "Taiwan time",
       ctaWork: "Read {count} real cases",
       ctaGithub: "GitHub",
+      ctaContact: "Contact / request résumé",
       motionLabel: "Motion",
       motionOn: "On",
       motionOff: "Off",
@@ -65,6 +71,7 @@ export const en: SiteContent = {
       actions: "What I did",
       result: "Result",
       lesson: "Lesson",
+      collapse: "Close this case",
     },
     offDuty: {
       hold: "Hold to rev",
