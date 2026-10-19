@@ -69,23 +69,34 @@ export function AnchorSettle() {
         el.scrollIntoView();
       }
     };
-    const off = (el: HTMLElement) =>
-      Math.abs(
-        el.getBoundingClientRect().top -
-          parseFloat(getComputedStyle(root).scrollPaddingTop || "0"),
-      ) > 8;
+    // Where the target sits in the document (not on screen), so a reader
+    // scrolling away is never mistaken for the layout moving.
+    const docTop = (el: HTMLElement) =>
+      el.getBoundingClientRect().top + window.scrollY;
+
+    // The reader taking over ends any further correction.
+    let userMoved = false;
+    const takeOver = () => {
+      userMoved = true;
+    };
+    const inputs = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+    inputs.forEach((type) =>
+      window.addEventListener(type, takeOver, { passive: true, once: true }),
+    );
 
     const settle = async (el: HTMLElement) => {
       measure();
       await frames(1);
-      if (cancelled) return;
+      if (cancelled || userMoved) return;
       land(el);
+      const landedAt = docTop(el);
       // Smooth scrolling loads on demand and late images or fonts can move
-      // things: check twice more and land again if needed.
+      // the target: check twice more, and land again only if the target
+      // itself moved in the document and the reader hasn't scrolled.
       for (const wait of [500, 1200]) {
         await sleep(wait);
-        if (cancelled) return;
-        if (off(el)) land(el);
+        if (cancelled || userMoved) return;
+        if (Math.abs(docTop(el) - landedAt) > 8) land(el);
       }
     };
 
@@ -108,6 +119,7 @@ export function AnchorSettle() {
     return () => {
       cancelled = true;
       cancelAnimationFrame(poll);
+      inputs.forEach((type) => window.removeEventListener(type, takeOver));
       document.removeEventListener("click", onClick, true);
     };
   }, []);
