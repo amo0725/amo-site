@@ -11,8 +11,10 @@ interface MotionToggleProps {
   label: string;
   on: string;
   off: string;
-  /** Header use: a taller tap target, and the on/off word is visually hidden below xl. */
+  /** Header use: the on/off word is visually hidden below xl. */
   compact?: boolean;
+  /** A 44px-tall tap target (header and menu panel). */
+  tall?: boolean;
 }
 
 /** Lets a visitor override the system motion setting in either direction. */
@@ -21,6 +23,7 @@ export function MotionToggle({
   on,
   off,
   compact = false,
+  tall = false,
 }: MotionToggleProps) {
   const preference = useMotionPreference();
   const enabled = preference === "full";
@@ -41,8 +44,7 @@ export function MotionToggle({
       }}
       className={cn(
         "group inline-flex items-center gap-2 text-sm whitespace-nowrap",
-        // Header use: at least 44px tall to tap.
-        compact && "min-h-11",
+        tall && "min-h-11",
       )}
     >
       {/* The label always shows, so the switch never reads as a bare knob;

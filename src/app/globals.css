@@ -56,7 +56,7 @@
 @media (prefers-color-scheme: dark) {
   /* The stage is darker than its section here: a hairline keeps its edge. */
   .reel-frame {
-    box-shadow: 0 0 0 1px var(--graticule);
+    box-shadow: 0 0 0 1px var(--coast);
   }
   :root {
     --paper: #0d1820; /* L* 8 */
@@ -198,6 +198,11 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 1100px;
   }
+}
+/* Real layout for every section once the visitor jumps within the page
+   (AnchorSettle), so #targets are measured against real heights. */
+.cv-measure :is(main > section, body > footer) {
+  content-visibility: visible !important;
 }
 
 /* ---------- CJK headings ----------
@@ -823,26 +828,8 @@
     animation-range: entry 20% cover 40%;
   }
 
-  /* Contact: an ink panel opens like a radar ring from the bottom. */
+  /* Contact: the closing panel opens like a radar ring. */
   @keyframes ring-open {
-    from {
-      clip-path: circle(8% at 50% 100%);
-    }
-    to {
-      clip-path: circle(150% at 50% 100%);
-    }
-  }
-  .ring-open {
-    animation: ring-open linear both;
-    animation-timeline: view();
-    /* Done by 60% in, so the white heading never sits on bare paper. */
-    animation-range: entry 0% entry 60%;
-  }
-  /* Below lg the section is about one screen tall, so a ring from the
-     bottom would leave the white heading on paper for most of the entry.
-     There it opens from the top edge, ahead of the text, and is done by
-     the time half the section is in. */
-  @keyframes ring-open-top {
     from {
       clip-path: circle(8% at 50% 0%);
     }
@@ -850,11 +837,13 @@
       clip-path: circle(150% at 50% 0%);
     }
   }
-  @media (max-width: 63.99rem) {
-    .ring-open {
-      animation-name: ring-open-top;
-      animation-range: entry 0% entry 40%;
-    }
+  /* Opens from the top edge, ahead of the white heading, and is done by
+     the time 40% of the section is in, so the heading is never drawn on
+     bare paper at any width. */
+  .ring-open {
+    animation: ring-open linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
   }
 
   /* The section border is the sweep: a rule in the section's own band
@@ -933,10 +922,10 @@
 }
 
 /* Light mode: the pale bands (yellow, orange, sky) fall under 3:1 against
-   the paper, so the heading swatch gets a faint ink edge. */
+   the paper, so the heading swatch gets an ink edge (3:1). */
 @media not (prefers-color-scheme: dark) {
   .scan-swatch {
-    box-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 30%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 52%, transparent);
   }
 }
 

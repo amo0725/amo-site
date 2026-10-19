@@ -133,6 +133,7 @@ export function SiteHeader({
               on={motion.on}
               off={motion.off}
               compact
+              tall
             />
           </span>
           {/* Phones have no side legend, so the menu button doubles as the
@@ -225,7 +226,7 @@ export function SiteHeader({
             label={motion.label}
             on={motion.on}
             off={motion.off}
-            compact
+            tall
           />
         </div>
       </div>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { MotionProvider } from "@/components/providers/motion-provider";
+import { AnchorSettle } from "@/components/providers/anchor-settle";
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
 import { RadarCursor } from "@/components/ui/radar-cursor";
 import { site } from "@/config/site";
@@ -83,6 +84,7 @@ export default async function RootLayout({
         </a>
         <MotionProvider>
           <SmoothScroll />
+          <AnchorSettle />
           <RadarCursor />
           {children}
         </MotionProvider>

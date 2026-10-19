@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { setLenis } from "@/lib/motion/lenis-instance";
 import { useMotionPreference } from "@/lib/motion/preference";
 
 /**
@@ -23,7 +24,8 @@ export function SmoothScroll() {
       const lenis = new Lenis({
         autoRaf: true,
         lerp: 0.12,
-        anchors: { offset: -56 },
+        // Lenis subtracts the html scroll-padding-top (the header) itself.
+        anchors: true,
         // Hand the wheel to a nested panel only while it can actually scroll
         // vertically. Marking a region as native unconditionally makes the
         // page drop out of smoothing whenever the cursor crosses it, which
@@ -33,7 +35,11 @@ export function SmoothScroll() {
           node.scrollHeight > node.clientHeight + 1 &&
           getComputedStyle(node).overflowY !== "visible",
       });
-      destroy = () => lenis.destroy();
+      setLenis(lenis);
+      destroy = () => {
+        setLenis(null);
+        lenis.destroy();
+      };
     });
 
     return () => {
