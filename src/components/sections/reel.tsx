@@ -7,7 +7,7 @@ export function Reel({ copy }: { copy: ReelCopy }) {
     <section
       id="reel"
       aria-labelledby="reel-title"
-      className="border-t border-graticule px-5 py-16 md:px-10 md:py-32"
+      className="border-t border-graticule bg-surface-display px-5 py-16 md:px-10 md:py-32"
     >
       <div className="mx-auto max-w-[90rem]">
         <header className="mb-10 flex flex-wrap items-end justify-between gap-6 md:mb-12">

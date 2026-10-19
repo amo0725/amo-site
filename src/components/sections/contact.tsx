@@ -10,7 +10,7 @@ interface ContactProps {
 }
 
 /**
- * The page ends on an ink panel that opens like a radar ring from the
+ * The page ends on the closing panel (--closing: ink in light mode, a raised dark surface in dark mode) that opens like a radar ring from the
  * bottom edge as you scroll into it (CSS, see .ring-open).
  */
 export function Contact({ contact, copy, ui }: ContactProps) {
@@ -23,9 +23,9 @@ export function Contact({ contact, copy, ui }: ContactProps) {
     >
       <div
         aria-hidden="true"
-        className="ring-open absolute inset-0 -z-10 bg-ink"
+        className="ring-open absolute inset-0 -z-10 bg-closing"
       />
-      <div className="mx-auto max-w-[90rem] px-5 pt-28 pb-16 text-paper md:px-10 md:pt-40">
+      <div className="mx-auto max-w-[90rem] px-5 pt-28 pb-16 text-on-closing md:px-10 md:pt-40">
         <SectionHeading id={meta.id} colorVar={meta.colorVar} inverted>
           {copy.label}
         </SectionHeading>
@@ -36,12 +36,12 @@ export function Contact({ contact, copy, ui }: ContactProps) {
           {ui.headline}
         </p>
 
-        <p className="mt-6 max-w-[36rem] text-lg text-paper/80">{ui.status}</p>
+        <p className="mt-6 max-w-[36rem] text-lg text-on-closing/80">{ui.status}</p>
 
         <p className="mt-6 text-lg">
           <a
             href={`mailto:${contact.email}`}
-            className="-my-2 inline-block py-2 underline decoration-paper/40 decoration-1 underline-offset-[6px] transition-colors hover:decoration-paper"
+            className="-my-2 inline-block py-2 underline decoration-on-closing/40 decoration-1 underline-offset-[6px] transition-colors hover:decoration-on-closing"
           >
             {contact.email}
           </a>
@@ -50,20 +50,20 @@ export function Contact({ contact, copy, ui }: ContactProps) {
         <div className="mt-10 flex flex-wrap items-center gap-4">
           <a
             href={`mailto:${contact.email}`}
-            className="inline-flex h-14 items-center rounded-full bg-paper px-8 text-lg font-semibold text-ink transition-transform active:scale-95"
+            className="inline-flex h-14 items-center rounded-full bg-on-closing px-8 text-lg font-semibold text-closing transition-transform active:scale-95"
           >
             {ui.write}
           </a>
           <a
             href={`mailto:${contact.email}?subject=${encodeURIComponent(ui.resumeSubject)}`}
-            className="inline-flex h-14 items-center rounded-full border border-paper/40 px-7 text-lg transition-colors hover:border-paper"
+            className="inline-flex h-14 items-center rounded-full border border-on-closing/40 px-7 text-lg transition-colors hover:border-on-closing"
           >
             {ui.resume}
           </a>
           <CopyEmailButton
             email={contact.email}
             labels={{ idle: ui.copy, copied: ui.copied, failed: ui.copyFailed }}
-            className="h-14 rounded-full border border-paper/40 px-7 text-lg transition-colors hover:border-paper"
+            className="h-14 rounded-full border border-on-closing/40 px-7 text-lg transition-colors hover:border-on-closing"
           />
         </div>
 
@@ -73,7 +73,7 @@ export function Contact({ contact, copy, ui }: ContactProps) {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="group inline-flex min-h-11 items-center gap-2 underline decoration-paper/40 underline-offset-4 hover:decoration-paper"
+                  className="group inline-flex min-h-11 items-center gap-2 underline decoration-on-closing/40 underline-offset-4 hover:decoration-on-closing"
                   rel="me noopener"
                   target="_blank"
                 >

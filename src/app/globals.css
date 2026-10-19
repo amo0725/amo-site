@@ -39,34 +39,51 @@
      both themes, which --coast is not. */
   --control: color-mix(in oklab, var(--ink) 45%, var(--paper));
 
+  /* Surfaces, Material-style: one hue, a few steps of lightness (about 4
+     L* apart), each with a job. Reading sections sit on --paper; sections
+     you look at or play with (the systems map, the AI pipeline, the reel)
+     on --surface-display; the page ends on --closing. In light mode the display
+     step sinks, in dark mode it rises (lighter = nearer, as in Apple's and
+     Material's dark themes). */
+  --surface-display: #d9dfdd; /* L* 88 */
+  --closing: var(--ink);
+  --on-closing: var(--paper);
+
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #0d1820;
-    --paper-raised: #12212b;
+    --paper: #0d1820; /* L* 8 */
+    --paper-raised: #182a36; /* L* 16: cards, above the display step */
+    --surface-display: #12212b; /* L* 12 */
+    /* The end panel stays dark: a light block at the bottom of a dark page
+       glares. One step above the cards instead. */
+    --closing: #1b2d39; /* L* 17.5 */
+    --on-closing: var(--ink);
     --ink: #e4ecee;
     --ink-soft: #95a7ae;
     --graticule: #213440;
     --coast: #4d6370;
 
-    --echo-1: #49c1f2;
-    --echo-2: #2cc257;
-    --echo-3: #f2d61c;
-    --echo-4: #ff9426;
-    --echo-5: #ff4048;
-    --echo-6: #d649cc;
+    /* Echo and band colours 18 points less saturated than the light
+       theme's: full-strength hues vibrate on a near-black ground. */
+    --echo-1: #5bbae0;
+    --echo-2: #41ad60;
+    --echo-3: #dcc632;
+    --echo-4: #eb943a;
+    --echo-5: #ee5158;
+    --echo-6: #c25dbb;
 
-    --band-1: #49c1f2;
-    --band-2: #5b8ff0;
-    --band-3: #2cc257;
-    --band-4: #f2d61c;
-    --band-5: #ffb52e;
-    --band-6: #ff9426;
-    --band-7: #ff4048;
-    --band-8: #e04fd0;
-    --band-9: #9a6bf0;
+    --band-1: #5bbae0;
+    --band-2: #6b94e0;
+    --band-3: #41ad60;
+    --band-4: #dcc632;
+    --band-5: #ecb041;
+    --band-6: #eb943a;
+    --band-7: #ee5158;
+    --band-8: #cd62c1;
+    --band-9: #9e7ae1;
 
     color-scheme: dark;
   }
@@ -80,6 +97,9 @@
   --color-graticule: var(--graticule);
   --color-coast: var(--coast);
   --color-control: var(--control);
+  --color-surface-display: var(--surface-display);
+  --color-closing: var(--closing);
+  --color-on-closing: var(--on-closing);
   --color-echo-1: var(--echo-1);
   --color-echo-2: var(--echo-2);
   --color-echo-3: var(--echo-3);

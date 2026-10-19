@@ -7,7 +7,7 @@ interface SectionHeadingProps {
   colorVar: string;
   children: ReactNode;
   lead?: ReactNode;
-  /** Light text for sections drawn on the ink panel. */
+  /** Text for sections drawn on the end panel (--closing). */
   inverted?: boolean;
   className?: string;
 }
@@ -39,7 +39,7 @@ export function SectionHeading({
         <span className="scan-text">{children}</span>
       </h2>
       {lead ? (
-        <p className={cn("mt-4", inverted ? "text-paper/75" : "text-ink-soft")}>
+        <p className={cn("mt-4", inverted ? "text-on-closing/75" : "text-ink-soft")}>
           {lead}
         </p>
       ) : null}
