@@ -281,7 +281,8 @@ export interface UiStrings {
   sectionNav: string;
   contactShort: string;
   /** Section menu below the desktop breakpoint. */
-  menu: { open: string; close: string };
+  /** current: the menu button's name while a section is shown on it. {section} */
+  menu: { open: string; close: string; current: string };
   /** Link to the other language. */
   switchLanguage: { label: string; href: string; hrefLang: Locale };
   hero: {

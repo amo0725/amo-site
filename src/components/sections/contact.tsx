@@ -23,7 +23,8 @@ export function Contact({ contact, copy, ui }: ContactProps) {
     >
       <div
         aria-hidden="true"
-        className="ring-open absolute inset-0 -z-10 bg-closing"
+        // One pixel past the bottom: the footer below rounds separately.
+        className="ring-open absolute inset-x-0 top-0 -bottom-px -z-10 bg-closing"
       />
       <div className="mx-auto max-w-[90rem] px-5 pt-28 pb-16 text-on-closing md:px-10 md:pt-40">
         <SectionHeading id={meta.id} colorVar={meta.colorVar} inverted>
@@ -36,7 +37,9 @@ export function Contact({ contact, copy, ui }: ContactProps) {
           {ui.headline}
         </p>
 
-        <p className="mt-6 max-w-[36rem] text-lg text-on-closing/80">{ui.status}</p>
+        <p className="mt-6 max-w-[36rem] text-lg text-on-closing/80">
+          {ui.status}
+        </p>
 
         <p className="mt-6 text-lg">
           <a

@@ -35,9 +35,10 @@
   /* Not-yet-read words in the scrubbed statement; keeps ≥3:1 for large text. */
   --unread: color-mix(in oklab, var(--ink) 56%, var(--paper));
   --header-h: 3.5rem;
-  /* Outline of a control (pill, header button, switch): ≥3:1 on paper in
-     both themes, which --coast is not. */
-  --control: color-mix(in oklab, var(--ink) 45%, var(--paper));
+  /* Outline of a control (pill, header button, switch): ≥3:1 on paper and
+     on the display surface in both themes (3.2 at the lowest), which
+     --coast is not. */
+  --control: color-mix(in oklab, var(--ink) 52%, var(--paper));
 
   /* Surfaces, Material-style: one hue, a few steps of lightness (about 4
      L* apart), each with a job. Reading sections sit on --paper; sections
@@ -53,6 +54,10 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  /* The stage is darker than its section here: a hairline keeps its edge. */
+  .reel-frame {
+    box-shadow: 0 0 0 1px var(--graticule);
+  }
   :root {
     --paper: #0d1820; /* L* 8 */
     --paper-raised: #182a36; /* L* 16: cards, above the display step */
@@ -830,7 +835,8 @@
   .ring-open {
     animation: ring-open linear both;
     animation-timeline: view();
-    animation-range: entry 0% entry 100%;
+    /* Done by 60% in, so the white heading never sits on bare paper. */
+    animation-range: entry 0% entry 60%;
   }
   /* Below lg the section is about one screen tall, so a ring from the
      bottom would leave the white heading on paper for most of the entry.
@@ -862,13 +868,14 @@
   #reel {
     --section-band: var(--echo-2);
   }
-  #experience {
+  /* Same bands as the headings, legend and menu (sectionMeta). */
+  #work {
     --section-band: var(--band-2);
   }
-  #systems {
+  #experience {
     --section-band: var(--band-3);
   }
-  #work {
+  #systems {
     --section-band: var(--band-4);
   }
   #principles {
@@ -915,6 +922,21 @@
     animation: band-rule linear both;
     animation-timeline: --section;
     animation-range: entry 0% entry 35%;
+  }
+}
+
+/* The surface a section is drawn on, for pinned and sticky parts inside it. */
+#systems,
+#ai,
+#reel {
+  --surface: var(--surface-display);
+}
+
+/* Light mode: the pale bands (yellow, orange, sky) fall under 3:1 against
+   the paper, so the heading swatch gets a faint ink edge. */
+@media not (prefers-color-scheme: dark) {
+  .scan-swatch {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 30%, transparent);
   }
 }
 
@@ -1145,7 +1167,7 @@
     top: var(--pin-top, var(--header-h));
     z-index: 5;
     padding-block: 0.75rem;
-    background: var(--paper);
+    background: var(--surface, var(--paper));
     box-shadow: 0 1px 0 var(--graticule);
     transition: top 0.5s var(--ease-out-expo);
   }

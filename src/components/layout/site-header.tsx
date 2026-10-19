@@ -11,7 +11,7 @@ interface SiteHeaderProps {
   name: string;
   nav: readonly NavItem[];
   navLabel: string;
-  menu: { open: string; close: string };
+  menu: { open: string; close: string; current: string };
   motion: { label: string; on: string; off: string };
   language: { label: string; href: string; hrefLang: Locale };
 }
@@ -145,7 +145,7 @@ export function SiteHeader({
               open
                 ? menu.close
                 : current
-                  ? `${menu.open}: ${current.label}`
+                  ? menu.current.replace("{section}", current.label)
                   : menu.open
             }
             onClick={() => setOpen((o) => !o)}
@@ -221,7 +221,12 @@ export function SiteHeader({
           ))}
         </ul>
         <div className="mx-auto mt-4 flex max-w-[90rem] justify-end">
-          <MotionToggle label={motion.label} on={motion.on} off={motion.off} />
+          <MotionToggle
+            label={motion.label}
+            on={motion.on}
+            off={motion.off}
+            compact
+          />
         </div>
       </div>
     </header>
