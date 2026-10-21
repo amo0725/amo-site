@@ -91,7 +91,7 @@ export const en: SiteContent = {
       prev: "Previous",
       next: "Next",
     },
-    ai: { step: "Step", me: "Me", agent: "Agent", details: "Each step in detail" },
+    ai: { step: "Step", me: "Me", agent: "Agent", details: "Detail" },
     principles: { evidence: "Where it happened" },
     offDuty: {
       hold: "Hold to rev",

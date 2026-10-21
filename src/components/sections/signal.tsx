@@ -83,12 +83,19 @@ export function Signal({ signal, copy, ui }: SignalProps) {
           </p>
 
           <InView threshold={0.25}>
-            <ul className="mt-8 border-b border-graticule md:mt-12">
+            {/* One grid for all four rows (subgrid), so the "looks fine"
+                column is as wide as its longest reading and the leader
+                arrow runs all the way to the "actually" column. */}
+            <ul className="mt-8 border-b border-graticule md:mt-12 md:grid md:grid-cols-[minmax(0,auto)_minmax(3rem,1fr)_minmax(0,auto)]">
               {signal.pairs.map((pair, i) => (
-                <li key={pair.href} style={{ "--i": i } as React.CSSProperties}>
+                <li
+                  key={pair.href}
+                  className="md:col-span-3 md:grid md:grid-cols-subgrid"
+                  style={{ "--i": i } as React.CSSProperties}
+                >
                   <a
                     href={pair.href}
-                    className="vs-row group relative grid gap-y-1 border-t border-graticule py-3.5 md:grid-cols-[1fr_3rem_1fr] md:items-start md:gap-x-0 md:py-5"
+                    className="vs-row group relative grid gap-y-1 border-t border-graticule py-3.5 md:col-span-3 md:grid-cols-subgrid md:items-start md:gap-x-0 md:py-5"
                   >
                     <span className="grid grid-cols-[1rem_1fr] items-start gap-x-3">
                       <span
@@ -104,13 +111,13 @@ export function Signal({ signal, copy, ui }: SignalProps) {
                         phones, across from md up. */}
                     <span
                       aria-hidden="true"
-                      className="relative ml-[0.3rem] h-3 w-px md:mt-[0.55rem] md:ml-0 md:h-px md:w-full"
+                      className="relative ml-[0.3rem] h-3 w-px md:mt-[1.65rem] md:ml-4 md:h-px md:w-auto"
                     >
                       <span className="vs-arrow absolute inset-0 bg-control" />
                       <span className="absolute -bottom-1 -left-[3px] hidden border-x-[3.5px] border-t-[5px] border-x-transparent border-t-control max-md:block" />
                       <span className="absolute top-[-3.5px] -right-px hidden border-y-[3.5px] border-l-[5px] border-y-transparent border-l-control md:block" />
                     </span>
-                    <span className="grid grid-cols-[1rem_1fr] items-start gap-x-3 md:pl-6">
+                    <span className="vs-actually relative grid grid-cols-[1rem_1fr] items-start gap-x-3 md:pl-6">
                       <span
                         aria-hidden="true"
                         className="vs-mark mark mt-[0.3rem] bg-echo-5"
@@ -158,7 +165,7 @@ export function Signal({ signal, copy, ui }: SignalProps) {
                     <span
                       className={
                         i === last
-                          ? "max-w-[18em] font-bold"
+                          ? "max-w-[18em] font-bold text-balance"
                           : "text-sm font-semibold"
                       }
                     >

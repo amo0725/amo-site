@@ -34,14 +34,14 @@ export function TrackStats({ track }: { track: ExperienceTrack }) {
   if (!track.stats?.length) return null;
   return (
     <InView threshold={0.4}>
-      <dl className="mt-7 grid grid-cols-3 gap-3 md:gap-4">
+      <dl className="mt-7 grid max-w-[30rem] grid-cols-3 gap-3 md:gap-4">
         {track.stats.map((s, i) => (
           <div
             key={s.label}
             className="grid content-start"
             style={{ "--i": i } as React.CSSProperties}
           >
-            <dt className="order-2 mt-1.5 text-xs leading-snug text-ink-soft">
+            <dt className="order-2 mt-1.5 text-xs leading-snug text-balance text-ink-soft">
               {s.label}
             </dt>
             <dd className="order-1 grid">
@@ -50,7 +50,7 @@ export function TrackStats({ track }: { track: ExperienceTrack }) {
                 className="tile-rule block h-0.5 bg-ink"
               />
               <span aria-hidden="true" className="axis-ticks" />
-              <span className="mt-2 text-xl leading-none font-extrabold tabular font-expanded md:text-[1.75rem]">
+              <span className="mt-2 text-xl leading-none font-extrabold tabular font-expanded 2xl:text-[1.75rem]">
                 {s.figure}
               </span>
             </dd>
@@ -107,13 +107,13 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
               <article
                 key={track.id}
                 aria-labelledby={`xp-${track.id}`}
-                className="grid gap-8 md:grid-cols-12 md:gap-10"
+                className="grid gap-8 md:gap-10 lg:grid-cols-12"
               >
-                <header className="md:col-span-4 md:self-start lg:sticky lg:top-[calc(var(--header-h)+2rem)]">
+                <header className="lg:col-span-5 lg:self-start xl:col-span-4 lg:sticky lg:top-[calc(var(--header-h)+2rem)]">
                   <TrackKicker index={t} color={color} />
                   <h3
                     id={`xp-${track.id}`}
-                    className="text-[2rem] leading-[0.95] font-extrabold font-expanded [overflow-wrap:anywhere] sm:text-4xl md:text-5xl"
+                    className="text-[2rem] leading-[0.95] font-extrabold font-expanded [overflow-wrap:anywhere] sm:text-4xl md:text-5xl lg:text-[2.5rem] xl:text-5xl"
                   >
                     {track.short}
                   </h3>
@@ -127,7 +127,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                   </a>
                 </header>
 
-                <div className="min-w-0 md:col-span-8">
+                <div className="min-w-0 lg:col-span-7 xl:col-span-8">
                   {track.flow ? (
                     <TrackFlowView track={track} flow={track.flow} ui={ui} />
                   ) : (

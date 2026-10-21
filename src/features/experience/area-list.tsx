@@ -18,7 +18,7 @@ function AreaDetail({
       {area.impact ? (
         <p className="mt-3 flex max-w-[40rem] items-baseline gap-2 text-sm">
           <span className="coord shrink-0 text-ink">{ui.impact}</span>
-          <span aria-hidden="true" className="leader self-center" />
+          <span aria-hidden="true" className="leader mt-[0.6em] self-start" />
           <span className="text-ink-soft">{area.impact}</span>
         </p>
       ) : null}

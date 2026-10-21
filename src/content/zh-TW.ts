@@ -91,7 +91,7 @@ export const zhTW: SiteContent = {
       prev: "上一則",
       next: "下一則",
     },
-    ai: { step: "步驟", me: "我", agent: "Agent", details: "看每一步的細節" },
+    ai: { step: "步驟", me: "我", agent: "Agent", details: "細節" },
     principles: { evidence: "出處" },
     offDuty: {
       hold: "按住踩油門",
