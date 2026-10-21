@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { DetailShell } from "@/components/layout/detail-shell";
 import { categoryColor, site } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
+import { detailMetadata } from "@/lib/detail-metadata";
 import type { Locale } from "@/content/types";
 import { CaseBody } from "@/features/work-log/case-body";
 import {
@@ -25,32 +26,23 @@ function find(lang: string, id: string) {
   return { lang, content, index, entry: content.work.entries[index] };
 }
 
-const paths = (id: string) =>
-  Object.fromEntries(locales.map((l) => [l, `/${l}/work/${id}`])) as Record<
-    Locale,
-    string
-  >;
-
 export async function generateMetadata({
   params,
 }: PageProps<"/[lang]/work/[id]">): Promise<Metadata> {
   const { lang, id } = await params;
   const found = find(lang, id);
   if (!found) return {};
-  const { entry } = found;
+  const { entry, content } = found;
   const description =
     lang === "en"
       ? `${entry.steps.symptom}. ${entry.steps.result}.`
       : `${entry.steps.symptom}。${entry.steps.result}。`;
-  return {
+  return detailMetadata({
+    content,
+    path: `/work/${id}`,
     title: entry.title,
     description,
-    alternates: {
-      canonical: paths(id)[lang as Locale],
-      languages: paths(id),
-    },
-    openGraph: { type: "article", url: paths(id)[lang as Locale], title: entry.title },
-  };
+  });
 }
 
 /**
@@ -107,7 +99,8 @@ export default async function CasePage({
         </h1>
 
         <div className="mt-8 border-y border-graticule py-6 md:mt-10 md:py-8">
-          <CaseSteps entry={entry} ui={ui} heading="h2" />
+          <h2 className="sr-only">{ui.summary}</h2>
+          <CaseSteps entry={entry} ui={ui} heading="h3" />
         </div>
 
         <div className="mt-10 md:mt-14">

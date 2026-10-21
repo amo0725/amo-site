@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { DetailShell } from "@/components/layout/detail-shell";
 import { TRACK_COLORS, TrackStats } from "@/components/sections/experience";
 import { getContent, isLocale, locales } from "@/content";
+import { detailMetadata } from "@/lib/detail-metadata";
 import type { Locale } from "@/content/types";
 import { AreaList } from "@/features/experience/area-list";
 import { TrackFlowView } from "@/features/experience/track-flow";
@@ -26,27 +27,20 @@ function find(lang: string, id: string) {
   return { lang, content: getContent(lang), track: tracks[index], index };
 }
 
-const paths = (id: string) =>
-  Object.fromEntries(
-    locales.map((l) => [l, `/${l}/experience/${id}`]),
-  ) as Record<Locale, string>;
-
 export async function generateMetadata({
   params,
 }: PageProps<"/[lang]/experience/[id]">): Promise<Metadata> {
   const { lang, id } = await params;
   const found = find(lang, id);
   if (!found) return {};
-  const { track } = found;
-  return {
+  const { track, content } = found;
+  return detailMetadata({
+    content,
+    path: `/experience/${id}`,
     title: track.short,
     description: track.domain,
-    alternates: {
-      canonical: paths(id)[lang as Locale],
-      languages: paths(id),
-    },
-    openGraph: { url: paths(id)[lang as Locale], title: track.short },
-  };
+    type: "profile",
+  });
 }
 
 /**

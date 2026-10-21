@@ -6,7 +6,8 @@ import type { SectionCopy, SideProject, UiStrings } from "@/content/types";
 
 /**
  * The product itself: a screenshot of the real app (demo data), framed at
- * one 16:10 shape so the list lines up. A phone screen sits upright in the
+ * one shape so the list lines up (16:10; a shorter 2:1 crop of the top on
+ * phones, where the frame is full width). A phone screen sits upright in the
  * middle of the frame. Information, not decoration: what the product looks
  * like is the evidence it exists.
  */
@@ -20,7 +21,7 @@ function Shot({
   const phone = shot.device === "phone";
   return (
     <figure className="grid gap-2">
-      <div className="relative aspect-[16/10] max-w-full overflow-hidden border border-graticule bg-surface-display">
+      <div className="relative aspect-[2/1] max-w-full overflow-hidden border border-graticule bg-surface-display md:aspect-[16/10]">
         <Image
           src={shot.src}
           alt={shot.alt}

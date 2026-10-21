@@ -84,12 +84,13 @@ export const en: SiteContent = {
       lesson: "Lesson",
       symptom: "Symptom",
       fix: "Fix",
+      summary: "In four steps",
       readMore: "Read the full case",
       back: "Back to the work log",
       prev: "Previous",
       next: "Next",
     },
-    ai: { step: "Step", me: "Me", agent: "Agent", toAgent: "The agent's", unassigned: "not assigned", details: "Each step in detail" },
+    ai: { step: "Step", me: "Me", agent: "Agent", details: "Each step in detail" },
     principles: { evidence: "Where it happened" },
     offDuty: {
       hold: "Hold to rev",
@@ -169,7 +170,7 @@ export const en: SiteContent = {
         label: "The path of one message",
         path: [
           { title: "A message arrives", note: "WhatsApp and five other chat channels, plus email", areas: [3, 4] },
-          { title: "AI handles it", note: "Speech-to-text, translation, AI agent replies", areas: [2] },
+          { title: "AI, where it applies", note: "Speech-to-text, translation, AI agent replies", areas: [2] },
           { title: "Sent, or handed to a person", note: "Inbox, ticket assignment, contact sync", areas: [6] },
         ],
         side: { label: "Beside the path: usage settled every hour", title: "Prepaid credit billing", note: "Pulls WhatsApp, LLM and workflow usage and deducts credits; daily reconciliation, monthly statements", areas: [1] },
@@ -970,8 +971,6 @@ export const en: SiteContent = {
 
   ai: {
     headline: "Decisions and production stay with me, the rest goes to agents, and every change walks the same pipeline.",
-    intro:
-      "Claude Code does most of my daily development. Requirements, every decision, what to verify, rollout order and production operations stay with me; verifying code, writing specs and tickets, implementation, review and E2E runs go to agents. Every change walks the same pipeline before it becomes a merge request.",
     steps: [
       {
         id: "spec",

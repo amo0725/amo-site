@@ -8,16 +8,14 @@ interface AiWorkflowProps {
   ui: UiStrings["ai"];
 }
 
-/** One lane of a step: who does what. Empty lanes say so in words. */
+/** One lane of a step: who does what. A step with no part for one side shows only the other. */
 function Lane({
   who,
   text,
-  empty,
   tone,
 }: {
   who: string;
-  text?: string;
-  empty: string;
+  text: string;
   tone: "me" | "agent";
 }) {
   return (
@@ -29,11 +27,7 @@ function Lane({
       <span className="pt-0.5 text-xs font-semibold text-ink-soft lg:pt-0">
         {who}
       </span>
-      {text ? (
-        <span>{text}</span>
-      ) : (
-        <span className="text-ink-soft">{empty}</span>
-      )}
+      <span>{text}</span>
     </div>
   );
 }
@@ -95,18 +89,12 @@ export function AiWorkflowSection({ workflow, copy, ui }: AiWorkflowProps) {
                   <h3 className="text-lg font-bold lg:flex lg:min-h-[3.5rem] lg:items-center lg:justify-center">
                     {step.title}
                   </h3>
-                  <Lane
-                    who={ui.me}
-                    text={step.me}
-                    empty={ui.toAgent}
-                    tone="me"
-                  />
-                  <Lane
-                    who={ui.agent}
-                    text={step.agent}
-                    empty={ui.unassigned}
-                    tone="agent"
-                  />
+                  {step.me ? (
+                    <Lane who={ui.me} text={step.me} tone="me" />
+                  ) : null}
+                  {step.agent ? (
+                    <Lane who={ui.agent} text={step.agent} tone="agent" />
+                  ) : null}
                   <details className="group/step text-left">
                     <summary className="flex cursor-pointer list-none items-center gap-1.5 py-1 text-sm font-semibold text-ink-soft [&::-webkit-details-marker]:hidden">
                       <span

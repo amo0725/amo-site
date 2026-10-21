@@ -19,8 +19,8 @@ export function CaseSteps({
 }: {
   entry: WorkEntry;
   ui: UiStrings["work"];
-  /** The steps' label level: h4 under a case in the list, h2 on its page. */
-  heading?: "h2" | "h4";
+  /** The steps' label level: h4 under a case in the list, h3 on its page. */
+  heading?: "h3" | "h4";
 }) {
   const steps = [
     { key: "symptom", label: ui.symptom, text: entry.steps.symptom },

@@ -261,18 +261,21 @@ export function WorkLog({
                     <h3 className="text-lg font-semibold text-balance md:text-xl">
                       {entry.title}
                     </h3>
-                    <span className="log-meta mt-1.5 grid gap-1.5 text-sm text-ink-soft">
-                      <span className="flex flex-wrap gap-x-3 gap-y-0.5">
-                        <span className="flex items-center gap-2 md:hidden">
-                          <CategoryMark color={colors[entry.category]} />
-                          {categories[entry.category]}
-                        </span>
-                        <span>{trackLabel.get(entry.track)}</span>
+                    {/* Phones: category and result share a line (the track
+                        is one tap away in the filter); from md the category
+                        has its own column and the track shows here. */}
+                    <span className="log-meta mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-ink-soft">
+                      <span className="flex items-center gap-2 md:hidden">
+                        <CategoryMark color={colors[entry.category]} />
+                        {categories[entry.category]}
+                      </span>
+                      <span className="hidden md:inline">
+                        {trackLabel.get(entry.track)}
                       </span>
                       {entry.metrics?.[0] ? (
                         <MiniBar metric={entry.metrics[0]} />
                       ) : entry.outcome ? (
-                        <span className="flex items-center gap-2 font-semibold text-ink">
+                        <span className="flex items-center gap-2 font-semibold text-ink md:basis-full">
                           <span
                             aria-hidden="true"
                             className="size-2 shrink-0 bg-echo-2"

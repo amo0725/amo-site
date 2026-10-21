@@ -241,7 +241,6 @@ export interface PipelineStep {
 export interface AiWorkflow {
   /** The division of labour in one sentence. */
   headline: string;
-  intro: string;
   steps: readonly PipelineStep[];
   toolsLabel: string;
   tools: readonly string[];
@@ -418,6 +417,8 @@ export interface UiStrings {
     fix: string;
     /** Link from the list to a case's own page. */
     readMore: string;
+    /** On a case page: heading over the four steps. */
+    summary: string;
     /** On a case page: back to the list. */
     back: string;
     /** On a case page: the neighbouring cases. */
@@ -428,10 +429,6 @@ export interface UiStrings {
     step: string;
     me: string;
     agent: string;
-    /** In the "me" column when the step is the agent's alone. */
-    toAgent: string;
-    /** In the "agent" column when the text gives the agent no part. */
-    unassigned: string;
     details: string;
   };
   principles: {

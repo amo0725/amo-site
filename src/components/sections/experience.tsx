@@ -95,6 +95,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                     className="mt-6 inline-flex items-center gap-1.5 border-b border-control pb-0.5 text-sm font-semibold hover:border-ink"
                   >
                     {ui.full}
+                    <span className="sr-only">: {track.short}</span>
                     <span aria-hidden="true">→</span>
                   </a>
                 </header>

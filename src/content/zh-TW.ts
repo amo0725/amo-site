@@ -84,12 +84,13 @@ export const zhTW: SiteContent = {
       lesson: "學到的事",
       symptom: "症狀",
       fix: "修法",
+      summary: "四步驟摘要",
       readMore: "讀完整案例",
       back: "回到事件紀錄",
       prev: "上一則",
       next: "下一則",
     },
-    ai: { step: "步驟", me: "我", agent: "Agent", toAgent: "交給 agent", unassigned: "未分配", details: "看每一步的細節" },
+    ai: { step: "步驟", me: "我", agent: "Agent", details: "看每一步的細節" },
     principles: { evidence: "出處" },
     offDuty: {
       hold: "按住踩油門",
@@ -169,7 +170,7 @@ export const zhTW: SiteContent = {
         label: "一則訊息經過的路",
         path: [
           { title: "訊息進來", note: "WhatsApp 等 6 個聊天通路與 Email", areas: [3, 4] },
-          { title: "交給 AI", note: "語音轉文字、翻譯、AI Agent 回覆", areas: [2] },
+          { title: "需要時交給 AI", note: "語音轉文字、翻譯、AI Agent 回覆", areas: [2] },
           { title: "送出・交給客服", note: "收件匣、工單指派、聯絡人同步", areas: [6] },
         ],
         side: { label: "旁路：每小時結算用量", title: "預付點數計費", note: "拉 WhatsApp、LLM、workflow 的用量扣點，每日對帳、月結", areas: [1] },
@@ -970,8 +971,6 @@ export const zhTW: SiteContent = {
 
   ai: {
     headline: "決策和 production 由我負責，其餘交給 agent；每次改動都走同一條流程。",
-    intro:
-      "Claude Code 是我日常開發的主力。需求、所有決策、查證要求、上線順序和 production 操作由我負責；查證程式碼、寫 spec 與票、實作、審查、E2E 交給 agent。每一次改動都走同一條流程，走完才會變成 MR。",
     steps: [
       {
         id: "spec",

@@ -13,7 +13,7 @@ export function MiniBar({ metric }: { metric: Metric }) {
   return (
     <span className="mini-bar grid w-full max-w-[26rem] grid-cols-[auto_1fr_auto] items-center gap-2 text-sm tabular">
       <span className="text-ink-soft">{metric.beforeText}</span>
-      <span aria-hidden="true" className="relative h-1.5 bg-echo-5/25">
+      <span aria-hidden="true" className="relative h-1.5 bg-ink/15">
         <span
           className="mini-bar-after absolute inset-y-0 left-0 min-w-0.5 bg-echo-2"
           style={{ width: `${Math.min(100, ratio * 100)}%` }}
