@@ -12,7 +12,9 @@ concurrency:
 jobs:
   check:
     name: Lint, typecheck, build, smoke test
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest started moving to Ubuntu 26 on 2026-10-19, and the
+    # smoke test's browser setup is only known good on 24.04.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       NEXT_TELEMETRY_DISABLED: "1"
@@ -35,6 +37,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Browser for the smoke test
+        run: /usr/bin/google-chrome --version
 
       - name: Smoke test (production server, desktop and phone, both languages)
         env:
