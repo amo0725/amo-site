@@ -85,6 +85,7 @@ export const en: SiteContent = {
       symptom: "Symptom",
       fix: "Fix",
       summary: "In four steps",
+      stack: "Stack",
       readMore: "Read the full case",
       back: "Back to the work log",
       prev: "Previous",

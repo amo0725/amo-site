@@ -8,24 +8,67 @@ interface AiWorkflowProps {
   ui: UiStrings["ai"];
 }
 
-/** One lane of a step: who does what. A step with no part for one side shows only the other. */
-function Lane({
+/** Grid column of each station from lg (column 1 holds the lane names). */
+const STEP_COLUMN = [
+  "lg:col-start-2",
+  "lg:col-start-3",
+  "lg:col-start-4",
+  "lg:col-start-5",
+  "lg:col-start-6",
+  "lg:col-start-7",
+];
+
+const LANE_COLOR = { me: "var(--echo-4)", agent: "var(--echo-1)" } as const;
+
+/** A lane's name with its colour mark. */
+function LaneLabel({ who, tone }: { who: string; tone: "me" | "agent" }) {
+  return (
+    <span className="coord flex items-center gap-2">
+      <span
+        aria-hidden="true"
+        className="mark"
+        style={{ background: LANE_COLOR[tone] }}
+      />
+      {who}
+    </span>
+  );
+}
+
+/**
+ * One cell of a lane: what this side does at this step. On phones each
+ * cell names its lane; from lg the lane names sit once in the first
+ * column and a cell with no part shows a dash, so the row reads straight
+ * across. Phones skip the empty cell.
+ */
+function LaneCell({
   who,
   text,
   tone,
 }: {
   who: string;
-  text: string;
+  text?: string;
   tone: "me" | "agent";
 }) {
+  const edge =
+    tone === "me"
+      ? "border-t border-graticule lg:border-control"
+      : "border-t border-graticule lg:border-b lg:border-b-control";
+  if (!text) {
+    return (
+      <div
+        aria-hidden="true"
+        className={`hidden items-center py-3 lg:flex ${edge}`}
+      >
+        <span className="leader" />
+      </div>
+    );
+  }
   return (
     <div
-      className={`grid grid-cols-[3.25rem_1fr] gap-x-2 gap-y-0.5 border-l-2 px-2.5 py-1 text-left text-sm lg:grid-cols-1 lg:py-1.5 ${
-        tone === "me" ? "border-echo-4" : "border-echo-1"
-      }`}
+      className={`grid grid-cols-[4.75rem_1fr] gap-x-2 py-2.5 text-sm lg:block lg:py-3 lg:pr-5 ${edge}`}
     >
-      <span className="pt-0.5 text-xs font-semibold text-ink-soft lg:pt-0">
-        {who}
+      <span className="lg:sr-only">
+        <LaneLabel who={who} tone={tone} />
       </span>
       <span>{text}</span>
     </div>
@@ -33,10 +76,12 @@ function Lane({
 }
 
 /**
- * The pipeline every change goes through, with who does what at each step:
- * me or the agent. As the section scrolls by, a signal fills the line and
- * each station lights up in turn (CSS scroll-driven animation on a shared
- * named timeline). Each step's full description is one tap away.
+ * The pipeline every change goes through, drawn as a lane chart: the six
+ * stations on an axis, then two lanes, me and the agent, read straight
+ * across (a CSS subgrid keeps every column's rows level). Phones stack the
+ * stations on a vertical rail. As the section scrolls by, the rail fills
+ * and each station lights up in turn (scroll-driven, on a shared named
+ * timeline). Each step's full description is one tap away.
  */
 export function AiWorkflowSection({ workflow, copy, ui }: AiWorkflowProps) {
   const meta = sectionMeta("ai");
@@ -59,62 +104,66 @@ export function AiWorkflowSection({ workflow, copy, ui }: AiWorkflowProps) {
           className="pipe relative"
           style={{ "--steps": steps.length } as React.CSSProperties}
         >
-          {/* Track and fill: vertical up to tablets, horizontal from lg up. */}
+          {/* The rail on phones and tablets; from lg each station draws
+              its own connector to the next. */}
           <span
             aria-hidden="true"
-            className="absolute top-5 bottom-5 left-5 w-px bg-graticule lg:hidden"
+            className="absolute top-3.5 bottom-3.5 left-[13px] w-[1.5px] bg-control lg:hidden"
           >
             <span className="pipe-fill-y absolute inset-0 bg-echo-2" />
           </span>
-          <span
-            aria-hidden="true"
-            className="absolute top-5 right-[8%] left-[8%] hidden h-px bg-graticule lg:block"
-          >
-            <span className="pipe-fill-x absolute inset-0 bg-echo-2" />
-          </span>
 
-          <ol className="relative grid gap-7 md:gap-10 lg:grid-cols-6 lg:gap-5">
+          <ol className="relative grid gap-8 lg:grid-cols-[5.5rem_repeat(6,minmax(0,1fr))] lg:grid-rows-[auto_auto_auto_auto_auto] lg:gap-0">
+            {/* Lane names, once, in the first column (lg). */}
+            <li
+              aria-hidden="true"
+              className="hidden border-t border-control py-3 lg:col-start-1 lg:row-start-3 lg:block"
+            >
+              <LaneLabel who={ui.me} tone="me" />
+            </li>
+            <li
+              aria-hidden="true"
+              className="hidden border-t border-b border-graticule border-b-control py-3 lg:col-start-1 lg:row-start-4 lg:block"
+            >
+              <LaneLabel who={ui.agent} tone="agent" />
+            </li>
             {steps.map((step, i) => (
               <li
                 key={step.id}
-                className="grid grid-cols-[2.5rem_1fr] gap-4 lg:grid-cols-1 lg:justify-items-center lg:text-center"
+                className={`pipe-stop relative grid grid-cols-[1.75rem_1fr] gap-x-4 lg:row-span-5 lg:row-start-1 lg:grid-cols-1 lg:grid-rows-subgrid lg:gap-x-0 ${STEP_COLUMN[i] ?? ""}`}
               >
                 <span
-                  className="pipe-dot relative z-10 flex size-10 items-center justify-center rounded-full border border-coast bg-paper-raised text-sm font-bold tabular"
+                  className="node pipe-dot row-span-5 lg:row-span-1 lg:mb-4"
                   style={{ "--i": i } as React.CSSProperties}
                 >
                   {i + 1}
                 </span>
-                <div className="grid w-full content-start gap-2 lg:max-w-[15rem]">
-                  <h3 className="text-lg font-bold lg:flex lg:min-h-[3.5rem] lg:items-center lg:justify-center">
-                    {step.title}
-                  </h3>
-                  {step.me ? (
-                    <Lane who={ui.me} text={step.me} tone="me" />
-                  ) : null}
-                  {step.agent ? (
-                    <Lane who={ui.agent} text={step.agent} tone="agent" />
-                  ) : null}
-                  <details className="group/step text-left">
-                    <summary className="flex cursor-pointer list-none items-center gap-1.5 py-1 text-sm font-semibold text-ink-soft [&::-webkit-details-marker]:hidden">
-                      <span
-                        aria-hidden="true"
-                        className="transition-[rotate] duration-300 group-open/step:rotate-90"
-                      >
-                        ›
-                      </span>
-                      {ui.details}
-                    </summary>
-                    <p className="pt-1 text-sm text-ink-soft">{step.body}</p>
-                  </details>
+                <h3 className="pt-[0.15rem] text-lg leading-tight font-bold lg:pt-0 lg:pr-5 lg:pb-4 lg:text-base">
+                  {step.title}
+                </h3>
+                <div className="col-start-2 mt-2 lg:col-start-1 lg:mt-0 lg:contents">
+                  <LaneCell who={ui.me} text={step.me} tone="me" />
+                  <LaneCell who={ui.agent} text={step.agent} tone="agent" />
                 </div>
+                <details className="group/step col-start-2 mt-1 lg:col-start-1 lg:mt-3 lg:pr-5">
+                  <summary className="coord flex cursor-pointer list-none items-center gap-1.5 py-1 [&::-webkit-details-marker]:hidden">
+                    <span
+                      aria-hidden="true"
+                      className="transition-[rotate] duration-300 group-open/step:rotate-90"
+                    >
+                      ›
+                    </span>
+                    {ui.details}
+                  </summary>
+                  <p className="pt-1 text-sm text-ink-soft">{step.body}</p>
+                </details>
               </li>
             ))}
           </ol>
         </div>
 
         <div className="mt-16 flex flex-wrap items-baseline gap-x-6 gap-y-2 border-t border-graticule pt-6">
-          <h3 className="text-sm font-semibold">{workflow.toolsLabel}</h3>
+          <h3 className="coord">{workflow.toolsLabel}</h3>
           <ul className="flex flex-wrap gap-x-6 gap-y-1 text-ink-soft">
             {workflow.tools.map((tool) => (
               <li key={tool}>{tool}</li>

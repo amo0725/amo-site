@@ -419,6 +419,8 @@ export interface UiStrings {
     readMore: string;
     /** On a case page: heading over the four steps. */
     summary: string;
+    /** On a case page: the stack, in the side rail. */
+    stack: string;
     /** On a case page: back to the list. */
     back: string;
     /** On a case page: the neighbouring cases. */

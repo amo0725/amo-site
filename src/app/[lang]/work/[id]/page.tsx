@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DetailShell } from "@/components/layout/detail-shell";
+import { InView } from "@/components/motion/in-view";
 import { categoryColor, site } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
 import { detailMetadata } from "@/lib/detail-metadata";
@@ -69,9 +70,16 @@ export default async function CasePage({
     "@type": "Article",
     headline: entry.title,
     inLanguage: c.htmlLang,
-    author: { "@type": "Person", name: c.profile.fullName, url: `${site.url}/${lang}` },
+    author: {
+      "@type": "Person",
+      name: c.profile.fullName,
+      url: `${site.url}/${lang}`,
+    },
     url: `${site.url}/${lang}/work/${id}`,
   };
+
+  const color = `var(${categoryColor[entry.category]})`;
+  const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
     <DetailShell
@@ -80,56 +88,70 @@ export default async function CasePage({
       otherPath={`/${other}/work/${id}`}
     >
       <article aria-labelledby="case-title">
-        <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-soft">
+        <span
+          aria-hidden="true"
+          className="grow-x block h-0.5 w-24 origin-left"
+          style={{ background: color }}
+        />
+        <p className="coord mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
           <span className="flex items-center gap-2">
             <span
               aria-hidden="true"
-              className="inline-block size-2.5"
-              style={{ background: `var(${categoryColor[entry.category]})` }}
+              className="mark"
+              style={{ background: color }}
             />
             {c.work.categories[entry.category]}
           </span>
           {track ? <span>{track.short}</span> : null}
+          <span className="tabular">
+            {pad(index + 1)} / {pad(entries.length)}
+          </span>
         </p>
         <h1
           id="case-title"
-          className="mt-3 text-[1.75rem] leading-tight font-extrabold text-balance md:text-4xl"
+          className="mt-3 max-w-[22em] text-[1.75rem] leading-[1.1] font-extrabold text-balance md:text-4xl lg:text-[2.75rem] [:lang(zh)_&]:leading-[1.25]"
         >
           {entry.title}
         </h1>
 
-        <div className="mt-8 border-y border-graticule py-6 md:mt-10 md:py-8">
-          <h2 className="sr-only">{ui.summary}</h2>
-          <CaseSteps entry={entry} ui={ui} heading="h3" />
-        </div>
+        <InView threshold={0.3}>
+          <div className="mt-10 border-y border-control py-7 md:mt-12 md:py-9">
+            <h2 className="sr-only">{ui.summary}</h2>
+            <CaseSteps entry={entry} ui={ui} heading="h3" />
+          </div>
+        </InView>
 
-        <div className="mt-10 md:mt-14">
+        <div className="mt-12 md:mt-16">
           <CaseBody entry={entry} ui={ui} />
         </div>
       </article>
 
       <nav
         aria-label={c.sections.work.label}
-        className="mt-16 grid gap-3 border-t border-graticule pt-6 sm:grid-cols-2"
+        className="mt-20 grid border-t border-control sm:grid-cols-2 sm:gap-x-10"
       >
         {prev ? (
           <a
             href={caseHref(lang as Locale, prev.id)}
-            className="grid gap-1 border border-graticule p-4 hover:border-control"
+            className="pen-row grid gap-1.5 border-b border-graticule py-5"
           >
-            <span className="text-xs text-ink-soft">← {ui.prev}</span>
-            <span className="font-semibold">{prev.title}</span>
+            <span className="coord">
+              ← {ui.prev} · {pad(index)}
+            </span>
+            <span className="font-semibold text-balance">{prev.title}</span>
           </a>
         ) : (
-          <span />
+          <span aria-hidden="true" />
         )}
         {next ? (
           <a
             href={caseHref(lang as Locale, next.id)}
-            className="grid gap-1 border border-graticule p-4 text-right hover:border-control"
+            className="pen-row grid gap-1.5 border-b border-graticule py-5"
           >
-            <span className="text-xs text-ink-soft">{ui.next} →</span>
-            <span className="font-semibold">{next.title}</span>
+            <span className="coord">
+              {ui.next} · {pad(index + 2)} →
+            </span>
+            <span className="font-semibold text-balance">{next.title}</span>
           </a>
         ) : null}
       </nav>

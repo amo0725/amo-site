@@ -16,8 +16,9 @@ function AreaDetail({
     <div className="pb-5 pl-[2.75rem] sm:pl-[3.5rem]">
       <p className="max-w-[40rem] text-ink-soft">{area.body}</p>
       {area.impact ? (
-        <p className="mt-3 flex max-w-[40rem] gap-3 text-sm">
-          <span className="shrink-0 font-semibold text-ink">{ui.impact}</span>
+        <p className="mt-3 flex max-w-[40rem] items-baseline gap-2 text-sm">
+          <span className="coord shrink-0 text-ink">{ui.impact}</span>
+          <span aria-hidden="true" className="leader self-center" />
           <span className="text-ink-soft">{area.impact}</span>
         </p>
       ) : null}
@@ -53,7 +54,7 @@ export function AreaList({
           <>
             <span
               aria-hidden="true"
-              className={`${open ? "" : "index-ink "}text-sm font-semibold text-ink-soft tabular`}
+              className={`${open ? "" : "index-ink "}index -ml-1 w-fit px-1`}
             >
               {pad(n)}
             </span>
@@ -75,7 +76,7 @@ export function AreaList({
               </>
             ) : (
               <details className="area-fold group/area">
-                <summary className="grid cursor-pointer list-none grid-cols-[2.25rem_1fr_auto] items-baseline gap-x-2 py-4 sm:grid-cols-[3rem_1fr_auto] [&::-webkit-details-marker]:hidden">
+                <summary className="pen-row grid cursor-pointer list-none grid-cols-[2.25rem_1fr_auto] items-baseline gap-x-2 py-4 sm:grid-cols-[3rem_1fr_auto] [&::-webkit-details-marker]:hidden">
                   {head}
                   <span
                     aria-hidden="true"

@@ -12,6 +12,10 @@ export const areaId = (trackId: string, n: number) => `xp-${trackId}-${n}`;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+/**
+ * The areas a stop carries, as coordinates: the same "01…07" index as the
+ * list of areas, plotted on the drawing, each linking to its area.
+ */
 function AreaBadges({
   track,
   areas,
@@ -24,7 +28,7 @@ function AreaBadges({
   hrefBase: string;
 }) {
   return (
-    <span className="flex flex-wrap gap-1">
+    <span className="flex flex-wrap items-center gap-1">
       {areas.map((n) => {
         const area = track.areas[n - 1];
         return (
@@ -33,7 +37,7 @@ function AreaBadges({
             href={`${hrefBase}#${areaId(track.id, n)}`}
             aria-label={fill(ui.area, { n: pad(n), title: area?.title ?? "" })}
             title={area?.title}
-            className="area-badge inline-flex min-h-6 min-w-7 items-center justify-center bg-ink px-1.5 text-xs font-bold text-paper tabular transition-colors hover:bg-echo-2"
+            className="area-badge"
           >
             {pad(n)}
           </a>
@@ -58,22 +62,18 @@ function Stop({
 }) {
   return (
     <li
-      className="flow-stop relative grid gap-1 md:content-start"
+      className="flow-stop relative grid grid-cols-[1.75rem_1fr] gap-x-3 gap-y-1.5 md:grid-cols-1 md:content-start md:gap-y-2"
       style={{ "--i": index } as React.CSSProperties}
     >
-      <span className="flex items-center gap-2.5 md:grid md:justify-items-start md:gap-2">
-        <span
-          aria-hidden="true"
-          className="flow-dot relative z-10 flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-paper text-xs font-bold tabular"
-        >
-          {index + 1}
-        </span>
-        <span className="font-bold leading-tight">{node.title}</span>
+      <span aria-hidden="true" className="node row-span-3 md:row-span-1">
+        {index + 1}
       </span>
-      <span className="pl-[2.375rem] text-sm text-ink-soft md:pl-0">
-        {node.note}
-      </span>
-      <span className="pl-[2.375rem] md:pl-0">
+      <p className="flow-title pt-[0.2rem] leading-tight font-bold md:pt-1">
+        {node.title}
+      </p>
+      <p className="text-sm text-ink-soft md:max-w-[20em]">{node.note}</p>
+      <span className="flex items-center gap-2 pt-0.5">
+        <span aria-hidden="true" className="leader" />
         <AreaBadges
           track={track}
           areas={node.areas}
@@ -86,11 +86,11 @@ function Stop({
 }
 
 /**
- * How the system behind a body of work runs, as a path the reader can take
- * in at a glance: vertical on phones, left to right from md up. Each area
- * of ownership is a numbered badge on the stop it belongs to and links to
- * that area's detail. Work that runs beside the path is a dashed side lane;
- * work outside it is listed under the drawing.
+ * How the system behind a body of work runs, plotted as a path the reader
+ * takes in at a glance: vertical on phones, left to right from md up. Each
+ * area of ownership is a coordinate on the stop it belongs to and links to
+ * that area's detail. Work that runs beside the path hangs below it on a
+ * dashed axis; work outside it is a third row.
  *
  * The drawing is real text (an ordered list), so it reads the same to a
  * screen reader and to find-in-page. When it arrives, the track fills stop
@@ -110,12 +110,10 @@ export function TrackFlowView({
 }) {
   return (
     <figure className="track-flow">
-      <figcaption className="text-xs font-semibold text-ink-soft">
-        {flow.label}
-      </figcaption>
-      <InView threshold={0.5}>
+      <figcaption className="coord">{flow.label}</figcaption>
+      <InView threshold={0.25}>
         <ol
-          className="flow-path relative mt-4 grid gap-4 md:gap-6"
+          className="flow-path relative mt-5 grid gap-5 md:gap-7"
           style={{ "--stops": flow.path.length } as React.CSSProperties}
         >
           {flow.path.map((node, i) => (
@@ -131,35 +129,49 @@ export function TrackFlowView({
         </ol>
       </InView>
       {flow.side ? (
-        <div className="mt-5 grid gap-1 border border-dashed border-control p-3 md:grid-cols-[auto_1fr_auto] md:items-center md:gap-x-4">
-          <p className="text-xs font-semibold text-ink-soft md:col-span-3">
-            {flow.side.label}
-          </p>
-          <p className="font-bold">{flow.side.title}</p>
-          <p className="text-sm text-ink-soft">{flow.side.note}</p>
-          <AreaBadges
-            track={track}
-            areas={flow.side.areas}
-            ui={ui}
-            hrefBase={hrefBase}
-          />
-        </div>
-      ) : null}
-      {flow.around && flow.around.length > 0 ? (
-        <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-ink-soft">
-          <span>{ui.around}</span>
-          {flow.around.map((n) => (
-            <span key={n} className="flex items-center gap-1.5">
+        <div className="mt-7">
+          <p className="coord">{flow.side.label}</p>
+          <div className="flow-side mt-2 grid grid-cols-[1.75rem_1fr] gap-x-3 gap-y-1 pt-3 md:grid-cols-[1.75rem_auto_1fr_auto] md:items-baseline">
+            <span aria-hidden="true" className="node node-side mt-[0.3rem]" />
+            <p className="font-bold">{flow.side.title}</p>
+            <p className="col-start-2 text-sm text-ink-soft md:col-start-3">
+              {flow.side.note}
+            </p>
+            <span className="col-start-2 flex items-center gap-2 pt-1 md:col-start-4 md:pt-0">
+              <span aria-hidden="true" className="leader" />
               <AreaBadges
                 track={track}
-                areas={[n]}
+                areas={flow.side.areas}
                 ui={ui}
                 hrefBase={hrefBase}
               />
-              <span className="text-ink">{track.areas[n - 1]?.title}</span>
             </span>
-          ))}
-        </p>
+          </div>
+        </div>
+      ) : null}
+      {flow.around && flow.around.length > 0 ? (
+        <div className="mt-5 grid grid-cols-[1.75rem_1fr] gap-x-3 border-t border-graticule pt-3">
+          <span
+            aria-hidden="true"
+            className="node node-side mt-[0.3rem] rounded-full"
+          />
+          <div className="grid gap-1.5">
+            <p className="coord">{ui.around}</p>
+            <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
+              {flow.around.map((n) => (
+                <li key={n} className="flex items-center gap-2">
+                  <AreaBadges
+                    track={track}
+                    areas={[n]}
+                    ui={ui}
+                    hrefBase={hrefBase}
+                  />
+                  <span>{track.areas[n - 1]?.title}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       ) : null}
     </figure>
   );

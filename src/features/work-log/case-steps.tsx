@@ -8,7 +8,8 @@ export const caseHref = (locale: Locale, id: string) =>
 export const caseAnchor = (id: string) => `case-${id}`;
 
 /**
- * A case in four steps, symptom to result, as a short vertical track. The
+ * A case in four steps, symptom to result, plotted as four stations with
+ * arrowed connectors; the result is the one filled (green) station. The
  * steps rise in one after another when the case opens (.case-step), all
  * within half a second; at rest and with motion off they are simply there.
  */
@@ -29,28 +30,30 @@ export function CaseSteps({
     { key: "result", label: ui.result, text: entry.steps.result },
   ];
   return (
-    <ol className="case-steps grid gap-0 md:grid-cols-4 md:gap-5">
+    <ol className="case-steps grid gap-0 md:grid-cols-4 md:gap-x-8">
       {steps.map((step, i) => {
         const last = i === steps.length - 1;
         return (
           <li
             key={step.key}
-            className="case-step relative grid content-start grid-cols-[1.75rem_1fr] gap-x-3 pb-4 md:grid-cols-1 md:gap-y-2 md:pb-0"
+            className="case-step relative grid content-start grid-cols-[1.75rem_1fr] gap-x-3 pb-5 md:grid-cols-1 md:gap-y-3 md:pb-0"
             style={{ "--i": i } as React.CSSProperties}
           >
             <span
               aria-hidden="true"
-              className={`relative z-10 flex size-7 items-center justify-center rounded-full border-2 bg-paper text-xs font-bold tabular ${
-                last ? "border-echo-2" : "border-ink"
-              }`}
+              className={last ? "node node-live" : "node"}
             >
               {i + 1}
             </span>
             <div>
-              <Heading className="text-xs font-semibold text-ink-soft">
-                {step.label}
-              </Heading>
-              <p className={last ? "mt-0.5 font-semibold" : "mt-0.5"}>
+              <Heading className="coord">{step.label}</Heading>
+              <p
+                className={
+                  last
+                    ? "mt-1 font-semibold md:max-w-[18em]"
+                    : "mt-1 md:max-w-[18em]"
+                }
+              >
                 {step.text}
               </p>
             </div>
@@ -58,6 +61,42 @@ export function CaseSteps({
         );
       })}
     </ol>
+  );
+}
+
+/**
+ * The lesson as an annotation: a coordinate label with its leader, then the
+ * sentence by a green mark. In the list the label sits in the category
+ * column; on a case page it heads the line.
+ */
+export function Lesson({
+  text,
+  label,
+  inColumn = false,
+}: {
+  text: string;
+  label: string;
+  inColumn?: boolean;
+}) {
+  return (
+    <figure
+      className={
+        inColumn
+          ? "grid gap-2 md:col-span-2 md:grid-cols-[7rem_1fr] md:gap-x-8"
+          : "grid gap-2"
+      }
+    >
+      <figcaption className="coord flex items-center gap-2 md:pt-[0.35rem]">
+        {label}
+        <span aria-hidden="true" className="leader" />
+      </figcaption>
+      <blockquote className="flex gap-3">
+        <span aria-hidden="true" className="mark mt-[0.55em] bg-echo-2" />
+        <p className="max-w-[30em] text-lg font-semibold tracking-tight text-balance md:text-xl">
+          {text}
+        </p>
+      </blockquote>
+    </figure>
   );
 }
 
@@ -76,24 +115,17 @@ export function CaseSummary({
   locale: Locale;
 }) {
   return (
-    <div className="grid gap-6 pb-8 md:grid-cols-[7rem_1fr] md:gap-x-8">
-      <div className="space-y-6 md:col-start-2">
+    <div className="grid gap-y-7 pb-9 md:grid-cols-[7rem_1fr] md:gap-x-8">
+      <div className="md:col-start-2">
         <CaseSteps entry={entry} ui={ui} />
-        {entry.lesson ? (
-          <blockquote className="max-w-[44rem] border-l-2 border-echo-2 pl-4 text-lg font-medium">
-            <span className="sr-only">{ui.lesson}: </span>
-            {entry.lesson}
-          </blockquote>
-        ) : null}
-        <a
-          href={caseHref(locale, entry.id)}
-          className="inline-flex items-center gap-1.5 border-b border-control pb-0.5 text-sm font-semibold hover:border-ink"
-        >
-          {ui.readMore}
-          <span className="sr-only">: {entry.title}</span>
-          <span aria-hidden="true">→</span>
-        </a>
       </div>
+      {entry.lesson ? (
+        <Lesson text={entry.lesson} label={ui.lesson} inColumn />
+      ) : null}
+      <a href={caseHref(locale, entry.id)} className="go justify-self-start md:col-start-2">
+        {ui.readMore}
+        <span className="sr-only">: {entry.title}</span>
+      </a>
     </div>
   );
 }

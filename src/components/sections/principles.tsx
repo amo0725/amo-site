@@ -1,3 +1,4 @@
+import { InView } from "@/components/motion/in-view";
 import { PhoneFold } from "@/components/ui/phone-fold";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
@@ -97,7 +98,11 @@ function glyphFor(id: string, index: number): React.ReactNode {
 }
 
 /**
- * The principles as cards: a single column on phones, a grid from md up.
+ * The principles as numbered entries on a rule, not cards: index and line
+ * drawing, title, the rule itself, and where it comes from. One column on
+ * phones (title a tap away from its body), two from md, four from xl, so
+ * eight entries never leave a hole. The section's pen draws each entry's
+ * short rule on arrival; the drawings draw themselves in as they enter.
  */
 export function Principles({ principles, copy, ui }: PrinciplesProps) {
   const meta = sectionMeta("principles");
@@ -111,62 +116,65 @@ export function Principles({ principles, copy, ui }: PrinciplesProps) {
         <SectionHeading id={meta.id} colorVar={meta.colorVar} lead={copy.lead}>
           {copy.label}
         </SectionHeading>
-        {/* One column on phones (a sideways scroller hid seven of the
-            eight), two from md, three from lg. */}
-        <ul className="grid gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
-          {principles.map((p, i) => (
-            <li
-              key={p.id}
-              // Column index in the md (2-up) and lg (3-up) grids, so cards in
-              // one row draw a beat apart.
-              style={{ "--c2": i % 2, "--c3": i % 3 } as React.CSSProperties}
-              className="glyph-card group relative overflow-hidden rounded-sm border border-graticule bg-paper-raised md:p-8"
-            >
-              <span
-                aria-hidden="true"
-                className="absolute inset-x-0 top-0 h-1"
-                style={{ background: `var(${meta.colorVar})` }}
-              />
-              {/* Phones: glyph and title as one row, the body a tap away. */}
-              <PhoneFold
-                summaryClassName="grid grid-cols-[2.25rem_1fr_auto] items-center gap-x-3 p-4 pt-5 md:block md:p-0"
-                summary={
-                  <>
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 64 64"
-                      className="glyph size-9 text-ink md:size-20"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      {glyphFor(p.id, i)}
-                    </svg>
-                    <h3 className="text-lg leading-tight font-extrabold text-balance font-expanded md:mt-10 md:text-[1.75rem]">
-                      {p.title}
-                    </h3>
-                  </>
+        <InView threshold={0.15}>
+          <ul className="grid border-b border-graticule md:grid-cols-2 md:gap-x-10 md:gap-y-14 md:border-b-0 xl:grid-cols-4">
+            {principles.map((p, i) => (
+              <li
+                key={p.id}
+                style={
+                  {
+                    "--i": i,
+                    "--c2": i % 2,
+                    "--c3": i % 4,
+                  } as React.CSSProperties
                 }
+                className="glyph-card principle group relative border-t border-graticule md:pt-6"
               >
-                <p className="px-4 pb-3 text-ink-soft md:mt-3 md:p-0">
-                  {p.body}
-                </p>
-                <p className="px-4 pb-5 text-sm md:mt-5 md:p-0">
-                  <span className="text-ink-soft">{ui.evidence}</span>{" "}
-                  <a
-                    href={p.evidence.href}
-                    className="font-semibold underline decoration-control underline-offset-4 hover:decoration-ink"
-                  >
-                    {p.evidence.label}
-                    <span aria-hidden="true"> →</span>
-                  </a>
-                </p>
-              </PhoneFold>
-            </li>
-          ))}
-        </ul>
+                <span
+                  aria-hidden="true"
+                  className="principle-rule absolute -top-px left-0 h-0.5 w-10 md:w-14"
+                  style={{ background: `var(${meta.colorVar})` }}
+                />
+                <PhoneFold
+                  summaryClassName="grid grid-cols-[1.75rem_2rem_1fr_auto] items-center gap-x-3 py-4 md:grid-cols-[1fr_auto] md:gap-y-5 md:py-0"
+                  summary={
+                    <>
+                      <span
+                        aria-hidden="true"
+                        className="index md:col-start-1 md:row-start-1 md:self-start"
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 64 64"
+                        className="glyph size-8 text-ink md:col-start-2 md:row-start-1 md:size-14"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        {glyphFor(p.id, i)}
+                      </svg>
+                      <h3 className="text-lg leading-tight font-extrabold text-balance font-expanded md:col-span-2 md:row-start-2 md:max-w-[11em] md:text-xl md:leading-[1.15]">
+                        {p.title}
+                      </h3>
+                    </>
+                  }
+                >
+                  <p className="pb-3 text-ink-soft md:mt-3 md:pb-0">{p.body}</p>
+                  <p className="grid gap-1 pb-5 text-sm md:mt-5 md:pb-0">
+                    <span className="coord">{ui.evidence}</span>
+                    <a href={p.evidence.href} className="go justify-self-start">
+                      {p.evidence.label}
+                    </a>
+                  </p>
+                </PhoneFold>
+              </li>
+            ))}
+          </ul>
+        </InView>
       </div>
     </section>
   );

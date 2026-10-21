@@ -40,6 +40,7 @@ export function Work({
         <div className="lg:col-span-3">
           <div className="sticky-heading lg:sticky lg:top-24">
             <SectionHeading
+              compact
               id={meta.id}
               colorVar={meta.colorVar}
               lead={copy.lead}

@@ -1,3 +1,4 @@
+import { InView } from "@/components/motion/in-view";
 import { PhoneFold } from "@/components/ui/phone-fold";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
@@ -24,25 +25,59 @@ export const TRACK_COLORS = ["--band-2", "--band-6"];
 export const trackHref = (locale: Locale, id: string) =>
   `/${locale}/experience/${id}`;
 
-/** Headline figures under a track's title. */
+/**
+ * Headline figures under a track's title, as readings on a scale: a ruled
+ * axis with ticks, the figure in expanded tabular numerals, its label. The
+ * rule draws once on arrival.
+ */
 export function TrackStats({ track }: { track: ExperienceTrack }) {
   if (!track.stats?.length) return null;
   return (
-    <dl className="mt-6 grid grid-cols-3 gap-3">
-      {track.stats.map((s) => (
-        <div
-          key={s.label}
-          className="grid content-start border-t-2 border-ink pt-2"
-        >
-          <dt className="order-2 text-xs leading-snug text-ink-soft">
-            {s.label}
-          </dt>
-          <dd className="order-1 text-xl font-extrabold tabular md:text-2xl">
-            {s.figure}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    <InView threshold={0.4}>
+      <dl className="mt-7 grid grid-cols-3 gap-3 md:gap-4">
+        {track.stats.map((s, i) => (
+          <div
+            key={s.label}
+            className="grid content-start"
+            style={{ "--i": i } as React.CSSProperties}
+          >
+            <dt className="order-2 mt-1.5 text-xs leading-snug text-ink-soft">
+              {s.label}
+            </dt>
+            <dd className="order-1 grid">
+              <span
+                aria-hidden="true"
+                className="tile-rule block h-0.5 bg-ink"
+              />
+              <span aria-hidden="true" className="axis-ticks" />
+              <span className="mt-2 text-xl leading-none font-extrabold tabular font-expanded md:text-[1.75rem]">
+                {s.figure}
+              </span>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </InView>
+  );
+}
+
+/** A track's kicker: its pen colour, its index, and a short rule. */
+export function TrackKicker({
+  index,
+  color,
+}: {
+  index: number;
+  color: string;
+}) {
+  return (
+    <p aria-hidden="true" className="mb-5 flex items-center gap-3">
+      <span className="mark" style={{ background: color }} />
+      <span className="index">{String(index + 1).padStart(2, "0")}</span>
+      <span
+        className="grow-x h-0.5 w-16 origin-left"
+        style={{ background: color }}
+      />
+    </p>
   );
 }
 
@@ -75,11 +110,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                 className="grid gap-8 md:grid-cols-12 md:gap-10"
               >
                 <header className="md:col-span-4 md:self-start lg:sticky lg:top-[calc(var(--header-h)+2rem)]">
-                  <div
-                    aria-hidden="true"
-                    className="grow-x mb-6 h-1.5 w-24 origin-left"
-                    style={{ background: color }}
-                  />
+                  <TrackKicker index={t} color={color} />
                   <h3
                     id={`xp-${track.id}`}
                     className="text-[2rem] leading-[0.95] font-extrabold font-expanded [overflow-wrap:anywhere] sm:text-4xl md:text-5xl"
@@ -90,13 +121,9 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                     {track.tagline ?? track.role}
                   </p>
                   <TrackStats track={track} />
-                  <a
-                    href={trackHref(locale, track.id)}
-                    className="mt-6 inline-flex items-center gap-1.5 border-b border-control pb-0.5 text-sm font-semibold hover:border-ink"
-                  >
+                  <a href={trackHref(locale, track.id)} className="go mt-7">
                     {ui.full}
                     <span className="sr-only">: {track.short}</span>
-                    <span aria-hidden="true">→</span>
                   </a>
                 </header>
 
@@ -114,7 +141,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                       opens it at its area). From md up it is shown. */}
                   <PhoneFold
                     className="mt-8 md:mt-10"
-                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:mb-2 md:border-0 md:py-0 md:text-xs md:text-ink-soft"
+                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:mb-3 md:border-0 md:py-0 md:text-xs md:tracking-[0.08em] md:text-ink-soft md:uppercase"
                     summary={fill(ui.areas, { count: track.areas.length })}
                   >
                     <AreaList track={track} ui={ui} />
@@ -122,7 +149,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
 
                   <PhoneFold
                     className="md:mt-6"
-                    summaryClassName="flex items-center justify-between border-b border-graticule py-4 text-sm font-semibold md:border-0 md:py-0 md:text-ink-soft"
+                    summaryClassName="flex items-center justify-between border-b border-graticule py-4 text-sm font-semibold md:border-0 md:py-0 md:text-xs md:tracking-[0.08em] md:text-ink-soft md:uppercase"
                     summary={<>{ui.stack}</>}
                   >
                     <ul className="flex flex-wrap gap-x-4 gap-y-1 pt-3 pb-2 text-sm md:pt-2">
@@ -139,7 +166,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
 
         {earlier.length > 0 ? (
           <div className="mt-20 border-t border-graticule pt-10 md:mt-28">
-            <h3 className="text-sm font-semibold text-ink-soft">
+            <h3 className="coord">
               {ui.earlier}
             </h3>
             <div className="mt-6 grid gap-10 md:grid-cols-2">
@@ -171,7 +198,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                           <li key={area.title} className="flex gap-3">
                             <span
                               aria-hidden="true"
-                              className="mt-[0.75em] h-px w-3 shrink-0 bg-coast"
+                              className="leader mt-[0.85em]"
                             />
                             <span>
                               <span className="font-semibold text-ink">

@@ -70,7 +70,7 @@ function FilterGroup({
     >
       <p
         id={`filter-${id}-label`}
-        className="mb-2 text-xs font-semibold text-ink-soft md:mb-0 md:w-24 md:shrink-0"
+        className="coord mb-2 md:mb-0 md:w-28 md:shrink-0"
       >
         {label}
       </p>
@@ -84,7 +84,7 @@ function FilterGroup({
               aria-pressed={on}
               onClick={() => onChange(opt.value)}
               className={cn(
-                "relative isolate flex min-h-10 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors",
+                "relative isolate flex min-h-10 items-center gap-2 rounded-[2px] border px-3 py-1.5 text-sm transition-colors",
                 on
                   ? "border-ink text-paper"
                   : "border-control hover:border-ink",
@@ -93,7 +93,7 @@ function FilterGroup({
               {on ? (
                 <m.span
                   layoutId={`pill-${id}`}
-                  className="absolute inset-0 -z-10 rounded-full bg-ink"
+                  className="absolute inset-0 -z-10 rounded-[1px] bg-ink"
                   transition={{ duration: 0.35, ease }}
                 />
               ) : null}
@@ -107,7 +107,7 @@ function FilterGroup({
               <span>{opt.label}</span>
               <span
                 className={cn(
-                  "tabular",
+                  "text-xs font-bold tabular",
                   on ? "text-paper/70" : "text-ink-soft",
                 )}
               >
@@ -125,7 +125,7 @@ function CategoryMark({ color }: { color: string }) {
   return (
     <span
       aria-hidden="true"
-      className="inline-block size-2.5 shrink-0"
+      className="mark log-mark"
       style={{ background: `var(${color})` }}
     />
   );
@@ -250,44 +250,47 @@ export function WorkLog({
                 ref={entry.featured ? openWhenWide : undefined}
                 data-featured={entry.featured ? "" : undefined}
               >
-                {/* Phones: two columns, the category joins the line under the
-                    title so the title gets the full width. */}
-                <summary className="grid grid-cols-[1fr_auto] items-baseline gap-x-4 py-5 md:grid-cols-[7rem_1fr_auto] md:gap-x-8 md:py-6">
-                  <span className="hidden items-center gap-2 text-sm text-ink-soft md:flex">
+                {/* One grid for every row, so the list reads as a table:
+                    category, title, a fixed plot column (the before/after
+                    strip or the outcome) and the toggle. Phones: title and
+                    toggle, then the category, then the plot full width. */}
+                <summary className="pen-row grid grid-cols-[1fr_auto] items-start gap-x-4 py-5 md:grid-cols-[7rem_1fr_15rem_1.5rem] md:gap-x-8 md:py-6 xl:grid-cols-[7rem_1fr_18rem_1.5rem]">
+                  <span className="hidden items-center gap-2 pt-[0.3rem] text-sm text-ink-soft md:col-start-1 md:row-start-1 md:flex">
                     <CategoryMark color={colors[entry.category]} />
                     {categories[entry.category]}
                   </span>
-                  <div>
+                  <div className="col-start-1 row-start-1 md:col-start-2">
                     <h3 className="text-lg font-semibold text-balance md:text-xl">
                       {entry.title}
                     </h3>
-                    {/* Phones: category and result share a line (the track
-                        is one tap away in the filter); from md the category
-                        has its own column and the track shows here. */}
-                    <span className="log-meta mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-ink-soft">
+                    <span className="log-meta coord mt-1.5 flex flex-wrap items-center gap-x-3">
                       <span className="flex items-center gap-2 md:hidden">
                         <CategoryMark color={colors[entry.category]} />
                         {categories[entry.category]}
                       </span>
-                      <span className="hidden md:inline">
-                        {trackLabel.get(entry.track)}
-                      </span>
-                      {entry.metrics?.[0] ? (
-                        <MiniBar metric={entry.metrics[0]} />
-                      ) : entry.outcome ? (
-                        <span className="flex items-center gap-2 font-semibold text-ink md:basis-full">
-                          <span
-                            aria-hidden="true"
-                            className="size-2 shrink-0 bg-echo-2"
-                          />
-                          {entry.outcome}
-                        </span>
-                      ) : null}
+                      <span>{trackLabel.get(entry.track)}</span>
                     </span>
                   </div>
+                  <span className="log-plot col-span-2 col-start-1 row-start-2 mt-3 md:col-span-1 md:col-start-3 md:row-start-1 md:mt-0 md:pt-[0.35rem]">
+                    {entry.metrics?.[0] ? (
+                      <MiniBar metric={entry.metrics[0]} />
+                    ) : entry.outcome ? (
+                      <span className="flex items-start gap-2 text-sm font-semibold">
+                        <span
+                          aria-hidden="true"
+                          className="mark mt-[0.4em] bg-echo-2"
+                        />
+                        <span
+                          aria-hidden="true"
+                          className="leader mt-[0.72em] -ml-1 w-2.5"
+                        />
+                        <span>{entry.outcome}</span>
+                      </span>
+                    ) : null}
+                  </span>
                   <span
                     aria-hidden="true"
-                    className="log-chevron text-2xl leading-none font-light text-ink-soft"
+                    className="log-chevron col-start-2 row-start-1 text-2xl leading-none font-light text-ink-soft md:col-start-4"
                   >
                     +
                   </span>

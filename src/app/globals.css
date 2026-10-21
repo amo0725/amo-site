@@ -47,6 +47,13 @@
      step sinks, in dark mode it rises (lighter = nearer, as in Apple's and
      Material's dark themes). */
   --surface-display: #d9dfdd; /* L* 88 */
+
+  /* Text-strength signal inks: --echo-2 on paper is 3.05:1 and --echo-5
+     4.31:1, under 4.5 for small text. */
+  --echo-2-ink: #0b7029; /* 5.18:1 on paper */
+  --echo-5-ink: #b5101a; /* 5.70:1 on paper */
+  /* Numeral on a filled green node: 4.46:1 light, 6.3:1 dark. */
+  --on-echo: #142030;
   --closing: var(--ink);
   --on-closing: var(--paper);
 
@@ -79,6 +86,9 @@
     --echo-4: #eb943a;
     --echo-5: #ee5158;
     --echo-6: #c25dbb;
+    --echo-2-ink: var(--echo-2); /* 6.31:1 on paper */
+    --echo-5-ink: var(--echo-5); /* 5.09:1 on paper */
+    --on-echo: #0d1820;
 
     --band-1: #5bbae0;
     --band-2: #6b94e0;
@@ -111,6 +121,9 @@
   --color-echo-4: var(--echo-4);
   --color-echo-5: var(--echo-5);
   --color-echo-6: var(--echo-6);
+  --color-echo-2-ink: var(--echo-2-ink);
+  --color-echo-5-ink: var(--echo-5-ink);
+  --color-on-echo: var(--on-echo);
 
   --font-sans:
     var(--font-archivo), "PingFang TC", "Noto Sans TC", "Microsoft JhengHei",
@@ -377,8 +390,14 @@
    Rest state = end state (also the reduced-motion state). The animation
    plays when a work-log entry opens or an experience metric enters view
    (InView sets data-in). Timing on the reel's ease; no count-up, no glow. */
+/* Cleared cells: a step above the graticule so they still read as cells
+   (an empty track otherwise looks like an empty progress bar), most of all
+   in dark mode where the graticule nearly vanishes. */
+:root {
+  --echo-off: color-mix(in oklab, var(--control) 45%, var(--paper));
+}
 .echo-drop {
-  background: var(--graticule);
+  background: var(--echo-off);
 }
 /* The bar before its cells exist (or with motion off): the same end state
    painted as one element. A colour split at the "after" length, cut into
@@ -388,7 +407,7 @@
   background: linear-gradient(
     90deg,
     var(--echo-2) 0 calc(var(--pitch) * var(--keep)),
-    var(--graticule) 0
+    var(--echo-off) 0
   );
   mask-image: repeating-linear-gradient(
     90deg,
@@ -874,7 +893,7 @@
       --i: var(--c2, 0);
     }
   }
-  @media (min-width: 64rem) {
+  @media (min-width: 80rem) {
     .glyph-card {
       --i: var(--c3, 0);
     }
@@ -882,8 +901,8 @@
   :root:not([data-motion="reduced"]) .glyph * {
     animation: glyph-draw linear both;
     animation-timeline: --glyph-card;
-    animation-range: entry calc(20% + var(--i) * 4%) entry
-      calc(70% + var(--i) * 4%);
+    animation-range: entry calc(var(--i) * 4%) entry
+      calc(55% + var(--i) * 4%);
   }
 }
 /* Hover redraws once on a time-based animation. The shorthand replaces the
@@ -1044,13 +1063,14 @@
     z-index: 5;
     padding-block: 0.75rem;
     background: var(--surface, var(--paper));
-    box-shadow: 0 1px 0 var(--graticule);
+    /* Pinned, the bar reads as the chart's top axis. */
+    box-shadow: 0 1px 0 var(--control);
     transition: top 0.5s var(--ease-out-expo);
   }
   .log-entry[open] > summary h3 {
     font-size: var(--text-base);
   }
-  .log-entry[open] > summary .log-meta {
+  .log-entry[open] > summary :is(.log-meta, .log-plot) {
     display: none;
   }
 }
@@ -1088,58 +1108,249 @@
 }
 
 /* ==================================================================
-   VISUAL SUMMARIES
-   The first layer of each section: evidence cards, flow drawings, case
-   steps, before/after bars. Every one is complete at rest; motion only
-   shows a change (a mark lighting up, a path filling, steps arriving),
-   plays once, stays under ~300 ms per element and is off with reduced
-   motion (the global rule above removes every animation).
+   INSTRUMENT KIT — "plotted, not boxed"
+   The page is one sheet of chart paper and every visual summary is drawn
+   on it the way the hero radar is: marks on hairlines, coordinate labels,
+   leader lines, numbered stations. Nothing is put in a box. Four inks,
+   four jobs: --ink content, --ink-soft secondary text, --control (≥3:1)
+   every line that carries meaning, --graticule only for background grid
+   and separators. Motion is a pen stroke: complete at rest, one line or
+   mark draws once, ≤300 ms per element, off under reduced motion (the
+   global rule above removes every animation).
    ================================================================== */
 
-/* "What I do": the "actually" side carries a faint warning tint. */
-.vs-actually {
-  background: color-mix(in oklab, var(--echo-5) 6%, transparent);
+/* In the components layer, so Tailwind utilities on an element (a colour,
+   a size) win over the kit's defaults. */
+@layer components {
+/* Coordinate label: the small caps that annotate a drawing. */
+.coord {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--ink-soft);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
 }
-@keyframes vs-pop {
-  from {
-    opacity: 0;
-    scale: 0.4;
+:lang(zh) .coord {
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+/* Index numeral "01": expanded, tabular, like the hero figures. */
+.index {
+  font-size: var(--text-sm);
+  font-weight: 800;
+  font-stretch: 112%;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+/* Leader: the short dash from a label to what it labels. */
+.leader {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.75rem;
+  height: 1px;
+  background: var(--control);
+  vertical-align: middle;
+}
+/* Ticks under an axis, like the rev meter's ring. */
+.axis-ticks {
+  display: block;
+  height: 5px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--control) 0 1px,
+    transparent 1px 10px
+  );
+}
+/* Station: every numbered stop on the site is this one 28px node. */
+.node {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: var(--text-xs);
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  position: relative;
+  z-index: 1;
+}
+.node-live {
+  background: var(--echo-2);
+  border-color: var(--echo-2);
+  color: var(--on-echo);
+}
+/* A stop beside or around the path: square, hollow, no numeral. */
+.node-side {
+  border-radius: 2px;
+  border-width: 1.5px;
+  border-color: var(--control);
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-inline: 0.4375rem;
+}
+/* Plotted square: category, outcome, "actually". */
+.mark {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+/* "Go deeper" link, one style everywhere: a leader, the words, an arrow.
+   The leader reaches further on hover. Inline body links keep underlines. */
+.go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+.go::before {
+  content: "";
+  width: 0.75rem;
+  height: 1px;
+  background: var(--control);
+  transition:
+    width 0.2s var(--ease-out-expo),
+    background-color 0.2s;
+}
+.go::after {
+  content: "→";
+  color: var(--ink-soft);
+  transition: translate 0.2s var(--ease-out-expo);
+}
+.go:hover::before,
+.go:focus-visible::before {
+  width: 1.25rem;
+  background: var(--ink);
+}
+.go:hover::after {
+  translate: 2px 0;
+}
+.go-back::after {
+  content: none;
+}
+.go-back::before {
+  content: "←";
+  width: auto;
+  height: auto;
+  background: none;
+  color: var(--ink-soft);
+}
+.go-back:hover::before {
+  width: auto;
+  background: none;
+  translate: -2px 0;
+}
+
+/* Plate: the frame around a picture, with corner ticks. */
+.plate {
+  --tick: var(--control);
+  position: relative;
+  padding: 0.375rem;
+  border: 1px solid var(--graticule);
+  background: var(--paper-raised);
+}
+.plate::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  --l: 0.625rem;
+  --w: 2px;
+  background:
+    linear-gradient(var(--tick), var(--tick)) top left / var(--l) var(--w),
+    linear-gradient(var(--tick), var(--tick)) top left / var(--w) var(--l),
+    linear-gradient(var(--tick), var(--tick)) top right / var(--l) var(--w),
+    linear-gradient(var(--tick), var(--tick)) top right / var(--w) var(--l),
+    linear-gradient(var(--tick), var(--tick)) bottom left / var(--l) var(--w),
+    linear-gradient(var(--tick), var(--tick)) bottom left / var(--w) var(--l),
+    linear-gradient(var(--tick), var(--tick)) bottom right / var(--l) var(--w),
+    linear-gradient(var(--tick), var(--tick)) bottom right / var(--w) var(--l);
+  background-repeat: no-repeat;
+}
+@media (min-width: 48rem) {
+  .plate {
+    padding: 0.5rem;
   }
 }
-@keyframes vs-flag {
-  from {
-    background: transparent;
-  }
+.group:hover .plate {
+  --tick: var(--ink);
 }
-:root:not([data-motion="reduced"]) [data-in] .vs-card {
-  & .vs-mark {
-    display: inline-block;
-    animation: vs-pop 0.22s var(--ease-out-expo)
-      calc(0.2s + var(--i, 0) * 0.12s) both;
-  }
-  & .vs-actually {
-    animation: vs-flag 0.3s ease-out calc(0.2s + var(--i, 0) * 0.12s) both;
+
+/* A row's pen: a 2px rule in the section's band draws along the top edge
+   on hover (desktop pointers only). */
+.pen-row {
+  position: relative;
+}
+.pen-row::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -1px;
+  height: 2px;
+  background: var(--section-band, var(--ink));
+  transform-origin: left;
+  scale: 0 1;
+  transition: scale 0.25s var(--ease-out-expo);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pen-row:hover::before {
+    scale: 1 1;
   }
 }
 
-/* Experience flow: a track between stops, drawn per stop so it always
-   runs dot to dot; vertical on phones, left to right from md up. */
+/* Section heading: a chart title — swatch, title, a rule to the edge and
+   the section's index. The rule scans in with the swatch. */
+@supports (animation-timeline: view()) {
+  .scan-rule {
+    transform-origin: left center;
+    animation: scan-swatch linear both;
+    animation-timeline: view();
+    animation-range: entry 30% cover 32%;
+  }
+  @media (min-width: 64rem) {
+    .sticky-heading .scan-rule {
+      animation: none;
+    }
+  }
+}
+
+/* ---------- Plotted paths (experience flow, signal trail, case steps) ----------
+   A track between stops, drawn per stop so it runs node to node: vertical
+   on phones, left to right from md up, in --control. At rest the path is
+   drawn; as it arrives it fills stop by stop in the signal green. */
 .flow-path {
   grid-template-columns: 1fr;
 }
 .flow-stop {
   --dot: 1.75rem;
-  --gap: 1rem;
+  --gap: 1.25rem;
+}
+@media (max-width: 47.99rem) {
+  #signal .flow-stop {
+    --gap: 0.875rem;
+  }
 }
 .flow-stop:not(:last-child)::before,
 .flow-stop:not(:last-child)::after {
   content: "";
   position: absolute;
-  left: calc(var(--dot) / 2 - 1px);
+  left: calc(var(--dot) / 2 - 0.75px);
   top: var(--dot);
   bottom: calc(var(--gap) * -1);
-  width: 2px;
-  background: var(--graticule);
+  width: 1.5px;
+  background: var(--control);
 }
 .flow-stop:not(:last-child)::after {
   background: var(--echo-2);
@@ -1150,23 +1361,21 @@
     grid-template-columns: repeat(var(--stops, 3), minmax(0, 1fr));
   }
   .flow-stop {
-    --gap: 1.5rem;
+    --gap: 1.75rem;
   }
   .flow-stop:not(:last-child)::before,
   .flow-stop:not(:last-child)::after {
-    left: calc(var(--dot) + 0.5rem);
-    right: calc(var(--gap) * -1 + 0.5rem);
-    top: calc(var(--dot) / 2 - 1px);
+    left: calc(var(--dot) + 0.375rem);
+    right: calc(var(--gap) * -1 + 0.375rem);
+    top: calc(var(--dot) / 2 - 0.75px);
     bottom: auto;
     width: auto;
-    height: 2px;
+    height: 1.5px;
   }
   .flow-stop:not(:last-child)::after {
     transform-origin: left;
   }
 }
-/* At rest the path is filled. As the drawing arrives it fills stop by
-   stop, showing which way the work flows (about 0.8 s end to end). */
 @keyframes flow-fill-y {
   from {
     scale: 1 0;
@@ -1177,9 +1386,21 @@
     scale: 0 1;
   }
 }
-:root:not([data-motion="reduced"]) [data-in] .flow-stop:not(:last-child)::after {
-  animation: flow-fill-y 0.3s var(--ease-out-expo)
-    calc(0.1s + var(--i, 0) * 0.25s) both;
+@keyframes node-ink {
+  from {
+    background: var(--paper);
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+}
+:root:not([data-motion="reduced"]) [data-in] {
+  & .flow-stop:not(:last-child)::after {
+    animation: flow-fill-y 0.3s var(--ease-out-expo)
+      calc(0.1s + var(--i, 0) * 0.25s) both;
+  }
+  & .flow-stop .node-live {
+    animation: node-ink 0.22s ease-out calc(0.1s + var(--i, 0) * 0.25s) both;
+  }
 }
 @media (min-width: 48rem) {
   :root:not([data-motion="reduced"]) [data-in] .flow-stop:not(:last-child)::after {
@@ -1187,7 +1408,157 @@
   }
 }
 
-/* A badge or link that jumps to an area marks where it landed. */
+/* Area badges on a flow: the same coordinate as the list's index, plotted
+   on the drawing. Hollow; filled while pointed at. */
+.area-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.375rem;
+  padding-inline: 0.25rem;
+  border: 1px solid var(--control);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-stretch: 112%;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+.area-badge:hover,
+.area-badge:focus-visible {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+/* The side lane hangs off the path on a dashed drop. */
+.flow-side {
+  position: relative;
+  border-top: 1px dashed var(--control);
+}
+
+/* ---------- "What I do": readings ---------- */
+@keyframes vs-pop {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+@keyframes draw-x {
+  from {
+    scale: 0 1;
+  }
+}
+@keyframes draw-y {
+  from {
+    scale: 1 0;
+  }
+}
+.vs-arrow {
+  transform-origin: left;
+}
+.vs-row::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  height: 2px;
+  left: 0;
+  right: 0;
+  background: var(--echo-5);
+  transform-origin: left;
+  scale: 0 1;
+  transition: scale 0.25s var(--ease-out-expo);
+}
+@media (min-width: 48rem) {
+  .vs-row::after {
+    left: calc(50% + 1.5rem);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .vs-row:hover::after {
+    scale: 1 1;
+  }
+}
+.vs-row:focus-visible::after {
+  scale: 1 1;
+}
+:root:not([data-motion="reduced"]) [data-in] .vs-row {
+  & .vs-mark {
+    animation: vs-pop 0.22s var(--ease-out-expo)
+      calc(0.25s + var(--i, 0) * 0.12s) both;
+  }
+  & .vs-arrow {
+    animation: draw-x 0.22s var(--ease-out-expo)
+      calc(0.1s + var(--i, 0) * 0.12s) both;
+  }
+}
+@media (max-width: 47.99rem) {
+  .vs-arrow {
+    transform-origin: top;
+  }
+  :root:not([data-motion="reduced"]) [data-in] .vs-row .vs-arrow {
+    animation-name: draw-y;
+  }
+}
+
+/* ---------- Work log ---------- */
+/* Stat tiles and case steps: the rule under a figure draws on arrival. */
+:root:not([data-motion="reduced"]) [data-in] .tile-rule {
+  animation: draw-x 0.3s var(--ease-out-expo) calc(var(--i, 0) * 0.08s) both;
+}
+.tile-rule {
+  transform-origin: left;
+}
+
+/* Case steps: a line from node to node with an arrowhead at the next
+   node; vertical on phones, a row from md. */
+.case-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(0.875rem - 0.75px);
+  top: 1.75rem;
+  bottom: 0;
+  width: 1.5px;
+  background: var(--control);
+}
+@media (min-width: 48rem) {
+  .case-step:not(:last-child)::after {
+    left: 2.125rem;
+    right: -1rem;
+    top: calc(0.875rem - 0.75px);
+    bottom: auto;
+    width: auto;
+    height: 1.5px;
+  }
+  .case-step:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    left: -0.875rem;
+    top: calc(0.875rem - 4px);
+    border-block: 4px solid transparent;
+    border-left: 6px solid var(--control);
+  }
+}
+@keyframes step-rise {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+:root:not([data-motion="reduced"]) :is(.log-entry[open], [data-in]) .case-step {
+  animation: step-rise 0.26s var(--ease-out-expo) calc(var(--i, 0) * 0.07s)
+    both;
+  & .node-live {
+    animation: node-ink 0.2s ease-out 0.45s both;
+  }
+}
+
+/* A badge, card or link that jumps to an item marks where it landed. */
 @keyframes target-flash {
   from {
     background: color-mix(in oklab, var(--echo-3) 30%, transparent);
@@ -1197,35 +1568,54 @@
   animation: target-flash 0.6s ease-out;
 }
 
-/* Case steps: a line from dot to dot; vertical on phones, a row from md. */
-.case-step:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  left: calc(0.875rem - 1px);
-  top: 1.75rem;
-  bottom: 0;
-  width: 2px;
-  background: var(--graticule);
+/* Areas: an open or targeted area shows its index as a selected
+   coordinate. */
+.area-item :is(details[open], :target) .index,
+.area-item:target .index {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 2px;
 }
-@media (min-width: 48rem) {
-  .case-step:not(:last-child)::after {
+
+/* Principles: the section's pen draws each entry's rule on arrival. */
+.principle-rule {
+  transform-origin: left;
+}
+:root:not([data-motion="reduced"]) [data-in] .principle-rule {
+  animation: draw-x 0.3s var(--ease-out-expo) calc(var(--i, 0) * 0.09s) both;
+}
+
+/* AI lanes (lg): each station draws its connector to the next. */
+@media (min-width: 64rem) {
+  .pipe-stop:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: calc(0.875rem - 0.75px);
     left: 2.25rem;
-    right: -0.75rem;
-    top: calc(0.875rem - 1px);
-    bottom: auto;
-    width: auto;
-    height: 2px;
+    right: 0.5rem;
+    height: 1.5px;
+    background: var(--control);
   }
 }
-/* Opening a case brings its steps in one after another, all within half a
-   second. */
-@keyframes step-rise {
-  from {
-    opacity: 0;
-    translate: 0 6px;
-  }
+
+/* zh figure titles need room for the glyphs' height. */
+:lang(zh) :is(.track-flow .flow-title, .case-steps p, .pipe h3, .principle h3) {
+  line-height: 1.3;
 }
-:root:not([data-motion="reduced"]) .log-entry[open] .case-step {
-  animation: step-rise 0.26s var(--ease-out-expo) calc(var(--i, 0) * 0.07s)
-    both;
+:lang(zh) {
+  text-autospace: normal;
 }
+
+}
+
+/* Each section's pen, for hover rules and marks (the scroll-driven band
+   rule above sets the same values inside its @supports block). */
+#signal { --section-band: var(--band-1); }
+#work { --section-band: var(--band-2); }
+#experience { --section-band: var(--band-3); }
+#systems { --section-band: var(--band-4); }
+#principles { --section-band: var(--band-5); }
+#ai { --section-band: var(--band-6); }
+#projects { --section-band: var(--band-7); }
+#off-duty { --section-band: var(--band-8); }
+#contact { --section-band: var(--band-9); }

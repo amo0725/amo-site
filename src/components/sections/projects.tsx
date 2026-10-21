@@ -5,39 +5,47 @@ import { sectionMeta } from "@/config/site";
 import type { SectionCopy, SideProject, UiStrings } from "@/content/types";
 
 /**
- * The product itself: a screenshot of the real app (demo data), framed at
- * one shape so the list lines up (16:10; a shorter 2:1 crop of the top on
- * phones, where the frame is full width). A phone screen sits upright in the
- * middle of the frame. Information, not decoration: what the product looks
- * like is the evidence it exists.
+ * The product itself, on a plate: a screenshot of the real app in a frame
+ * with corner ticks, one shape for every project (16:10; a shorter 2:1 crop
+ * of the top on phones, where the plate is full width), and a caption row
+ * "FIG. 01 · demo data". A phone screen stands upright in the middle.
  */
-function Shot({
+function Plate({
   shot,
+  index,
   note,
 }: {
   shot: NonNullable<SideProject["shot"]>;
+  index: number;
   note: string;
 }) {
   const phone = shot.device === "phone";
   return (
-    <figure className="grid gap-2">
-      <div className="relative aspect-[2/1] max-w-full overflow-hidden border border-graticule bg-surface-display md:aspect-[16/10]">
-        <Image
-          src={shot.src}
-          alt={shot.alt}
-          width={shot.width}
-          height={shot.height}
-          sizes={phone ? "(min-width: 48rem) 14vw, 40vw" : "(min-width: 48rem) 40vw, 100vw"}
-          className={
-            phone
-              ? "absolute top-[6%] left-1/2 h-[120%] w-auto -translate-x-1/2 rounded-xl border-4 border-ink object-cover object-top"
-              : "size-full object-cover object-top-left"
-          }
-        />
+    <figure>
+      <div className="plate">
+        <div className="relative aspect-[2/1] max-w-full overflow-hidden bg-surface-display outline outline-1 -outline-offset-1 outline-graticule md:aspect-[16/10]">
+          <Image
+            src={shot.src}
+            alt={shot.alt}
+            width={shot.width}
+            height={shot.height}
+            sizes={
+              phone
+                ? "(min-width: 48rem) 14vw, 40vw"
+                : "(min-width: 48rem) 40vw, 100vw"
+            }
+            className={
+              phone
+                ? "absolute top-[7%] left-1/2 h-[125%] w-auto -translate-x-1/2 rounded-[0.9rem] border-[3px] border-ink object-cover object-top"
+                : "size-full object-cover object-top-left"
+            }
+          />
+        </div>
       </div>
-      {shot.demo ? (
-        <figcaption className="text-xs text-ink-soft">{note}</figcaption>
-      ) : null}
+      <figcaption className="coord mt-2 flex items-center justify-between gap-3">
+        <span>FIG. {String(index + 1).padStart(2, "0")}</span>
+        {shot.demo ? <span>{note}</span> : null}
+      </figcaption>
     </figure>
   );
 }
@@ -53,6 +61,11 @@ interface ProjectsProps {
   ui: UiStrings["projects"];
 }
 
+/**
+ * Side projects as a column of plates with their notes: the screenshot is
+ * the evidence, the name and one line say what it is, how it is built is a
+ * tap away. Titles stay below the section heading's size.
+ */
 export function Projects({ projects, copy, ui }: ProjectsProps) {
   const meta = sectionMeta("projects");
   return (
@@ -67,69 +80,69 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
         </SectionHeading>
 
         <ul className="border-t border-graticule">
-          {projects.map((project) => (
+          {projects.map((project, i) => (
             <li
               key={project.id}
-              className="group relative isolate grid gap-4 border-b border-graticule py-8 md:grid-cols-12 md:gap-8 md:py-12"
+              className="group pen-row grid gap-6 border-b border-graticule py-10 md:grid-cols-12 md:gap-10 md:py-14"
             >
-              {/* Hover wash: wipes in from the left in the section's band colour. */}
-              <span
-                aria-hidden="true"
-                className="absolute inset-y-0 -right-5 -left-5 -z-10 origin-left scale-x-0 bg-paper-raised transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-100 md:-right-10 md:-left-10"
-              />
               <div className="md:col-span-5">
                 {project.shot ? (
-                  <Shot shot={project.shot} note={ui.shotNote} />
+                  <Plate shot={project.shot} index={i} note={ui.shotNote} />
                 ) : null}
               </div>
-              <div className="md:col-span-7">
-                <h3 className="text-2xl leading-tight font-extrabold md:text-4xl">
+              <div className="md:col-span-7 md:pt-1">
+                <h3 className="text-2xl leading-[1.05] font-extrabold font-expanded md:text-[2rem]">
                   {project.href ? (
                     <a
                       href={project.href}
                       target="_blank"
                       rel="noopener"
-                      className="underline decoration-coast decoration-2 underline-offset-[6px] transition-colors hover:decoration-ink"
+                      className="group/name inline-flex items-baseline gap-2 hover:text-ink-soft"
                     >
                       {project.name}
+                      <span
+                        aria-hidden="true"
+                        className="text-xl text-ink-soft transition-transform group-hover/name:translate-x-0.5 group-hover/name:-translate-y-0.5"
+                      >
+                        ↗
+                      </span>
                     </a>
                   ) : (
                     project.name
                   )}
                 </h3>
-                <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-soft">
-                  {project.alias ? <span>{project.alias}</span> : null}
-                  {project.year ? (
-                    <span className="tabular">{project.year}</span>
+                <p className="coord mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  {project.status ? (
+                    <span className="flex items-center gap-2">
+                      <span
+                        aria-hidden="true"
+                        className="mark"
+                        style={{ background: "var(--echo-4)" }}
+                      />
+                      {project.status}
+                    </span>
                   ) : null}
                   {project.href ? (
                     <a
                       href={project.href}
                       target="_blank"
                       rel="noopener"
-                      className="group/repo inline-flex items-center gap-1 rounded-full border border-ink px-2.5 py-0.5 text-xs font-semibold text-ink"
+                      className="normal-case underline decoration-control underline-offset-4 hover:text-ink"
                     >
                       {repoLabel(project.href)}
-                      <span
-                        aria-hidden="true"
-                        className="transition-transform group-hover/repo:translate-x-0.5 group-hover/repo:-translate-y-0.5"
-                      >
-                        ↗
-                      </span>
                     </a>
                   ) : null}
-                  {project.status ? (
-                    <span className="rounded-full border border-echo-4 px-2.5 py-0.5 text-xs font-semibold text-ink">
-                      {project.status}
-                    </span>
+                  {project.alias && project.alias !== project.name ? (
+                    <span className="normal-case">{project.alias}</span>
                   ) : null}
+                  {project.year ? <span>{project.year}</span> : null}
                 </p>
                 <p className="mt-4 max-w-[40rem] md:text-lg">
                   {project.description}
                 </p>
                 {project.details.length > 0 ? (
                   <Fold
-                    className="mt-3 max-w-[40rem] md:mt-4"
+                    className="mt-5 max-w-[40rem]"
                     summaryClassName="border-y border-graticule py-3 text-sm font-semibold"
                     summary={ui.details}
                   >
@@ -138,7 +151,7 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
                         <li key={d} className="flex gap-3">
                           <span
                             aria-hidden="true"
-                            className="mt-[0.75em] h-px w-3 shrink-0 bg-coast"
+                            className="leader mt-[0.85em]"
                           />
                           {d}
                         </li>

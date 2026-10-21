@@ -35,11 +35,7 @@ export function DetailShell({
       <div id="top" />
       <header className="border-b border-graticule px-5 md:px-10">
         <div className="mx-auto flex h-[var(--header-h)] max-w-[90rem] items-center justify-between gap-4">
-          <a
-            href={back.href}
-            className="flex min-h-10 items-center gap-2 text-sm font-semibold"
-          >
-            <span aria-hidden="true">←</span>
+          <a href={back.href} className="go go-back min-h-10">
             {back.label}
           </a>
           <div className="flex items-center gap-4 text-sm">
@@ -53,7 +49,7 @@ export function DetailShell({
               href={otherPath}
               hrefLang={other}
               lang={other}
-              className="flex min-h-10 items-center rounded-full border border-control px-3 font-semibold hover:border-ink"
+              className="flex min-h-10 items-center rounded-[2px] border border-control px-3 font-semibold hover:border-ink"
             >
               {ui.switchLanguage.label}
             </a>
@@ -61,7 +57,7 @@ export function DetailShell({
         </div>
       </header>
       <main id="main" className="px-5 py-12 md:px-10 md:py-20">
-        <div className="mx-auto max-w-[60rem]">{children}</div>
+        <div className="mx-auto max-w-[90rem]">{children}</div>
       </main>
       <SiteFooter profile={profile} ui={ui.footer} />
     </>

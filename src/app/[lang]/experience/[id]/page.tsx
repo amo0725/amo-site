@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DetailShell } from "@/components/layout/detail-shell";
-import { TRACK_COLORS, TrackStats } from "@/components/sections/experience";
+import {
+  TRACK_COLORS,
+  TrackKicker,
+  TrackStats,
+} from "@/components/sections/experience";
+import { categoryColor } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
 import { detailMetadata } from "@/lib/detail-metadata";
 import type { Locale } from "@/content/types";
@@ -66,72 +71,84 @@ export default async function TrackPage({
       otherPath={`/${other}/experience/${id}`}
     >
       <article aria-labelledby="track-title">
-        <div
-          aria-hidden="true"
-          className="mb-6 h-1.5 w-24"
-          style={{ background: color }}
-        />
+        <TrackKicker index={index} color={color} />
         <h1
           id="track-title"
-          className="text-[2.25rem] leading-[0.95] font-extrabold font-expanded md:text-6xl"
+          className="text-[2.25rem] leading-[0.95] font-extrabold font-expanded md:text-6xl [:lang(zh)_&]:leading-[1.15]"
         >
           {track.short}
         </h1>
         {track.tagline ? (
-          <p className="mt-4 text-ink-soft md:text-lg">{track.tagline}</p>
+          <p className="mt-4 max-w-[44rem] text-ink-soft md:text-lg">
+            {track.tagline}
+          </p>
         ) : null}
-        <div className="max-w-[34rem]">
+        <div className="max-w-[36rem]">
           <TrackStats track={track} />
         </div>
 
-        <div className="mt-10 max-w-[44rem] space-y-4 md:text-lg">
-          <p>{track.domain}</p>
-          <p className="text-ink-soft">{track.context}</p>
-        </div>
-        <dl className="mt-6 max-w-[44rem]">
-          <dt className="text-sm text-ink-soft">{ui.role}</dt>
-          <dd className="mt-0.5 font-semibold">{track.role}</dd>
-        </dl>
-        <p className="mt-6 max-w-[44rem] leading-relaxed">{track.summary}</p>
-
         {track.flow ? (
-          <div className="mt-12">
+          <div className="mt-14 border-y border-control py-8 md:py-10">
             <TrackFlowView track={track} flow={track.flow} ui={ui} />
           </div>
         ) : null}
 
-        <h2 className="mt-14 mb-2 text-xl font-bold">{ui.scope}</h2>
-        <AreaList track={track} ui={ui} open />
+        <div className="mt-14 grid gap-14 lg:grid-cols-[minmax(0,44rem)_1fr_19rem] lg:gap-x-10">
+          <div>
+            <div className="space-y-4 md:text-lg">
+              <p>{track.domain}</p>
+              <p className="text-ink-soft">{track.context}</p>
+            </div>
+            <dl className="mt-8 grid gap-1">
+              <dt className="coord">{ui.role}</dt>
+              <dd className="font-semibold">{track.role}</dd>
+            </dl>
+            <p className="mt-8 leading-relaxed">{track.summary}</p>
 
-        <h2 className="mt-12 text-sm text-ink-soft">{ui.stack}</h2>
-        <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-          {track.stack.map((s) => (
-            <li key={s}>{s}</li>
-          ))}
-        </ul>
-
-        {cases.length > 0 ? (
-          <>
-            <h2 className="mt-14 text-xl font-bold">
-              {c.sections.work.label}
+            <h2 className="coord mt-14 mb-3 flex items-center gap-3 after:h-px after:flex-1 after:bg-graticule">
+              {ui.scope}
             </h2>
-            <ul className="mt-4 border-t border-graticule">
-              {cases.map((e) => (
-                <li key={e.id} className="border-b border-graticule">
-                  <a
-                    href={caseHref(lang as Locale, e.id)}
-                    className="flex items-baseline justify-between gap-4 py-4 font-semibold hover:text-ink-soft"
-                  >
-                    {e.title}
-                    <span aria-hidden="true" className="text-ink-soft">
-                      →
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : null}
+            <AreaList track={track} ui={ui} open />
+          </div>
+
+          <aside className="space-y-10 lg:sticky lg:top-8 lg:col-start-3 lg:self-start">
+            <div className="space-y-2">
+              <h2 className="coord">{ui.stack}</h2>
+              <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
+                {track.stack.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ul>
+            </div>
+            {cases.length > 0 ? (
+              <div>
+                <h2 className="coord">{c.sections.work.label}</h2>
+                <ul className="mt-3 border-t border-control">
+                  {cases.map((e) => (
+                    <li key={e.id} className="border-b border-graticule">
+                      <a
+                        href={caseHref(lang as Locale, e.id)}
+                        className="pen-row flex items-start gap-3 py-3.5 text-sm font-semibold hover:text-ink-soft"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="mark mt-[0.45em]"
+                          style={{
+                            background: `var(${categoryColor[e.category]})`,
+                          }}
+                        />
+                        <span className="flex-1 text-balance">{e.title}</span>
+                        <span aria-hidden="true" className="text-ink-soft">
+                          →
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </aside>
+        </div>
       </article>
     </DetailShell>
   );

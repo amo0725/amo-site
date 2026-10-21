@@ -144,7 +144,7 @@ for (const lang of ["zh-TW", "en"]) {
 
     // The visual first layer: evidence cards, a flow drawing per main
     // track, a screenshot per project, and the way to each full write-up.
-    const cards = await page.locator("#signal .vs-card a").count();
+    const cards = await page.locator("#signal a.vs-row").count();
     check(cards === 4, `${label}: ${cards} looks-fine / actually cards`);
     const flows = await page.locator("#experience .track-flow").count();
     check(flows === 2, `${label}: ${flows} experience flow drawings`);

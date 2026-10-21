@@ -85,6 +85,7 @@ export const zhTW: SiteContent = {
       symptom: "症狀",
       fix: "修法",
       summary: "四步驟摘要",
+      stack: "技術",
       readMore: "讀完整案例",
       back: "回到事件紀錄",
       prev: "上一則",
