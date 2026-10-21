@@ -11,7 +11,7 @@ interface SiteHeaderProps {
   name: string;
   nav: readonly NavItem[];
   navLabel: string;
-  menu: { open: string; close: string };
+  menu: { open: string; close: string; current: string };
   motion: { label: string; on: string; off: string };
   language: { label: string; href: string; hrefLang: Locale };
 }
@@ -33,6 +33,7 @@ export function SiteHeader({
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const active = useActiveSection(nav);
+  const current = nav.find((s) => s.id === active);
 
   useEffect(() => {
     let last = window.scrollY;
@@ -124,21 +125,51 @@ export function SiteHeader({
           ))}
         </ul>
         <div className="flex items-center gap-3 text-sm sm:gap-4">
-          <MotionToggle
-            label={motion.label}
-            on={motion.on}
-            off={motion.off}
-            compact
-          />
+          {/* Below lg the switch lives in the menu panel, which leaves the
+              bar room to name the section being read. */}
+          <span className="hidden lg:contents">
+            <MotionToggle
+              label={motion.label}
+              on={motion.on}
+              off={motion.off}
+              compact
+              tall
+            />
+          </span>
+          {/* Phones have no side legend, so the menu button doubles as the
+              "you are here": the current section's swatch and name. */}
           <button
             type="button"
             aria-expanded={open}
             aria-controls="section-menu"
+            aria-label={
+              open
+                ? menu.close
+                : current
+                  ? menu.current.replace("{section}", current.label)
+                  : menu.open
+            }
             onClick={() => setOpen((o) => !o)}
             // Drawn at 28px, but the ::before stretches the tap target to 44.
-            className="relative py-1 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] rounded-full border border-control px-3 font-semibold whitespace-nowrap transition-colors hover:border-ink lg:hidden"
+            className="relative inline-flex items-center gap-2 py-1 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] rounded-full border border-control px-3 font-semibold whitespace-nowrap transition-colors hover:border-ink lg:hidden"
           >
-            {open ? menu.close : menu.open}
+            {!open && current ? (
+              <>
+                <span
+                  aria-hidden="true"
+                  className="size-2 shrink-0"
+                  style={{ background: `var(${current.colorVar})` }}
+                />
+                {current.label}
+                <span aria-hidden="true" className="text-ink-soft">
+                  ▾
+                </span>
+              </>
+            ) : open ? (
+              menu.close
+            ) : (
+              menu.open
+            )}
           </button>
           {/* Carries the current section, so switching language mid-read
               lands on the same part of the page. */}
@@ -190,6 +221,14 @@ export function SiteHeader({
             </li>
           ))}
         </ul>
+        <div className="mx-auto mt-4 flex max-w-[90rem] justify-end">
+          <MotionToggle
+            label={motion.label}
+            on={motion.on}
+            off={motion.off}
+            tall
+          />
+        </div>
       </div>
     </header>
   );

@@ -89,7 +89,7 @@ export function IntegrationMap({
         // panel docks to the bottom edge; otherwise a tap would change
         // nothing in view. With nothing picked it sits after the map.
         className={`-mx-5 border-t border-graticule px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:-mx-10 md:px-10 lg:static lg:col-span-4 lg:mx-0 lg:max-h-none lg:self-center lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0 ${
-          selectedId ? "sticky bottom-0 z-10 max-h-[40svh] overflow-y-auto bg-paper md:max-h-[34svh]" : ""
+          selectedId ? "sticky bottom-0 z-10 max-h-[40svh] overflow-y-auto bg-surface-display md:max-h-[34svh]" : ""
         }`}
       >
         {/* Only a click (or tap, or Enter) wipes the panel. Hovering a node

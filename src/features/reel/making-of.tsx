@@ -25,7 +25,7 @@ function StateGlyph({ id }: { id: SignalStateName }) {
     case "packet":
       return <span className={cn(base, "size-2.5 rotate-45 bg-echo-2")} />;
     case "inbox":
-      return <span className={cn(base, "h-4 w-3 rounded-[3px] bg-paper")} />;
+      return <span className={cn(base, "h-4 w-3 rounded-[3px] bg-transparent")} />;
     case "pen":
       return (
         <svg viewBox="0 0 20 12" className="h-3 w-5 text-echo-2" aria-hidden="true">
@@ -39,7 +39,7 @@ function StateGlyph({ id }: { id: SignalStateName }) {
         </svg>
       );
     case "gate":
-      return <span className={cn(base, "size-3 rotate-45 bg-paper")} />;
+      return <span className={cn(base, "size-3 rotate-45 bg-transparent")} />;
     case "bar":
       return <span className="block h-1 w-5 bg-echo-2" />;
   }

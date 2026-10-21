@@ -43,7 +43,7 @@ export const zhTW: SiteContent = {
     mainNav: "主要",
     sectionNav: "段落",
     contactShort: "聯絡",
-    menu: { open: "目錄", close: "關閉" },
+    menu: { open: "目錄", close: "關閉", current: "目錄：{section}" },
     switchLanguage: { label: "EN", href: "/en", hrefLang: "en" },
     hero: {
       timeLabel: "台灣時間",

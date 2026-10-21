@@ -19,7 +19,7 @@ export function AiWorkflowSection({ workflow, copy }: AiWorkflowProps) {
     <section
       id={meta.id}
       aria-labelledby={`${meta.id}-title`}
-      className="border-t border-graticule px-5 py-16 md:px-10 md:py-32"
+      className="border-t border-graticule bg-surface-display px-5 py-16 md:px-10 md:py-32"
     >
       <div className="mx-auto max-w-[90rem]">
         <SectionHeading id={meta.id} colorVar={meta.colorVar} lead={copy.lead}>
@@ -52,7 +52,7 @@ export function AiWorkflowSection({ workflow, copy }: AiWorkflowProps) {
                 className="grid grid-cols-[2.5rem_1fr] gap-4 lg:grid-cols-1 lg:justify-items-center lg:text-center"
               >
                 <span
-                  className="pipe-dot relative z-10 flex size-10 items-center justify-center rounded-full border border-coast bg-paper text-sm font-bold tabular"
+                  className="pipe-dot relative z-10 flex size-10 items-center justify-center rounded-full border border-coast bg-paper-raised text-sm font-bold tabular"
                   style={{ "--i": i } as React.CSSProperties}
                 >
                   {i + 1}

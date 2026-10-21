@@ -204,7 +204,7 @@ export function GraphView({
                   "px-3 py-1 text-[0.8rem] md:px-4 md:py-1.5 md:text-sm",
                   hub
                     ? "border-ink bg-ink font-semibold text-paper"
-                    : "border-control bg-paper text-ink hover:border-ink",
+                    : "border-control bg-paper-raised text-ink hover:border-ink",
                   isActive && "scale-110 shadow-[0_0_0_4px_var(--echo-2)]",
                   dimmed && "opacity-40",
                 )}

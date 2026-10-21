@@ -35,38 +35,60 @@
   /* Not-yet-read words in the scrubbed statement; keeps ≥3:1 for large text. */
   --unread: color-mix(in oklab, var(--ink) 56%, var(--paper));
   --header-h: 3.5rem;
-  /* Outline of a control (pill, header button, switch): ≥3:1 on paper in
-     both themes, which --coast is not. */
-  --control: color-mix(in oklab, var(--ink) 45%, var(--paper));
+  /* Outline of a control (pill, header button, switch): ≥3:1 on paper and
+     on the display surface in both themes (3.2 at the lowest), which
+     --coast is not. */
+  --control: color-mix(in oklab, var(--ink) 52%, var(--paper));
+
+  /* Surfaces, Material-style: one hue, a few steps of lightness (about 4
+     L* apart), each with a job. Reading sections sit on --paper; sections
+     you look at or play with (the systems map, the AI pipeline, the reel)
+     on --surface-display; the page ends on --closing. In light mode the display
+     step sinks, in dark mode it rises (lighter = nearer, as in Apple's and
+     Material's dark themes). */
+  --surface-display: #d9dfdd; /* L* 88 */
+  --closing: var(--ink);
+  --on-closing: var(--paper);
 
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
+  /* The stage is darker than its section here: a hairline keeps its edge. */
+  .reel-frame {
+    box-shadow: 0 0 0 1px var(--coast);
+  }
   :root {
-    --paper: #0d1820;
-    --paper-raised: #12212b;
+    --paper: #0d1820; /* L* 8 */
+    --paper-raised: #182a36; /* L* 16: cards, above the display step */
+    --surface-display: #12212b; /* L* 12 */
+    /* The end panel stays dark: a light block at the bottom of a dark page
+       glares. One step above the cards instead. */
+    --closing: #1b2d39; /* L* 17.5 */
+    --on-closing: var(--ink);
     --ink: #e4ecee;
     --ink-soft: #95a7ae;
     --graticule: #213440;
     --coast: #4d6370;
 
-    --echo-1: #49c1f2;
-    --echo-2: #2cc257;
-    --echo-3: #f2d61c;
-    --echo-4: #ff9426;
-    --echo-5: #ff4048;
-    --echo-6: #d649cc;
+    /* Echo and band colours 18 points less saturated than the light
+       theme's: full-strength hues vibrate on a near-black ground. */
+    --echo-1: #5bbae0;
+    --echo-2: #41ad60;
+    --echo-3: #dcc632;
+    --echo-4: #eb943a;
+    --echo-5: #ee5158;
+    --echo-6: #c25dbb;
 
-    --band-1: #49c1f2;
-    --band-2: #5b8ff0;
-    --band-3: #2cc257;
-    --band-4: #f2d61c;
-    --band-5: #ffb52e;
-    --band-6: #ff9426;
-    --band-7: #ff4048;
-    --band-8: #e04fd0;
-    --band-9: #9a6bf0;
+    --band-1: #5bbae0;
+    --band-2: #6b94e0;
+    --band-3: #41ad60;
+    --band-4: #dcc632;
+    --band-5: #ecb041;
+    --band-6: #eb943a;
+    --band-7: #ee5158;
+    --band-8: #cd62c1;
+    --band-9: #9e7ae1;
 
     color-scheme: dark;
   }
@@ -80,6 +102,9 @@
   --color-graticule: var(--graticule);
   --color-coast: var(--coast);
   --color-control: var(--control);
+  --color-surface-display: var(--surface-display);
+  --color-closing: var(--closing);
+  --color-on-closing: var(--on-closing);
   --color-echo-1: var(--echo-1);
   --color-echo-2: var(--echo-2);
   --color-echo-3: var(--echo-3);
@@ -173,6 +198,11 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 1100px;
   }
+}
+/* Real layout for every section once the visitor jumps within the page
+   (AnchorSettle), so #targets are measured against real heights. */
+.cv-measure :is(main > section, body > footer) {
+  content-visibility: visible !important;
 }
 
 /* ---------- CJK headings ----------
@@ -798,25 +828,8 @@
     animation-range: entry 20% cover 40%;
   }
 
-  /* Contact: an ink panel opens like a radar ring from the bottom. */
+  /* Contact: the closing panel opens like a radar ring. */
   @keyframes ring-open {
-    from {
-      clip-path: circle(8% at 50% 100%);
-    }
-    to {
-      clip-path: circle(150% at 50% 100%);
-    }
-  }
-  .ring-open {
-    animation: ring-open linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 100%;
-  }
-  /* Below lg the section is about one screen tall, so a ring from the
-     bottom would leave the white heading on paper for most of the entry.
-     There it opens from the top edge, ahead of the text, and is done by
-     the time half the section is in. */
-  @keyframes ring-open-top {
     from {
       clip-path: circle(8% at 50% 0%);
     }
@@ -824,11 +837,13 @@
       clip-path: circle(150% at 50% 0%);
     }
   }
-  @media (max-width: 63.99rem) {
-    .ring-open {
-      animation-name: ring-open-top;
-      animation-range: entry 0% entry 40%;
-    }
+  /* Opens from the top edge, ahead of the white heading, and is done by
+     the time 40% of the section is in, so the heading is never drawn on
+     bare paper at any width. */
+  .ring-open {
+    animation: ring-open linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
   }
 
   /* The section border is the sweep: a rule in the section's own band
@@ -842,13 +857,14 @@
   #reel {
     --section-band: var(--echo-2);
   }
-  #experience {
+  /* Same bands as the headings, legend and menu (sectionMeta). */
+  #work {
     --section-band: var(--band-2);
   }
-  #systems {
+  #experience {
     --section-band: var(--band-3);
   }
-  #work {
+  #systems {
     --section-band: var(--band-4);
   }
   #principles {
@@ -895,6 +911,21 @@
     animation: band-rule linear both;
     animation-timeline: --section;
     animation-range: entry 0% entry 35%;
+  }
+}
+
+/* The surface a section is drawn on, for pinned and sticky parts inside it. */
+#systems,
+#ai,
+#reel {
+  --surface: var(--surface-display);
+}
+
+/* Light mode: the pale bands (yellow, orange, sky) fall under 3:1 against
+   the paper, so the heading swatch gets an ink edge (3:1). */
+@media not (prefers-color-scheme: dark) {
+  .scan-swatch {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 52%, transparent);
   }
 }
 
@@ -1125,7 +1156,7 @@
     top: var(--pin-top, var(--header-h));
     z-index: 5;
     padding-block: 0.75rem;
-    background: var(--paper);
+    background: var(--surface, var(--paper));
     box-shadow: 0 1px 0 var(--graticule);
     transition: top 0.5s var(--ease-out-expo);
   }

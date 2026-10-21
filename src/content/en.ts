@@ -43,7 +43,7 @@ export const en: SiteContent = {
     mainNav: "Main",
     sectionNav: "Sections",
     contactShort: "Contact",
-    menu: { open: "Menu", close: "Close" },
+    menu: { open: "Menu", close: "Close", current: "Menu: {section}" },
     switchLanguage: { label: "中文", href: "/zh-TW", hrefLang: "zh-TW" },
     hero: {
       timeLabel: "Taiwan time",

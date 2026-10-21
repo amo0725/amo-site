@@ -35,7 +35,7 @@ export function Systems({
     <section
       id={meta.id}
       aria-labelledby={`${meta.id}-title`}
-      className="border-t border-graticule px-5 pt-16 md:px-10 md:pt-32"
+      className="border-t border-graticule bg-surface-display px-5 pt-16 md:px-10 md:pt-32"
     >
       <div className="mx-auto max-w-[90rem]">
         <SectionHeading id={meta.id} colorVar={meta.colorVar} lead={copy.lead}>
