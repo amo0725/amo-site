@@ -7,7 +7,10 @@
  * the person and the role, the call to action points at the case log, the
  * featured cases are open (none on phones), the hero carries its three
  * proof figures, nothing scrolls sideways, every public project links to its repository,
- * the phone menu opens, and nothing logs an error. Also checks the
+ * the phone menu opens, the visual summaries are there (evidence cards,
+ * flow drawings, screenshots) and a flow badge lands on its area open, the
+ * case and experience pages answer and lead back, and nothing logs an
+ * error. Also checks the
  * sitemap, robots and the Open Graph image, and that no URL still points
  * at a placeholder domain.
  *
@@ -45,6 +48,12 @@ for (const path of ["/sitemap.xml", "/robots.txt"]) {
   const body = await res.text();
   check(res.ok, `${path} answers ${res.status}`);
   check(!body.includes("example.com"), `${path} has no placeholder domain`);
+  if (path === "/sitemap.xml") {
+    check(
+      body.includes("/work/vanishing-index") && body.includes("/experience/messaging"),
+      `${path} lists the case and experience pages`,
+    );
+  }
 }
 
 const browser = await chromium.launch(
@@ -131,6 +140,43 @@ for (const lang of ["zh-TW", "en"]) {
         !(await page.locator("#section-menu").isVisible()),
         `${label}: section menu closes after a link`,
       );
+    }
+
+    // The visual first layer: evidence cards, a flow drawing per main
+    // track, a screenshot per project, and the way to each full write-up.
+    const cards = await page.locator("#signal .vs-card a").count();
+    check(cards === 4, `${label}: ${cards} looks-fine / actually cards`);
+    const flows = await page.locator("#experience .track-flow").count();
+    check(flows === 2, `${label}: ${flows} experience flow drawings`);
+    const shots = await page.locator("#projects figure img").count();
+    check(shots >= 4, `${label}: ${shots} project screenshots`);
+    const caseLinks = await page.locator('#work a[href*="/work/"]').count();
+    check(caseLinks > 0, `${label}: ${caseLinks} links to full case pages`);
+
+    // A badge on a flow drawing opens its area and lands on it.
+    const badge = page.locator("#experience a.area-badge").first();
+    const target = (await badge.getAttribute("href"))?.slice(1) ?? "";
+    await badge.click();
+    await page.waitForTimeout(1200);
+    const landed = await page.evaluate((id) => {
+      const el = document.getElementById(id);
+      const top = el?.getBoundingClientRect().top ?? -1;
+      return [!!el?.querySelector("details[open]"), top >= 0 && top < 200];
+    }, target);
+    check(landed[0] && landed[1], `${label}: area badge opens and lands on #${target}`);
+
+    // One case page and one experience page: they answer, carry an h1,
+    // lead back to the item they expand, and don't scroll sideways.
+    for (const path of [`/${lang}/work/vanishing-index`, `/${lang}/experience/messaging`]) {
+      const r = await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+      check(r?.ok(), `${label}: ${path} answers ${r?.status()}`);
+      check((await page.locator("h1").count()) === 1, `${label}: ${path} has one h1`);
+      const back = await page.locator("header a").first().getAttribute("href");
+      check(!!back && back.startsWith(`/${lang}#`), `${label}: ${path} leads back to ${back}`);
+      const over = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      check(over <= 0, `${label}: ${path} no horizontal scroll (${over}px over)`);
     }
 
     check(errors.length === 0, `${label}: no console errors ${errors.join(" | ")}`);

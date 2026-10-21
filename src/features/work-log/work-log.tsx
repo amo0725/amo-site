@@ -3,10 +3,11 @@
 import { AnimatePresence, LayoutGroup, m } from "motion/react";
 import { Suspense, useState, type ReactNode } from "react";
 import type { UiStrings, WorkCategory, WorkEntry } from "@/content/types";
-import { metricHeadline } from "@/components/ui/metric-bars";
 import { cn } from "@/lib/cn";
 import { useMotionPreference } from "@/lib/motion/preference";
 import { PhoneFold } from "@/components/ui/phone-fold";
+import { caseAnchor } from "./case-steps";
+import { MiniBar } from "./mini-bar";
 
 export interface TrackOption {
   id: string;
@@ -242,6 +243,7 @@ export function WorkLog({
               {/* Featured cases start open; their figures play when scrolled
                   into view instead of on page load (see data-featured in CSS). */}
               <details
+                id={caseAnchor(entry.id)}
                 className="log-entry group"
                 // Served closed: phones get the list as an outline. From
                 // md up the featured cases open as they mount (no re-render).
@@ -259,18 +261,22 @@ export function WorkLog({
                     <h3 className="text-lg font-semibold text-balance md:text-xl">
                       {entry.title}
                     </h3>
-                    <span className="log-meta mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-ink-soft md:mt-0">
-                      <span className="flex items-center gap-2 md:hidden">
-                        <CategoryMark color={colors[entry.category]} />
-                        {categories[entry.category]}
-                      </span>
-                      <span>{trackLabel.get(entry.track)}</span>
-                      {entry.metrics?.[0] ? (
-                        <span className="metric-headline font-semibold text-ink tabular">
-                          {metricHeadline(entry.metrics[0])}
+                    <span className="log-meta mt-1.5 grid gap-1.5 text-sm text-ink-soft">
+                      <span className="flex flex-wrap gap-x-3 gap-y-0.5">
+                        <span className="flex items-center gap-2 md:hidden">
+                          <CategoryMark color={colors[entry.category]} />
+                          {categories[entry.category]}
                         </span>
+                        <span>{trackLabel.get(entry.track)}</span>
+                      </span>
+                      {entry.metrics?.[0] ? (
+                        <MiniBar metric={entry.metrics[0]} />
                       ) : entry.outcome ? (
-                        <span className="metric-headline font-semibold text-ink">
+                        <span className="flex items-center gap-2 font-semibold text-ink">
+                          <span
+                            aria-hidden="true"
+                            className="size-2 shrink-0 bg-echo-2"
+                          />
                           {entry.outcome}
                         </span>
                       ) : null}

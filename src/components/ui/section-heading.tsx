@@ -14,8 +14,8 @@ interface SectionHeadingProps {
 
 /**
  * Section title. The swatch matches the section's band in the side legend,
- * so the colour tells readers where they are. On scroll it is swept in like
- * a radar scan (pure CSS, see .scan-text / .scan-swatch).
+ * so the colour tells readers where they are. On scroll the swatch sweeps
+ * in like a radar scan (pure CSS, .scan-swatch); the text is always shown.
  */
 export function SectionHeading({
   id,
@@ -36,7 +36,7 @@ export function SectionHeading({
           className="scan-swatch inline-block size-3 shrink-0 md:size-3.5"
           style={{ background: `var(${colorVar})` }}
         />
-        <span className="scan-text">{children}</span>
+        <span>{children}</span>
       </h2>
       {lead ? (
         <p className={cn("mt-4", inverted ? "text-on-closing/75" : "text-ink-soft")}>

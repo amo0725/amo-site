@@ -75,7 +75,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         />
         {/* Suspense boundaries let React hydrate below-the-fold sections in separate, interruptible tasks. */}
         <Suspense fallback={null}>
-          <Signal profile={c.profile} copy={c.sections.signal} locale={lang} />
+          <Signal signal={c.signal} copy={c.sections.signal} ui={c.ui.signal} />
         </Suspense>
         <Suspense fallback={null}>
           <Work
@@ -85,6 +85,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             colors={categoryColor}
             copy={c.sections.work}
             ui={c.ui.work}
+            locale={lang}
           />
         </Suspense>
         <Suspense fallback={null}>
@@ -92,6 +93,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             tracks={c.experience}
             copy={c.sections.experience}
             ui={c.ui.experience}
+            locale={lang}
           />
         </Suspense>
         <Suspense fallback={null}>
@@ -106,10 +108,14 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           />
         </Suspense>
         <Suspense fallback={null}>
-          <Principles principles={c.principles} copy={c.sections.principles} />
+          <Principles
+            principles={c.principles}
+            copy={c.sections.principles}
+            ui={c.ui.principles}
+          />
         </Suspense>
         <Suspense fallback={null}>
-          <AiWorkflowSection workflow={c.ai} copy={c.sections.ai} />
+          <AiWorkflowSection workflow={c.ai} copy={c.sections.ai} ui={c.ui.ai} />
         </Suspense>
         <Suspense fallback={null}>
           <Projects

@@ -68,8 +68,3 @@ export function MetricBars({
     </dl>
   );
 }
-
-/** The first metric as one line of text, for the collapsed row. */
-export function metricHeadline(m: Metric): string {
-  return `${m.beforeText} → ${m.afterText}`;
-}

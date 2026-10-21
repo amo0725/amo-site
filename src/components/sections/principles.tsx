@@ -1,11 +1,12 @@
 import { PhoneFold } from "@/components/ui/phone-fold";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
-import type { Principle, SectionCopy } from "@/content/types";
+import type { Principle, SectionCopy, UiStrings } from "@/content/types";
 
 interface PrinciplesProps {
   principles: readonly Principle[];
   copy: SectionCopy;
+  ui: UiStrings["principles"];
 }
 
 /**
@@ -98,7 +99,7 @@ function glyphFor(id: string, index: number): React.ReactNode {
 /**
  * The principles as cards: a single column on phones, a grid from md up.
  */
-export function Principles({ principles, copy }: PrinciplesProps) {
+export function Principles({ principles, copy, ui }: PrinciplesProps) {
   const meta = sectionMeta("principles");
   return (
     <section
@@ -149,8 +150,18 @@ export function Principles({ principles, copy }: PrinciplesProps) {
                   </>
                 }
               >
-                <p className="px-4 pb-5 text-ink-soft md:mt-3 md:p-0">
+                <p className="px-4 pb-3 text-ink-soft md:mt-3 md:p-0">
                   {p.body}
+                </p>
+                <p className="px-4 pb-5 text-sm md:mt-5 md:p-0">
+                  <span className="text-ink-soft">{ui.evidence}</span>{" "}
+                  <a
+                    href={p.evidence.href}
+                    className="font-semibold underline decoration-control underline-offset-4 hover:decoration-ink"
+                  >
+                    {p.evidence.label}
+                    <span aria-hidden="true"> →</span>
+                  </a>
                 </p>
               </PhoneFold>
             </li>

@@ -14,10 +14,28 @@ const sleep = (ms: number) =>
   new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 
 /**
+ * Opens what a link points into: the target itself when it is a fold
+ * (a case in the work log), the fold it holds (an area of ownership), and
+ * every fold around it. A link that says "this case" lands on the case
+ * open, not on a closed line.
+ */
+function reveal(el: HTMLElement) {
+  if (el instanceof HTMLDetailsElement) el.open = true;
+  const inner = el.querySelector(":scope > details");
+  if (inner instanceof HTMLDetailsElement) inner.open = true;
+  for (let p = el.parentElement; p; p = p.parentElement) {
+    if (p instanceof HTMLDetailsElement) p.open = true;
+  }
+}
+
+/**
  * Sections below the fold use content-visibility: auto with a guessed
  * height (1100px) until they are first drawn, so a jump to #section can
  * land several sections off: the browser (or Lenis) measures the target
  * against guesses that are wrong by the time it arrives.
+ *
+ * Folds on the way to the target are opened first (reveal), so a link to
+ * a case or an area lands on it open.
  *
  * Before the first jump to an in-page target, content-visibility is turned
  * off for the rest of the visit (html.cv-measure), so that jump and every
@@ -44,7 +62,11 @@ export function AnchorSettle() {
 
     const onClick = (e: MouseEvent) => {
       const link = (e.target as Element | null)?.closest?.('a[href^="#"]');
-      if (link && link.getAttribute("href") !== "#top") measure();
+      const href = link?.getAttribute("href");
+      if (!href || href === "#top") return;
+      const target = document.getElementById(decodeURIComponent(href.slice(1)));
+      if (target) reveal(target);
+      measure();
     };
     // Capture phase, ahead of Lenis's own anchor handling.
     document.addEventListener("click", onClick, true);
@@ -85,6 +107,7 @@ export function AnchorSettle() {
     );
 
     const settle = async (el: HTMLElement) => {
+      reveal(el);
       measure();
       await frames(1);
       if (cancelled || userMoved) return;

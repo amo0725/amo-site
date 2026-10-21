@@ -1,18 +1,50 @@
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
-import type { AiWorkflow, SectionCopy } from "@/content/types";
+import type { AiWorkflow, SectionCopy, UiStrings } from "@/content/types";
 
 interface AiWorkflowProps {
   workflow: AiWorkflow;
   copy: SectionCopy;
+  ui: UiStrings["ai"];
+}
+
+/** One lane of a step: who does what. Empty lanes say so in words. */
+function Lane({
+  who,
+  text,
+  empty,
+  tone,
+}: {
+  who: string;
+  text?: string;
+  empty: string;
+  tone: "me" | "agent";
+}) {
+  return (
+    <div
+      className={`grid grid-cols-[3.25rem_1fr] gap-x-2 gap-y-0.5 border-l-2 px-2.5 py-1 text-left text-sm lg:grid-cols-1 lg:py-1.5 ${
+        tone === "me" ? "border-echo-4" : "border-echo-1"
+      }`}
+    >
+      <span className="pt-0.5 text-xs font-semibold text-ink-soft lg:pt-0">
+        {who}
+      </span>
+      {text ? (
+        <span>{text}</span>
+      ) : (
+        <span className="text-ink-soft">{empty}</span>
+      )}
+    </div>
+  );
 }
 
 /**
- * The pipeline every change goes through. As the section scrolls by, a
- * signal fills the line and each station lights up in turn (CSS
- * scroll-driven animation on a shared named timeline).
+ * The pipeline every change goes through, with who does what at each step:
+ * me or the agent. As the section scrolls by, a signal fills the line and
+ * each station lights up in turn (CSS scroll-driven animation on a shared
+ * named timeline). Each step's full description is one tap away.
  */
-export function AiWorkflowSection({ workflow, copy }: AiWorkflowProps) {
+export function AiWorkflowSection({ workflow, copy, ui }: AiWorkflowProps) {
   const meta = sectionMeta("ai");
   const steps = workflow.steps;
   return (
@@ -25,7 +57,9 @@ export function AiWorkflowSection({ workflow, copy }: AiWorkflowProps) {
         <SectionHeading id={meta.id} colorVar={meta.colorVar} lead={copy.lead}>
           {copy.label}
         </SectionHeading>
-        <p className="mb-10 max-w-[40rem] md:mb-14 md:text-lg">{workflow.intro}</p>
+        <p className="mb-10 max-w-[40rem] text-lg font-semibold text-balance md:mb-14 md:text-xl">
+          {workflow.headline}
+        </p>
 
         <div
           className="pipe relative"
@@ -57,11 +91,34 @@ export function AiWorkflowSection({ workflow, copy }: AiWorkflowProps) {
                 >
                   {i + 1}
                 </span>
-                <div>
-                  <h3 className="text-lg font-bold">{step.title}</h3>
-                  <p className="mt-1 text-ink-soft lg:mx-auto lg:max-w-[14rem]">
-                    {step.body}
-                  </p>
+                <div className="grid w-full content-start gap-2 lg:max-w-[15rem]">
+                  <h3 className="text-lg font-bold lg:flex lg:min-h-[3.5rem] lg:items-center lg:justify-center">
+                    {step.title}
+                  </h3>
+                  <Lane
+                    who={ui.me}
+                    text={step.me}
+                    empty={ui.toAgent}
+                    tone="me"
+                  />
+                  <Lane
+                    who={ui.agent}
+                    text={step.agent}
+                    empty={ui.unassigned}
+                    tone="agent"
+                  />
+                  <details className="group/step text-left">
+                    <summary className="flex cursor-pointer list-none items-center gap-1.5 py-1 text-sm font-semibold text-ink-soft [&::-webkit-details-marker]:hidden">
+                      <span
+                        aria-hidden="true"
+                        className="transition-[rotate] duration-300 group-open/step:rotate-90"
+                      >
+                        ›
+                      </span>
+                      {ui.details}
+                    </summary>
+                    <p className="pt-1 text-sm text-ink-soft">{step.body}</p>
+                  </details>
                 </div>
               </li>
             ))}

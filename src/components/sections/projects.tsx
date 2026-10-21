@@ -1,8 +1,45 @@
-import { PhoneFold } from "@/components/ui/phone-fold";
+import Image from "next/image";
+import { Fold } from "@/components/ui/fold";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
 import type { SectionCopy, SideProject, UiStrings } from "@/content/types";
-import { ProjectVisualView } from "./project-visuals";
+
+/**
+ * The product itself: a screenshot of the real app (demo data), framed at
+ * one 16:10 shape so the list lines up. A phone screen sits upright in the
+ * middle of the frame. Information, not decoration: what the product looks
+ * like is the evidence it exists.
+ */
+function Shot({
+  shot,
+  note,
+}: {
+  shot: NonNullable<SideProject["shot"]>;
+  note: string;
+}) {
+  const phone = shot.device === "phone";
+  return (
+    <figure className="grid gap-2">
+      <div className="relative aspect-[16/10] max-w-full overflow-hidden border border-graticule bg-surface-display">
+        <Image
+          src={shot.src}
+          alt={shot.alt}
+          width={shot.width}
+          height={shot.height}
+          sizes={phone ? "(min-width: 48rem) 14vw, 40vw" : "(min-width: 48rem) 40vw, 100vw"}
+          className={
+            phone
+              ? "absolute top-[6%] left-1/2 h-[120%] w-auto -translate-x-1/2 rounded-xl border-4 border-ink object-cover object-top"
+              : "size-full object-cover object-top-left"
+          }
+        />
+      </div>
+      {shot.demo ? (
+        <figcaption className="text-xs text-ink-soft">{note}</figcaption>
+      ) : null}
+    </figure>
+  );
+}
 
 /** "github.com/owner/repo" from a repository URL. */
 function repoLabel(href: string) {
@@ -29,7 +66,7 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
         </SectionHeading>
 
         <ul className="border-t border-graticule">
-          {projects.map((project, i) => (
+          {projects.map((project) => (
             <li
               key={project.id}
               className="group relative isolate grid gap-4 border-b border-graticule py-8 md:grid-cols-12 md:gap-8 md:py-12"
@@ -39,12 +76,12 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
                 aria-hidden="true"
                 className="absolute inset-y-0 -right-5 -left-5 -z-10 origin-left scale-x-0 bg-paper-raised transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-100 md:-right-10 md:-left-10"
               />
-              <div className="size-14 md:col-span-2 md:size-auto md:max-w-32">
-                <div className="aspect-square">
-                  <ProjectVisualView visual={project.visual} seed={i * 7 + 3} />
-                </div>
-              </div>
               <div className="md:col-span-5">
+                {project.shot ? (
+                  <Shot shot={project.shot} note={ui.shotNote} />
+                ) : null}
+              </div>
+              <div className="md:col-span-7">
                 <h3 className="text-2xl leading-tight font-extrabold md:text-4xl">
                   {project.href ? (
                     <a
@@ -86,16 +123,16 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
                     </span>
                   ) : null}
                 </p>
-              </div>
-              <div className="max-w-[34rem] md:col-span-5">
-                <p className="md:text-lg">{project.description}</p>
+                <p className="mt-4 max-w-[40rem] md:text-lg">
+                  {project.description}
+                </p>
                 {project.details.length > 0 ? (
-                  <PhoneFold
-                    className="mt-3 md:mt-4"
-                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:sr-only"
-                    summary={<>{ui.details}</>}
+                  <Fold
+                    className="mt-3 max-w-[40rem] md:mt-4"
+                    summaryClassName="border-y border-graticule py-3 text-sm font-semibold"
+                    summary={ui.details}
                   >
-                    <ul className="mt-3 space-y-1.5 text-ink-soft md:mt-0">
+                    <ul className="mt-3 space-y-1.5 text-ink-soft">
                       {project.details.map((d) => (
                         <li key={d} className="flex gap-3">
                           <span
@@ -106,7 +143,7 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
                         </li>
                       ))}
                     </ul>
-                  </PhoneFold>
+                  </Fold>
                 ) : null}
                 <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
                   {project.stack.map((s) => (

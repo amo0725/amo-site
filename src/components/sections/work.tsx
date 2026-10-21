@@ -1,12 +1,13 @@
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
 import type {
+  Locale,
   SectionCopy,
   UiStrings,
   WorkCategory,
   WorkEntry,
 } from "@/content/types";
-import { CaseBody } from "@/features/work-log/case-body";
+import { CaseSummary } from "@/features/work-log/case-steps";
 import { type TrackOption, WorkLog } from "@/features/work-log/work-log";
 
 interface WorkProps {
@@ -16,6 +17,7 @@ interface WorkProps {
   colors: Readonly<Record<WorkCategory, string>>;
   copy: SectionCopy;
   ui: UiStrings["work"];
+  locale: Locale;
 }
 
 export function Work({
@@ -25,6 +27,7 @@ export function Work({
   colors,
   copy,
   ui,
+  locale,
 }: WorkProps) {
   const meta = sectionMeta("work");
   return (
@@ -55,7 +58,7 @@ export function Work({
             bodies={Object.fromEntries(
               entries.map((e) => [
                 e.id,
-                <CaseBody key={e.id} entry={e} ui={ui} />,
+                <CaseSummary key={e.id} entry={e} ui={ui} locale={locale} />,
               ]),
             )}
           />

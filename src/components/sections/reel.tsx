@@ -20,7 +20,7 @@ export function Reel({ copy }: { copy: ReelCopy }) {
                 aria-hidden="true"
                 className="inline-block size-3 shrink-0 rounded-full bg-echo-2 md:size-3.5"
               />
-              <span className="scan-text">{copy.title}</span>
+              <span>{copy.title}</span>
             </h2>
             <p className="mt-4 text-ink-soft">{copy.lead}</p>
           </div>
