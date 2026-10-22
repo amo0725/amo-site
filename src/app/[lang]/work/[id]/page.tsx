@@ -6,6 +6,7 @@ import { trackHref } from "@/components/sections/experience";
 import { categoryColor, site } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
 import { detailMetadata, notFoundMetadata } from "@/lib/detail-metadata";
+import { redirectMiscased } from "@/lib/locale-case";
 import { fill } from "@/lib/i18n";
 import type { Locale } from "@/content/types";
 import { CaseBody } from "@/features/work-log/case-body";
@@ -61,6 +62,7 @@ export default async function CasePage({
   params,
 }: PageProps<"/[lang]/work/[id]">) {
   const { lang, id } = await params;
+  redirectMiscased(lang, `/work/${id}`);
   const found = find(lang, id);
   if (!found) notFound();
   const { content: c, entry, index } = found;
