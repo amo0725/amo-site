@@ -16,8 +16,16 @@
  * Open Graph image, the 404s and redirects, and that no URL still points
  * at a placeholder domain.
  *
- *   BASE_URL     server to test         (default: http://localhost:3100)
- *   CHROME_PATH  browser executable     (default: installed Google Chrome)
+ * It also checks that the stylesheet carries the whole design (the
+ * component kit and the colour utilities) and that it is applied on the
+ * page: a build can ship a stylesheet compiled from a stale globals.css,
+ * and such a page still renders, just with its labels, nodes and marks
+ * unstyled.
+ *
+ *   BASE_URL       server to test       (default: http://localhost:3100)
+ *   CHROME_PATH    browser executable   (default: installed Google Chrome)
+ *   EXPECT_COMMIT  after a deploy: wait until BASE_URL serves this commit
+ *                  (its build-commit meta), then test it
  *
  * Usage: npm run build && (npm start -- -p 3100 &) && npm run smoke
  */
@@ -44,6 +52,48 @@ async function waitForServer(url, tries = 60) {
 }
 
 await waitForServer(`${BASE}/en`);
+
+// After a deploy, the address may still serve the previous one for a
+// moment: wait (up to 10 minutes) for the commit being checked.
+if (process.env.EXPECT_COMMIT) {
+  const want = process.env.EXPECT_COMMIT.slice(0, 12);
+  let got = "";
+  for (let i = 0; i < 40; i += 1) {
+    const page = await (await fetch(`${BASE}/en`, { cache: "no-store" })).text();
+    got = page.match(/<meta name="build-commit" content="([^"]+)"/)?.[1] ?? "";
+    if (got === want) break;
+    await new Promise((r) => setTimeout(r, 15000));
+  }
+  check(got === want, `serves commit ${want} (got ${got || "none"})`);
+}
+
+// The stylesheet carries the component kit and the colour utilities by
+// name. A stylesheet compiled from a stale globals.css lacks them.
+{
+  const page = await (await fetch(`${BASE}/en`)).text();
+  const hrefs = [...page.matchAll(/<link\b[^>]*>/g)]
+    .map((m) => m[0])
+    .filter((tag) => /rel="stylesheet"/.test(tag))
+    .map((tag) => tag.match(/href="([^"]+)"/)?.[1])
+    .filter(Boolean);
+  const css = (
+    await Promise.all(
+      hrefs.map((h) => fetch(new URL(h, BASE)).then((r) => r.text())),
+    )
+  ).join("\n");
+  check(hrefs.length > 0, `${hrefs.length} stylesheet(s) linked`);
+  for (const [name, pattern] of [
+    ["the component layer", /@layer components\s*\{/],
+    ["labels (.coord)", /\.coord\s*\{/],
+    ["stations (.node)", /\.node\s*\{/],
+    ["marks (.mark)", /\.mark\s*\{/],
+    ["text links (.go)", /\.go\s*\{/],
+    ["lists (.bullets)", /\.bullets\s*\{/],
+    ["the green ink utility", /\.text-echo-2-ink\s*\{/],
+  ]) {
+    check(pattern.test(css), `stylesheet has ${name}`);
+  }
+}
 
 // Wrong addresses: the language's own 404, with a 404 status; a language in
 // the wrong case, or a path without one, is sent to the right place.
@@ -126,6 +176,31 @@ for (const lang of ["zh-TW", "en"]) {
     const want = vp.mobile ? 0 : 1;
     const open = await page.locator("#work details.log-entry[open]").count();
     check(open === want, `${label}: ${open} featured cases open (want ${want})`);
+
+    // The kit is applied, not only shipped: a station is a circle, a
+    // category mark has a size, a label and the "start here" marker are not
+    // in the title's ink.
+    const kit = await page.evaluate(() => {
+      const style = (selector) => {
+        const el = document.querySelector(selector);
+        return el ? getComputedStyle(el) : null;
+      };
+      const node = style("#experience .node");
+      const mark = style("#work .mark");
+      const meta = style("#work .log-meta");
+      const chip = style("#work .log-featured");
+      const title = style("#work .log-entry h3");
+      return {
+        node: !!node && node.borderRadius === "50%" && parseFloat(node.width) >= 24,
+        mark: !!mark && parseFloat(mark.width) > 0 && parseFloat(mark.height) > 0,
+        label: !!meta && !!title && meta.color !== title.color,
+        chip: !!chip && !!title && chip.color !== title.color,
+      };
+    });
+    check(
+      Object.values(kit).every(Boolean),
+      `${label}: design kit applied ${JSON.stringify(kit)}`,
+    );
 
     const proof = await page.locator("#hero-title ~ dl > div").count();
     check(proof === 3, `${label}: ${proof} proof figures under the headline`);

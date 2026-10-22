@@ -79,8 +79,13 @@ export async function generateMetadata({
       description: meta.description,
     },
     formatDetection: { telephone: false, email: false, address: false },
+    // The commit a Vercel build was made from, so the post-deploy check
+    // knows the live site is the deploy it is checking.
+    ...(BUILD_COMMIT ? { other: { "build-commit": BUILD_COMMIT } } : {}),
   };
 }
+
+const BUILD_COMMIT = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12);
 
 export const viewport: Viewport = {
   themeColor: [
