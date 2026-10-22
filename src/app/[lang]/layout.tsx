@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { AnchorSettle } from "@/components/providers/anchor-settle";
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
+import { WideFolds } from "@/components/providers/wide-folds";
 import { RadarCursor } from "@/components/ui/radar-cursor";
 import { site } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
@@ -124,6 +125,7 @@ export default async function RootLayout({
             Motion components: detail pages don't download it. */}
         <SmoothScroll />
         <AnchorSettle />
+        <WideFolds />
         <RadarCursor />
         {children}
       </body>

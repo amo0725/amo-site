@@ -876,21 +876,19 @@
 .phone-fold[open] > summary .fold-icon {
   rotate: 45deg;
 }
-.phone-fold > .fold-wide {
-  display: none;
-}
 @supports selector(::details-content) {
   @media (min-width: 48rem) {
     .phone-fold::details-content {
       content-visibility: visible;
     }
-    /* Not a control here: the toggle leaves the page (and the tab order),
-       and its plain label takes its place. */
+    /* A heading here, not a control (WideFolds also takes it out of the
+       tab order and marks the fold open). */
     .phone-fold > summary {
-      display: none;
+      cursor: auto;
+      pointer-events: none;
     }
-    .phone-fold > .fold-wide {
-      display: block;
+    .phone-fold > summary .fold-icon {
+      display: none;
     }
   }
 }

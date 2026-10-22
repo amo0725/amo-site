@@ -162,28 +162,24 @@ export function Principles({ principles, copy, ui }: PrinciplesProps) {
                   style={{ background: `var(${meta.colorVar})` }}
                 />
                 <PhoneFold
-                  summaryClassName="grid grid-cols-[1.75rem_2rem_1fr_auto] items-center gap-x-3 py-4"
+                  summaryClassName="grid grid-cols-[1.75rem_2rem_1fr_auto] items-center gap-x-3 py-4 md:grid-cols-[1fr_auto] md:gap-y-5 md:py-0"
                   summary={
                     <>
-                      <span aria-hidden="true" className="index">
+                      <span
+                        aria-hidden="true"
+                        className="index md:col-start-1 md:row-start-1 md:self-start"
+                      >
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <Glyph id={p.id} i={i} className="size-8" />
-                      <h3 className="text-lg leading-tight font-extrabold text-balance font-expanded">
+                      <Glyph
+                        id={p.id}
+                        i={i}
+                        className="size-8 md:col-start-2 md:row-start-1 md:size-14"
+                      />
+                      <h3 className="text-lg leading-tight font-extrabold text-balance font-expanded md:col-span-2 md:row-start-2 md:max-w-[11em] md:text-xl md:leading-[1.15]">
                         {p.title}
                       </h3>
                     </>
-                  }
-                  wide={
-                    <div className="grid grid-cols-[1fr_auto] gap-y-5">
-                      <span aria-hidden="true" className="index self-start">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <Glyph id={p.id} i={i} className="size-14" />
-                      <h3 className="col-span-2 max-w-[11em] text-xl leading-[1.15] font-extrabold text-balance font-expanded">
-                        {p.title}
-                      </h3>
-                    </div>
                   }
                 >
                   <p className="pb-3 text-ink-soft md:mt-3 md:pb-0">{p.body}</p>

@@ -141,27 +141,21 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                       opens it at its area). From md up it is shown. */}
                   <PhoneFold
                     className="mt-8 md:mt-10"
-                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold"
+                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:mb-3 md:border-0 md:py-0 md:text-xs md:tracking-[0.08em] md:text-ink-soft md:uppercase"
                     summary={fill(ui.areas, { count: track.areas.length })}
-                    wide={
-                      <p className="coord mb-3">
-                        {fill(ui.areas, { count: track.areas.length })}
-                      </p>
-                    }
                   >
                     <AreaList track={track} ui={ui} />
                   </PhoneFold>
 
                   <PhoneFold
                     className="md:mt-6"
-                    summaryClassName="flex items-center justify-between border-b border-graticule py-4 text-sm font-semibold"
+                    summaryClassName="flex items-center justify-between border-b border-graticule py-4 text-sm font-semibold md:border-0 md:py-0 md:text-xs md:tracking-[0.08em] md:text-ink-soft md:uppercase"
                     summary={
                       <span>
                         {ui.stack}
                         <span className="sr-only">: {track.short}</span>
                       </span>
                     }
-                    wide={<p className="coord">{ui.stack}</p>}
                   >
                     <ul className="flex flex-wrap gap-x-4 gap-y-1 pt-3 pb-2 text-sm md:pt-2">
                       {track.stack.map((s) => (
@@ -195,7 +189,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                       line; from md up they are shown. */}
                   <PhoneFold
                     className="mt-4"
-                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold"
+                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:sr-only"
                     summary={
                       <span>
                         {fill(ui.highlights, { count: track.areas.length })}

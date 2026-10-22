@@ -270,7 +270,7 @@ export function WorkLog({
           what the section opens with. */}
       <PhoneFold
         className="mb-8"
-        summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold"
+        summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:sr-only"
         summary={ui.filter}
       >
         <div className="space-y-4 pt-4 md:pt-0">
