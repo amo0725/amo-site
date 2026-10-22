@@ -1063,8 +1063,11 @@
     z-index: 5;
     padding-block: 0.75rem;
     background: var(--surface, var(--paper));
-    /* Pinned, the bar reads as the chart's top axis. */
-    box-shadow: 0 1px 0 var(--control);
+    /* Pinned, the bar reads as the chart's top axis; a soft shadow below
+       shows the case is sliding under it rather than being cut by a line. */
+    box-shadow:
+      0 1px 0 var(--control),
+      0 10px 14px -12px color-mix(in oklab, var(--ink) 45%, transparent);
     transition: top 0.5s var(--ease-out-expo);
   }
   .log-entry[open] > summary h3 {

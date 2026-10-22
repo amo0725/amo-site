@@ -115,7 +115,7 @@ export function CaseSummary({
   locale: Locale;
 }) {
   return (
-    <div className="grid gap-y-7 pb-9 md:grid-cols-[7rem_1fr] md:gap-x-8">
+    <div className="grid gap-y-7 pt-5 pb-9 md:grid-cols-[7rem_1fr] md:gap-x-8 md:pt-0">
       <div className="md:col-start-2">
         <CaseSteps entry={entry} ui={ui} />
       </div>
