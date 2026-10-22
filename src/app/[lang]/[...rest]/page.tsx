@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { NotFoundView } from "@/components/layout/not-found-view";
 import { getContent, isLocale, locales } from "@/content";
+import { redirectMiscased } from "@/lib/locale-case";
 
 /**
  * The 404 for every other address: the proxy sends any path that leads
@@ -25,6 +26,7 @@ export async function generateMetadata({
 export default async function UnknownPath({
   params,
 }: PageProps<"/[lang]/[...rest]">) {
-  const { lang } = await params;
+  const { lang, rest } = await params;
+  redirectMiscased(lang, `/${rest.join("/")}`);
   return <NotFoundView content={getContent(isLocale(lang) ? lang : "zh-TW")} />;
 }

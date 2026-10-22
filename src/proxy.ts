@@ -14,7 +14,9 @@ const SECTIONS = new Set(["work", "experience"]);
  * Runs only on addresses with no page of their own (see the matcher):
  *
  * - "/" goes to the language the visitor prefers.
- * - A language in the wrong case (/EN, /zh-tw/work/…) goes to the real one.
+ * - A language in the wrong case (/zh-tw/work, /EN/nothing) goes to the
+ *   real one. Where the path is a page (/EN, /zh-tw/work/…), the matcher
+ *   leaves it to the page, which does the same (redirectMiscased).
  * - A path that forgot its language (/work/inbox-freeze) gets the preferred
  *   one in front.
  * - /en/work and /en/experience go to that section of the page.
@@ -103,11 +105,16 @@ async function notFound(request: NextRequest, locale: string) {
 
 export const config = {
   matcher: [
+    // The languages are written in any case ([eE][nN]) because that is how
+    // Vercel matches them anyway: leaving /en to its page leaves /EN to it
+    // too, and the page sends /EN on to /en (redirectMiscased). Written
+    // out, `next start` matches the same paths as production.
+    //
     // Everything but the two languages, Next's own files and the files
     // that really exist (public folders, sitemap, robots, manifest, icon).
-    "/((?!en/|en$|zh-TW/|zh-TW$|_next/|_vercel/|projects/|reel/|icon\\.svg$|robots\\.txt$|sitemap\\.xml$|manifest\\.webmanifest$).*)",
+    "/((?![eE][nN]/|[eE][nN]$|[zZ][hH]-[tT][wW]/|[zZ][hH]-[tT][wW]$|_next/|_vercel/|projects/|reel/|icon\\.svg$|robots\\.txt$|sitemap\\.xml$|manifest\\.webmanifest$).*)",
     // Inside a language: anything but a case, a body of work, the share
     // cards (those pages 404 an unknown id themselves) or the 404 page.
-    "/:lang(en|zh-TW)/((?!work/[^/]+$|work/[^/]+/opengraph-image/|experience/[^/]+$|opengraph-image/|404$).*)",
+    "/:lang([eE][nN]|[zZ][hH]-[tT][wW])/((?!work/[^/]+$|work/[^/]+/opengraph-image/|experience/[^/]+$|opengraph-image/|404$).*)",
   ],
 };

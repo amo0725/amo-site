@@ -5,6 +5,7 @@ import { SmoothScroll } from "@/components/providers/smooth-scroll";
 import { WideFolds } from "@/components/providers/wide-folds";
 import { RadarCursor } from "@/components/ui/radar-cursor";
 import { site } from "@/config/site";
+import { localeIn } from "@/lib/locale-case";
 import { getContent, isLocale, locales } from "@/content";
 import { motionBootScript } from "@/lib/motion/boot";
 import { archivo, archivoName } from "../fonts";
@@ -102,8 +103,11 @@ export default async function RootLayout({
   params,
 }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
-  if (!isLocale(lang)) notFound();
-  const { htmlLang, ui } = getContent(lang);
+  // A language in the wrong case still renders the shell; its page sends
+  // the reader to the real address (redirectMiscased).
+  const locale = localeIn(lang);
+  if (!locale) notFound();
+  const { htmlLang, ui } = getContent(locale);
 
   return (
     // data-motion is set by the boot script before React hydrates.

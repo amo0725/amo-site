@@ -9,6 +9,7 @@ import {
 import { categoryColor } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
 import { detailMetadata, notFoundMetadata } from "@/lib/detail-metadata";
+import { redirectMiscased } from "@/lib/locale-case";
 import type { Locale } from "@/content/types";
 import { AreaList } from "@/features/experience/area-list";
 import { TrackFlowView } from "@/features/experience/track-flow";
@@ -56,6 +57,7 @@ export default async function TrackPage({
   params,
 }: PageProps<"/[lang]/experience/[id]">) {
   const { lang, id } = await params;
+  redirectMiscased(lang, `/experience/${id}`);
   const found = find(lang, id);
   if (!found) notFound();
   const { content: c, track, index } = found;

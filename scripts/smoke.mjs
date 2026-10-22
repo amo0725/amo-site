@@ -102,7 +102,10 @@ for (const [path, status, where] of [
   ["/en/no-such-page", 404, null],
   ["/en/work/no-such-case", 404, null],
   ["/EN", 308, "/en"],
+  ["/zh-tw", 308, "/zh-TW"],
   ["/zh-tw/work/vanishing-index", 308, "/zh-TW/work/vanishing-index"],
+  ["/En/experience/messaging", 308, "/en/experience/messaging"],
+  ["/EN/no-such-page", 308, "/en/no-such-page"],
   ["/en/work", 307, "/en#work"],
 ]) {
   const res = await fetch(`${BASE}${path}`, { redirect: "manual" });

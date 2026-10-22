@@ -18,6 +18,7 @@ import { Work } from "@/components/sections/work";
 import { narrowLayout, wideLayout } from "@/config/graph-layouts";
 import { categoryColor, sections, site } from "@/config/site";
 import { getContent, isLocale } from "@/content";
+import { redirectMiscased } from "@/lib/locale-case";
 
 /**
  * Composition root: the only place that knows where content comes from.
@@ -25,6 +26,7 @@ import { getContent, isLocale } from "@/content";
  */
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
+  redirectMiscased(lang);
   if (!isLocale(lang)) notFound();
   const c = getContent(lang);
 
