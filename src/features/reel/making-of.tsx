@@ -123,6 +123,8 @@ export function MakingOf({ copy, ready, playheadRef, onSeek }: MakingOfProps) {
                     <button
                       type="button"
                       disabled={!ready}
+                      // The title is hidden on phones; the name stays.
+                      aria-label={c.title}
                       onClick={() => onSeek(c.at + 0.01)}
                       className="flex h-full w-full flex-col justify-end gap-1.5 pr-1 text-left text-xs disabled:opacity-40"
                     >

@@ -20,6 +20,7 @@ export const zhTW: SiteContent = {
     role: "全端工程師",
     specialty: "後端・系統架構",
     place: "台灣",
+    status: "找全端／後端職缺・台灣或遠端",
     headline: "全端工程師（後端・系統架構），在台灣。",
     a11yName: "Amo Feng 馮聖淳，台灣的全端工程師",
     timeZone: "Asia/Taipei",
@@ -55,15 +56,18 @@ export const zhTW: SiteContent = {
     switchLanguage: { label: "EN", href: "/en", hrefLang: "en" },
     hero: {
       timeLabel: "台灣時間",
+      offset: "・UTC+8",
       ctaWork: "看 {count} 則真實案例",
       ctaGithub: "GitHub",
       ctaContact: "聯絡／索取履歷",
+      ctaContactShort: "聯絡／索取履歷",
+      ctaReel: "看 30 秒影片",
       motionLabel: "動態效果",
       motionOn: "開",
       motionOff: "關",
     },
-    signal: { looks: "看起來", actually: "其實", trail: "這些都不會出現在儀表板上，要一路追下去", context: "團隊與溝通" },
-    experience: { role: "角色", scope: "負責範圍", stack: "技術", earlier: "更早的工作", impact: "影響", highlights: "{count} 項重點", full: "看完整經歷", around: "周邊", areas: "{count} 項負責範圍", area: "負責範圍 {n}：{title}" },
+    signal: { looks: "看起來", actually: "其實", trail: "這些都不會出現在儀表板上，要一路追下去", context: "團隊與溝通", see: "看出處" },
+    experience: { role: "角色", scope: "負責範圍", stack: "技術", earlier: "更早的工作", impact: "影響", highlights: "{count} 項重點", full: "看完整經歷", around: "周邊", areas: "{count} 項負責範圍", area: "負責範圍 {n}：{title}", back: "回到經歷", to: "降到" },
     projects: { details: "做法與細節", shotNote: "示範資料" },
     systems: {
       emptyTitle: "選一個節點，看看資料怎麼流動。",
@@ -71,6 +75,8 @@ export const zhTW: SiteContent = {
         "圖上有 {nodes} 個系統、{edges} 條我實際接過的連線。深色的是核心系統，其他是外部平台。",
       flowsTo: "傳到",
       reset: "恢復排列",
+      core: "核心系統",
+      close: "關閉",
       skillsTitle: "技術範圍",
     },
     work: {
@@ -87,11 +93,15 @@ export const zhTW: SiteContent = {
       summary: "四步驟摘要",
       stack: "技術",
       readMore: "讀完整案例",
-      back: "回到事件紀錄",
+      back: "回到案例紀錄",
+      featured: "先看這三則・{n}/{of}",
+      more: "{track}的其他案例",
+      showing: "顯示 {count} 則案例",
+      to: "降到",
       prev: "上一則",
       next: "下一則",
     },
-    ai: { step: "步驟", me: "我", agent: "Agent", details: "細節" },
+    ai: { step: "步驟", me: "我", agent: "Agent", details: "這一步怎麼做" },
     principles: { evidence: "出處" },
     offDuty: {
       hold: "按住踩油門",
@@ -113,12 +123,21 @@ export const zhTW: SiteContent = {
       status: "正在找全端或後端職缺，台灣或海外遠端都可以。",
       resume: "索取履歷（中／英）",
       resumeSubject: "索取履歷",
+      resumeBody: "Amo 你好，\n\n我們在找 [職缺]（[公司]，[地點／遠端]）。\n方便提供你的履歷嗎？（[中文／英文]）\n\n謝謝，\n[姓名]",
     },
     footer: { now: "現在是台灣時間", backToTop: "回到頂端" },
+    notFound: {
+      title: "這個網址沒有訊號。",
+      body: "頁面可能已經移走，或網址打錯了。",
+      hint: "想找案例？標著「先看這三則」的是最好的起點。",
+      home: "回到首頁",
+      cases: "案例紀錄",
+      contact: "聯絡",
+    },
   },
 
   sections: {
-    signal: { label: "我做什麼", nav: "關於" },
+    signal: { label: "我做什麼", nav: "我做什麼" },
     experience: {
       label: "經歷",
       nav: "經歷",
@@ -130,8 +149,8 @@ export const zhTW: SiteContent = {
       lead: "每一條線都是真實的整合，上面流動的是錢、訂單或訊息。深色節點是我做過的核心系統，點一下看資料怎麼流。",
     },
     work: {
-      label: "事件紀錄",
-      nav: "紀錄",
+      label: "案例紀錄",
+      nav: "案例",
       lead: "真實處理過的案子：問題、根因、怎麼修、學到什麼。客戶與內部名稱已去識別化，點開一則看細節。",
     },
     principles: {
@@ -166,7 +185,7 @@ export const zhTW: SiteContent = {
         "多租戶平台，服務 2,000+ 企業，另有企業版與私有雲部署。PHP 單體加 NestJS 微服務，RabbitMQ 事件匯流排，跑在 AWS EKS 上；遠端加入香港團隊，工作語言英文。",
       role: "全端工程師：PHP 與 NestJS 後端、React 前端、AI 整合、架構規劃與 code review，並擔任 Email 通路專案的 owner",
       tagline: "香港・AI 全通路客服 SaaS・全端工程師，Email 通路 owner",
-      stats: [{ figure: "2,000+", label: "企業在用" }, { figure: "6", label: "個聊天通路，加上 Email" }, { figure: "7", label: "項負責範圍" }],
+      stats: [{ figure: "2,000+", label: "企業在用" }, { figure: "6", label: "個聊天通路，加上 Email" }, { figure: "360 倍", label: "用量 API 加速：18 秒到 50 毫秒以下" }],
       flow: {
         label: "一則訊息經過的路",
         path: [
@@ -182,36 +201,43 @@ export const zhTW: SiteContent = {
       areas: [
         {
           title: "預付點數計費平台",
+          short: "預付計費",
           body: "主要作者（初始 infra 由同事建立）。系統每小時以滑動視窗拉 WhatsApp、LLM 與 workflow 的用量並扣預付點數，再做每日對帳、月結與多幣別計價；金額一律用 Decimal128，每筆交易都能追回來源。也支援把帳號金鑰推送到客戶的私有雲部署，請求以 HMAC-SHA256 簽章，並擋掉內網與雲端 metadata 位址。",
           impact: "所有預付客戶的每一筆扣點、每日對帳與月結單都由這套產生；對 BSP 用量 API 的呼叫主動限速在官方上限的 2/3。",
         },
         {
           title: "AI 鏈路：語音轉文字、翻譯、AI Agent 回覆",
+          short: "AI 鏈路",
           body: "定下 AI 事件的分工原則：AI 服務只呼叫供應商並發布結果事件，寫入與推播由擁有資料的核心系統負責。語音轉文字用 Azure Speech 串流處理、長度不受限；AI Agent 回覆以（租戶、工單、訊息）為冪等鍵，commit 之後的失敗一律 park，不 requeue。",
           impact: "語音轉文字橫跨五個服務上線，沒有新增任何 Kubernetes Deployment；翻譯一次呼叫翻完租戶用到的所有語言，prompt 成本不隨語言數增加。",
         },
         {
           title: "Email 通路 owner 與 code review",
+          short: "Email 通路",
           body: "擔任 Email 通路專案的 owner：用過去幾個功能的實際工期校準估點、以區間給出日期，OAuth scope 刻意最小化。在 code review 中抓出一個授權模型錯誤。",
         },
         {
           title: "WhatsApp 與通路整合",
+          short: "通路整合",
           body: "WhatsApp 群組 API 以 Adapter pattern 支援三家 BSP，建群非同步、等 lifecycle webhook 回寫才完成。媒體下載的指數退避重試刻意塞在 Meta 媒體連結 24 小時的有效期內；用量 API 改成並行加快取：原本一次呼叫佔住 worker 18 秒，快取命中後 50 毫秒以下。自助開通改接 Embedded Signup v4，後端先確認號碼確實屬於客戶授權的帳號才註冊。",
           impact: "三家 BSP 共用同一套群組介面；媒體重試八段退避累計約 22.7 小時，收在 24 小時有效期內；一個客戶回報的權限問題追出四個同源缺陷。",
           metric: { label: "用量 API（快取命中）", before: 18000, after: 50, beforeText: "18 s", afterText: "< 50 ms", factor: "360× 以上" },
         },
         {
           title: "接手的兼職人員預約系統",
+          short: "預約系統",
           body: "接手香港一家大型會員制機構的兼職人員預約系統，成為主要開發者與維運負責人。做了候補、保留與逾時遞補的狀態機，遞補用 FOR UPDATE SKIP LOCKED 逐筆處理；兩次重大事故後，把 DateRangePolicy 定為所有日期條件的唯一出口。",
           impact: "兩次重大事故之後，所有日期條件都經過同一個 policy，預設 30 天前到 180 天後、硬上限 400 天，查詢不可能再沒有上界。",
           metric: { label: "篩選查詢（index 修回後）", before: 6300, after: 44, beforeText: "6.3 s", afterText: "44 ms", factor: "143×" },
         },
         {
           title: "收件匣、工單與聯絡人",
+          short: "收件匣與工單",
           body: "工單指派加上分散式鎖與樂觀並行控制，和前端的期望值不符就回 409；lock key 的算法刻意對齊，讓 PHP 核心與 Node 的工單路由服務共用同一組 Redis 鎖。聯絡人更新帶版本號，過期就拒絕，所有更新都即時推播同步。",
         },
         {
           title: "共用程式庫、Cron 與維運",
+          short: "程式庫與維運",
           body: "排程統一成 nest-commander 加 Kubernetes CronJob，取代 @nestjs/schedule 加 Redlock；超大 collection 的資料保留任務改用 cursor 分批刪除。另外新增 envelope encryption 程式庫，交付走 GitLab CI、Helm 與 ArgoCD 到 AWS EKS。",
           impact: "框架升級讓 LLM 用量計費靜默中斷的事故，用最小重現定位後，11 個 module 的子路由 middleware 一次救回並加上 fail-loud。",
         },
@@ -240,7 +266,7 @@ export const zhTW: SiteContent = {
         "直客、批發招牌商、內部業務代報價三種通路，服務美國與加拿大。系統橫跨主後端、CRM 與 3D 報價器、招牌商批發平台、訂閱付款服務、資料平台與 NetSuite 腳本；遠端加入美國團隊。",
       role: "quote-to-cash 鏈的主力全端工程師：後端、前端、3D、資料模型、NetSuite 腳本與發版協調，並直接和會計、財務、法務、業務對接",
       tagline: "美國・LED 數位招牌，硬體附軟體訂閱・quote-to-cash 主力全端工程師",
-      stats: [{ figure: "3", label: "種銷售通路" }, { figure: "0 張", label: "換定價模型時重算的已簽約報價" }, { figure: "6", label: "項負責範圍" }],
+      stats: [{ figure: "3", label: "種銷售通路" }, { figure: "0 張", label: "換定價模型時重算的已簽約報價" }, { figure: "8 個", label: "50×100 英尺招牌的 draw call，原本 12,503 個" }],
       flow: {
         label: "一張招牌，從設計到入帳",
         path: [
@@ -256,33 +282,39 @@ export const zhTW: SiteContent = {
       areas: [
         {
           title: "統一報價引擎與版本化定價",
+          short: "報價引擎",
           body: "從零設計分層的報價引擎，每條 line item 都附 cost trace；上面再加版本化定價，策略放在 code 裡的 registry，未知版本 fail-closed，翻 pointer 就是切換或回滾。公司換到硬體買斷的新商業模式，沒有重算任何一張已簽約的報價。更早一次舊引擎重構，用 55 個 golden master 加新舊引擎比對，抓到 11 個差異，修到 100% 一致才切換。",
           impact: "公司換商業模式時沒有重算任何一張已簽約的報價；NetSuite 沿用既有 item，零新 SKU。",
           metric: { label: "舊引擎重構：新舊比對差異", before: 11, after: 0, beforeText: "11 處", afterText: "0 處" },
         },
         {
           title: "Cellular 計費引擎：事件溯源、扣款恰好一次",
+          short: "Cellular 計費",
           body: "把三代並存的行動網路計費收斂成一張登記表、一個 Stripe writer、一個純函式政策引擎，partial unique index 從資料層杜絕雙收。先寫 ledger 再呼叫 Stripe，batch 必須帶兩封提醒信的事件 id 才能扣卡；不變式用 39,622 個生成案例驗證。",
           impact: "不變式 grid 從 7,745 擴到 39,622 個案例，70 分鐘模擬 4 年；同一台控制器被收兩次由資料層約束擋掉。",
         },
         {
           title: "招牌商批發平台與 3D 報價器",
+          short: "批發平台與 3D",
           body: "從零建立批發報價模組：報價與數量折扣、品牌化 PDF、結帳與電子簽名、ACH 與信用卡手續費。客戶提案從沒有成本欄位的型別逐欄組出，成本靠結構不外洩；3D 報價器改用 InstancedMesh，50×100 英尺的招牌從 12,503 個 draw call 降到 8 個、重建從 290 毫秒降到 8 毫秒。",
           impact: "客戶提案的成本欄位在型別上不存在，外洩在結構上不可能；3D 改動用 52 個情境、2 個視角做像素比對，標準尺寸 0 px 差異。",
           metric: { label: "大尺寸招牌重建", before: 290, after: 8, beforeText: "290 ms", afterText: "8 ms", factor: "36×" },
         },
         {
           title: "Stripe 訂閱計費",
+          short: "Stripe 訂閱",
           body: "把一筆加總的訂閱改成逐項計費，結帳時同時鑄造月繳與年繳的 price，切換週期只是換 id；出貨後才開始計費，用 billing_cycle_anchor 取代假的試用期。Stripe webhook 改走 BullMQ 管線，有重試、冪等與可 replay 的 dead-letter queue。",
           impact: "新版訂單出貨後永遠不會扣款的問題，在第一筆訂單出貨前修好；webhook 五次指數退避、冪等鍵保留 7 天、DLQ 保留 30 天可 replay。",
         },
         {
           title: "Quote-to-cash 跨系統同步",
+          short: "跨系統同步",
           body: "HubSpot 成交後依序 upsert 客戶、聯絡人、機會與估價單到 NetSuite，Stripe 的付款與訂金自動入帳，財務可以直接對帳。寫入前先查 NetSuite 是否已有會計手建的單據，查不到就 fail-closed；運費集中成單一服務，立下「承運商失敗絕不寫成 0」的不變式。",
           impact: "切換多棧板運費 payload 前做受控的 production 金額比對，差異為 0；付款條件回填把對 ERP 的請求從上千次降到個位數。",
         },
         {
           title: "發版協調與資料模型",
+          short: "發版與資料",
           body: "主導一次橫跨六個服務、二十多張票的訂閱計費發版：對自己的計畫做對抗式審查、抓出三個影響營收的排序錯誤，runbook 含 34 條 pre-flight 與回滾表。在同事建立的資料平台上負責 cellular 與訂閱的 dbt 與 Cube 模型。",
           impact: "runbook 的 34 條 pre-flight 每條附停止條件，十多步部署每步寫「做錯順序會壞什麼」，並列出明知留著的洞。",
         },

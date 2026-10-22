@@ -19,6 +19,8 @@ interface GraphViewProps {
   onSelect: (id: string) => void;
   onPreview: (id: string | null) => void;
   resetLabel: string;
+  /** Spoken after a core node's name (core nodes are told apart by colour). */
+  coreLabel: string;
   /**
    * Camera framing (wide layout only): when `zoomed`, the graph pushes in
    * around node `id`. The origin uses the laid-out position, not a dragged
@@ -51,6 +53,7 @@ export function GraphView({
   onSelect,
   onPreview,
   resetLabel,
+  coreLabel,
   camera,
   className,
 }: GraphViewProps) {
@@ -153,7 +156,7 @@ export function GraphView({
                     d={d}
                     pathLength={1}
                     fill="none"
-                    stroke={on ? "var(--ink)" : "var(--coast)"}
+                    stroke={on ? "var(--ink)" : "var(--control)"}
                     strokeWidth={on ? 1.75 : 1}
                     vectorEffect="non-scaling-stroke"
                     className="edge-draw transition-[stroke] duration-300"
@@ -202,11 +205,16 @@ export function GraphView({
                   "absolute -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border whitespace-nowrap select-none active:cursor-grabbing",
                   "transition-[opacity,background-color,color,box-shadow,scale] duration-300 ease-out",
                   "px-3 py-1 text-[0.8rem] md:px-4 md:py-1.5 md:text-sm",
+                  // Nodes set aside by a selection step back in colour, not
+                  // opacity, so their names stay readable (4.5:1 and up).
                   hub
-                    ? "border-ink bg-ink font-semibold text-paper"
-                    : "border-control bg-paper-raised text-ink hover:border-ink",
-                  isActive && "scale-110 shadow-[0_0_0_4px_var(--echo-2)]",
-                  dimmed && "opacity-40",
+                    ? dimmed
+                      ? "border-ink-soft bg-ink-soft font-semibold text-paper"
+                      : "border-ink bg-ink font-semibold text-paper"
+                    : dimmed
+                      ? "border-graticule bg-paper-raised text-ink-soft"
+                      : "border-control bg-paper-raised text-ink hover:border-ink",
+                  isActive && "scale-110 shadow-[0_0_0_4px_var(--echo-2-ink)]",
                 )}
                 style={{
                   left: `${(p.x / width) * 100}%`,
@@ -214,6 +222,7 @@ export function GraphView({
                 }}
               >
                 {node.label}
+                {hub ? <span className="sr-only">, {coreLabel}</span> : null}
               </button>
             );
           })}

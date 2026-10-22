@@ -1,6 +1,7 @@
 "use client";
 
-import { m } from "motion/react";
+// The bare m component, not the barrel (which bundles every feature).
+import * as m from "motion/react-m";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { fill } from "@/lib/i18n";

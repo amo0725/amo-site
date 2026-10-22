@@ -17,7 +17,7 @@ export function SiteFooter({ profile, ui }: SiteFooterProps) {
       <div className="mx-auto max-w-[90rem]">
         <p
           aria-hidden="true"
-          className="widen-in -ml-[0.04em] text-[clamp(3.25rem,12.5vw,13rem)] leading-[0.8] font-black tracking-[-0.03em] whitespace-nowrap text-on-closing/90"
+          className="widen-in font-name -ml-[0.04em] text-[clamp(3.25rem,12.5vw,13rem)] leading-[0.8] font-black tracking-[-0.03em] whitespace-nowrap text-on-closing/90"
         >
           {profile.fullName}
         </p>
@@ -35,7 +35,7 @@ export function SiteFooter({ profile, ui }: SiteFooterProps) {
           </p>
           <a
             href="#top"
-            className="underline underline-offset-4 hover:text-on-closing"
+            className="-my-3 inline-flex min-h-11 items-center underline underline-offset-4 hover:text-on-closing"
           >
             {ui.backToTop}
           </a>

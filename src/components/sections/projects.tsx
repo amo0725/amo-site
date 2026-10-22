@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import { Fold } from "@/components/ui/fold";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
@@ -20,20 +20,24 @@ function Plate({
   note: string;
 }) {
   const phone = shot.device === "phone";
+  // The optimised srcset without the client image component: a plain,
+  // lazy <img> needs no JavaScript.
+  const { props: img } = getImageProps({
+    src: shot.src,
+    alt: shot.alt,
+    width: shot.width,
+    height: shot.height,
+    sizes: phone
+      ? "(min-width: 48rem) 14vw, 26vw"
+      : "(min-width: 90rem) 37rem, (min-width: 48rem) 40vw, 100vw",
+  });
   return (
     <figure>
       <div className="plate">
         <div className="relative aspect-[2/1] max-w-full overflow-hidden bg-surface-display outline outline-1 -outline-offset-1 outline-graticule md:aspect-[16/10]">
-          <Image
-            src={shot.src}
-            alt={shot.alt}
-            width={shot.width}
-            height={shot.height}
-            sizes={
-              phone
-                ? "(min-width: 48rem) 14vw, 40vw"
-                : "(min-width: 48rem) 40vw, 100vw"
-            }
+          {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text -- getImageProps supplies src, srcSet and alt */}
+          <img
+            {...img}
             className={
               phone
                 ? "absolute top-[7%] left-1/2 h-[125%] w-auto -translate-x-1/2 rounded-[0.9rem] border-[3px] border-ink object-cover object-top"
@@ -116,8 +120,7 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
                     <span className="flex items-center gap-2">
                       <span
                         aria-hidden="true"
-                        className="mark"
-                        style={{ background: "var(--echo-4)" }}
+                        className="mark bg-control"
                       />
                       {project.status}
                     </span>
@@ -127,7 +130,7 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
                       href={project.href}
                       target="_blank"
                       rel="noopener"
-                      className="normal-case underline decoration-control underline-offset-4 hover:text-ink"
+                      className="-my-3 inline-flex min-h-11 items-center normal-case underline decoration-control underline-offset-4 hover:text-ink"
                     >
                       {repoLabel(project.href)}
                     </a>
@@ -144,7 +147,12 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
                   <Fold
                     className="mt-5 max-w-[40rem]"
                     summaryClassName="border-y border-graticule py-3 text-sm font-semibold"
-                    summary={ui.details}
+                    summary={
+                      <span>
+                        {ui.details}
+                        <span className="sr-only">: {project.name}</span>
+                      </span>
+                    }
                   >
                     <ul className="mt-3 space-y-1.5 text-ink-soft">
                       {project.details.map((d) => (

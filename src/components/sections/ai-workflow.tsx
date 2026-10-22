@@ -1,4 +1,5 @@
 import { SectionHeading } from "@/components/ui/section-heading";
+import { Fold } from "@/components/ui/fold";
 import { sectionMeta } from "@/config/site";
 import type { AiWorkflow, SectionCopy, UiStrings } from "@/content/types";
 
@@ -145,18 +146,18 @@ export function AiWorkflowSection({ workflow, copy, ui }: AiWorkflowProps) {
                   <LaneCell who={ui.me} text={step.me} tone="me" />
                   <LaneCell who={ui.agent} text={step.agent} tone="agent" />
                 </div>
-                <details className="group/step col-start-2 mt-1 lg:col-start-1 lg:mt-3 lg:pr-5">
-                  <summary className="coord flex cursor-pointer list-none items-center gap-1.5 py-1 [&::-webkit-details-marker]:hidden">
-                    <span
-                      aria-hidden="true"
-                      className="transition-[rotate] duration-300 group-open/step:rotate-90"
-                    >
-                      ›
+                <Fold
+                  className="col-start-2 mt-1 border-t border-graticule lg:col-start-1 lg:mt-3 lg:mr-5"
+                  summaryClassName="min-h-11 py-1 text-sm font-semibold"
+                  summary={
+                    <span>
+                      {ui.details}
+                      <span className="sr-only">: {step.title}</span>
                     </span>
-                    {ui.details}
-                  </summary>
-                  <p className="pt-1 text-sm text-ink-soft">{step.body}</p>
-                </details>
+                  }
+                >
+                  <p className="pb-2 text-sm text-ink-soft">{step.body}</p>
+                </Fold>
               </li>
             ))}
           </ol>

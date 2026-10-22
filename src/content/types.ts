@@ -19,6 +19,8 @@ export interface Profile {
   /** What the role leans towards, shown after the title. */
   specialty: string;
   place: string;
+  /** One line on what I am open to, for the first screen. */
+  status: string;
   /** Bold lead-in before the summary, e.g. "Full-stack engineer in Taiwan." */
   headline: string;
   /** Full text of the hero heading for assistive tech. */
@@ -108,6 +110,8 @@ export interface TrackFlow {
 /** One area of ownership inside a body of work. */
 export interface ScopeArea {
   title: string;
+  /** Two or three words, for the badge on the flow drawing. */
+  short?: string;
   body: string;
   metric?: Metric;
   /** What the work protected, removed or made impossible. May carry a number; not a measurement. */
@@ -357,11 +361,17 @@ export interface UiStrings {
   switchLanguage: { label: string; href: string; hrefLang: Locale };
   hero: {
     timeLabel: string;
+    /** UTC offset after the clock, with its separator. */
+    offset: string;
     /** {count} */
     ctaWork: string;
     ctaGithub: string;
     /** Quiet text link to the contact section. */
     ctaContact: string;
+    /** The same, on phones. */
+    ctaContactShort: string;
+    /** Link to the reel. */
+    ctaReel: string;
     motionLabel: string;
     motionOn: string;
     motionOff: string;
@@ -371,6 +381,8 @@ export interface UiStrings {
     actually: string;
     trail: string;
     context: string;
+    /** On each reading: where it links. */
+    see: string;
   };
   experience: {
     /** Link to a track's own page. */
@@ -388,6 +400,10 @@ export interface UiStrings {
     impact: string;
     /** Phone fold over an earlier job's bullet list. {count} */
     highlights: string;
+    /** On a track page: back to the list. */
+    back: string;
+    /** Spoken between a before and an after figure. */
+    to: string;
   };
   projects: {
     /** Phone fold over a project's build notes. */
@@ -402,6 +418,10 @@ export interface UiStrings {
     flowsTo: string;
     reset: string;
     skillsTitle: string;
+    /** Spoken after a core node's name. */
+    core: string;
+    /** Closes the docked panel on phones. */
+    close: string;
   };
   work: {
     /** Phone fold over the two filter rows. */
@@ -423,6 +443,14 @@ export interface UiStrings {
     stack: string;
     /** On a case page: back to the list. */
     back: string;
+    /** Marker on the featured cases. {n}, {of} */
+    featured: string;
+    /** On a case page: the other cases of its track. {track} */
+    more: string;
+    /** Announced after filtering. {count} */
+    showing: string;
+    /** Spoken between a before and an after figure. */
+    to: string;
     /** On a case page: the neighbouring cases. */
     prev: string;
     next: string;
@@ -460,8 +488,18 @@ export interface UiStrings {
     resume: string;
     /** Subject line of the résumé request email. */
     resumeSubject: string;
+    /** Prefilled body of the résumé request email, with [placeholders]. */
+    resumeBody: string;
   };
   footer: { now: string; backToTop: string };
+  notFound: {
+    title: string;
+    body: string;
+    hint: string;
+    home: string;
+    cases: string;
+    contact: string;
+  };
 }
 
 export interface SectionCopy {

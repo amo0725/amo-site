@@ -14,6 +14,7 @@ export function detailMetadata({
   title,
   description,
   type = "article",
+  image,
 }: {
   content: SiteContent;
   /** Path after the locale, e.g. "/work/vanishing-index". */
@@ -21,13 +22,18 @@ export function detailMetadata({
   title: string;
   description: string;
   type?: "article" | "profile";
+  /** The page's own share card (path and alt); the site's card otherwise. */
+  image?: { url: string; alt: string };
 }): Metadata {
   const lang = content.locale;
   const languages = Object.fromEntries(
     locales.map((l) => [l, `/${l}${path}`]),
   ) as Record<Locale, string>;
   const url = languages[lang];
-  const image = `/${lang}/opengraph-image/card`;
+  const card = image ?? {
+    url: `/${lang}/opengraph-image/card`,
+    alt: content.meta.ogAlt,
+  };
   return {
     title,
     description,
@@ -42,13 +48,13 @@ export function detailMetadata({
       siteName: content.profile.fullName,
       title,
       description,
-      images: [{ url: image, width: 1200, height: 630, alt: content.meta.ogAlt }],
+      images: [{ url: card.url, width: 1200, height: 630, alt: card.alt }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [image],
+      images: [{ url: card.url, alt: card.alt }],
     },
   };
 }

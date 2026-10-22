@@ -18,7 +18,7 @@ export function Reel({ copy }: { copy: ReelCopy }) {
             >
               <span
                 aria-hidden="true"
-                className="inline-block size-3 shrink-0 rounded-full bg-echo-2 md:size-3.5"
+                className="inline-block size-3 shrink-0 bg-echo-2 md:size-3.5"
               />
               <span>{copy.title}</span>
             </h2>

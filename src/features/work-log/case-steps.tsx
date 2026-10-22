@@ -104,18 +104,46 @@ export function Lesson({
  * What an open case shows in the list: the four steps, the lesson, and the
  * way to the full write-up. A server component, handed to the client list
  * as a finished node.
+ *
+ * On phones the open case's title is pinned as one compact line, so the
+ * category and track it showed while closed open the body instead.
  */
 export function CaseSummary({
   entry,
   ui,
   locale,
+  context,
 }: {
   entry: WorkEntry;
   ui: UiStrings["work"];
   locale: Locale;
+  context: {
+    category: string;
+    color: string;
+    track?: string;
+    /** "Start here · 1/3" on a featured case. */
+    featured?: string;
+  };
 }) {
   return (
-    <div className="grid gap-y-7 pt-5 pb-9 md:grid-cols-[7rem_1fr] md:gap-x-8 md:pt-0">
+    <div className="grid gap-y-7 pt-4 pb-9 md:grid-cols-[7rem_1fr] md:gap-x-8 md:pt-0">
+      <p className="coord -mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 md:hidden">
+        {context.featured ? (
+          <span className="flex basis-full items-center gap-2 text-echo-2-ink">
+            <span aria-hidden="true" className="mark rounded-full bg-echo-2" />
+            {context.featured}
+          </span>
+        ) : null}
+        <span className="flex items-center gap-2">
+          <span
+            aria-hidden="true"
+            className="mark"
+            style={{ background: `var(${context.color})` }}
+          />
+          {context.category}
+        </span>
+        {context.track ? <span>{context.track}</span> : null}
+      </p>
       <div className="md:col-start-2">
         <CaseSteps entry={entry} ui={ui} />
       </div>

@@ -20,6 +20,15 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
   poweredByHeader: false,
+  // Every route is prerendered with its metadata already in <head>, so no
+  // crawler or audit tool needs the blocking dynamic render Next gives the
+  // user agents on its default list: they get the cached page like anyone.
+  htmlLimitedBots: /x^/,
+  images: {
+    formats: ["image/avif", "image/webp"],
+    // Screenshots only change with a deploy.
+    minimumCacheTTL: 2592000,
+  },
   experimental: {
     // One 404 page for every unmatched URL, since the root layout lives under [lang].
     globalNotFound: true,

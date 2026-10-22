@@ -4,7 +4,7 @@ import { archivo } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "404",
+  title: "404 找不到頁面 · Page not found｜Amo Feng",
   description: "這個網址沒有訊號。No signal at this address.",
 };
 

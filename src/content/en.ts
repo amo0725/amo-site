@@ -20,14 +20,15 @@ export const en: SiteContent = {
     role: "Full-stack engineer",
     specialty: "Backend and systems architecture",
     place: "Taiwan",
+    status: "Open to full-stack / backend roles · Taiwan or remote",
     headline: "Full-stack engineer in Taiwan.",
     a11yName: "Amo Feng (馮聖淳), full-stack engineer in Taiwan",
     timeZone: "Asia/Taipei",
     focus: "NestJS · React · PHP · MySQL / PostgreSQL / MongoDB · RabbitMQ · Kubernetes",
     positioning: "Systems that touch money should add up at every step.",
     proof: [
-      { figure: "2,000+", label: "businesses on the support platform whose prepaid billing I wrote", short: "businesses; I wrote the billing" },
-      { figure: "0", label: "signed quotes repriced when the pricing model changed", short: "signed quotes repriced" },
+      { figure: "2,000+", label: "businesses on the support platform whose prepaid billing I wrote", short: "businesses on a platform whose billing I wrote" },
+      { figure: "0", label: "signed quotes repriced when the pricing model changed", short: "signed quotes repriced in a pricing switch" },
       { figure: "44 ms", label: "booking query, from 6.3\u00a0s: found the indexes the ORM had dropped", short: "booking query, was 6.3\u00a0s" },
     ],
     summary:
@@ -55,15 +56,18 @@ export const en: SiteContent = {
     switchLanguage: { label: "中文", href: "/zh-TW", hrefLang: "zh-TW" },
     hero: {
       timeLabel: "Taiwan time",
+      offset: " · UTC+8",
       ctaWork: "Read {count} real cases",
       ctaGithub: "GitHub",
       ctaContact: "Contact / request résumé",
+      ctaContactShort: "Contact",
+      ctaReel: "Watch the 30-second reel",
       motionLabel: "Motion",
       motionOn: "On",
       motionOff: "Off",
     },
-    signal: { looks: "Looks fine", actually: "Actually", trail: "None of it shows on a dashboard. You follow it down", context: "Teams and language" },
-    experience: { role: "Role", scope: "Scope", stack: "Stack", earlier: "Earlier work", impact: "Impact", highlights: "{count} highlights", full: "Read the full write-up", around: "Around it", areas: "{count} areas of ownership", area: "Area {n}: {title}" },
+    signal: { looks: "Looks fine", actually: "Actually", trail: "None of it shows on a dashboard. You follow it down", context: "Teams and language", see: "Where it happened" },
+    experience: { role: "Role", scope: "Scope", stack: "Stack", earlier: "Earlier work", impact: "Impact", highlights: "{count} highlights", full: "Read the full write-up", around: "Around it", areas: "{count} areas of ownership", area: "Area {n}: {title}", back: "Back to experience", to: "to" },
     projects: { details: "How it's built", shotNote: "Demo data" },
     systems: {
       emptyTitle: "Pick a node to see what flows through it.",
@@ -71,6 +75,8 @@ export const en: SiteContent = {
         "The map shows {nodes} systems and {edges} connections I have built. Dark nodes are core systems; the rest are outside platforms.",
       flowsTo: "to",
       reset: "Reset layout",
+      core: "core system",
+      close: "Close",
       skillsTitle: "Stack and tooling",
     },
     work: {
@@ -87,11 +93,15 @@ export const en: SiteContent = {
       summary: "In four steps",
       stack: "Stack",
       readMore: "Read the full case",
-      back: "Back to the work log",
+      back: "Back to the case log",
+      featured: "Start here · {n}/{of}",
+      more: "More from {track}",
+      showing: "{count} cases shown",
+      to: "to",
       prev: "Previous",
       next: "Next",
     },
-    ai: { step: "Step", me: "Me", agent: "Agent", details: "Detail" },
+    ai: { step: "Step", me: "Me", agent: "Agent", details: "How this step works" },
     principles: { evidence: "Where it happened" },
     offDuty: {
       hold: "Hold to rev",
@@ -111,14 +121,23 @@ export const en: SiteContent = {
       copied: "Email copied",
       copyFailed: "Couldn't copy. Select the address instead.",
       status: "Open to full-stack and backend roles, in Taiwan or remote.",
-      resume: "Request my résumé (EN / 中文)",
+      resume: "Request my résumé (English or Chinese)",
       resumeSubject: "Résumé request",
+      resumeBody: "Hi Amo,\n\nI'm hiring for [role] at [company] ([location / remote]).\nCould you send your résumé in [English / Chinese]?\n\nThanks,\n[name]",
     },
     footer: { now: "It is now, in Taiwan,", backToTop: "Back to top" },
+    notFound: {
+      title: "No signal at this address.",
+      body: "The page may have moved, or the URL has a typo.",
+      hint: "Looking for a case? The three marked “Start here” are the place to begin.",
+      home: "Home page",
+      cases: "The case log",
+      contact: "Contact",
+    },
   },
 
   sections: {
-    signal: { label: "What I do", nav: "About" },
+    signal: { label: "What I do", nav: "What I do" },
     experience: {
       label: "Experience",
       nav: "Experience",
@@ -127,11 +146,11 @@ export const en: SiteContent = {
     systems: {
       label: "Systems I've connected",
       nav: "Systems",
-      lead: "Every line is a real integration carrying money, orders or messages. Dark nodes are core systems I have built in; pick one to see what flows through it.",
+      lead: "Every line is a real integration carrying money, orders or messages. Dark nodes are core systems I have worked on; pick one to see what flows through it.",
     },
     work: {
-      label: "Incident log",
-      nav: "Log",
+      label: "Case log",
+      nav: "Cases",
       lead: "Real cases: the problem, the root cause, the fix and the lesson. Client and internal names are anonymised. Open one for the details.",
     },
     principles: {
@@ -166,7 +185,7 @@ export const en: SiteContent = {
         "Multi-tenant platform serving 2,000+ businesses, plus enterprise and private-cloud deployments. A PHP monolith with NestJS microservices and a RabbitMQ event bus, running on AWS EKS. I joined the Hong Kong team remotely; the working language is English.",
       role: "Full-stack engineer: PHP and NestJS backend, React front end, AI integration, architecture planning and code review, and owner of the email-channel project.",
       tagline: "Hong Kong · AI omnichannel messaging SaaS · Full-stack engineer, email-channel owner",
-      stats: [{ figure: "2,000+", label: "businesses use it" }, { figure: "6", label: "chat channels, plus email" }, { figure: "7", label: "areas I owned" }],
+      stats: [{ figure: "2,000+", label: "businesses use it" }, { figure: "6", label: "chat channels, plus email" }, { figure: "360×", label: "faster usage API: 18 s to under 50 ms" }],
       flow: {
         label: "The path of one message",
         path: [
@@ -182,36 +201,43 @@ export const en: SiteContent = {
       areas: [
         {
           title: "Prepaid credit billing platform",
+          short: "Prepaid billing",
           body: "Main author (a colleague set up the initial infrastructure). An hourly sliding-window job pulls WhatsApp, LLM and workflow usage and debits prepaid credits, with daily reconciliation, monthly settlement and multi-currency pricing on top. Money is Decimal128 throughout, and every transaction points back at its cause. It can also push account keys to customers' private-cloud deployments, with HMAC-SHA256-signed requests and outbound calls blocked from internal and cloud-metadata addresses.",
           impact: "Every debit, daily reconciliation and monthly settlement for every prepaid customer comes out of this system; calls to the BSP usage API are rate-limited to two thirds of the official cap.",
         },
         {
           title: "AI pipeline: speech-to-text, translation, AI agent replies",
+          short: "AI pipeline",
           body: "Set the ownership rule for AI events: AI services publish a result event, and the core system that owns the data does the write and the push. Speech-to-text streams through Azure Speech with no length limit, and AI agent replies are idempotent on (tenant, ticket, message), parked instead of requeued when they fail after commit.",
           impact: "Speech-to-text shipped across five services without adding a single Kubernetes Deployment; translation covers every language a tenant uses in one call, so prompt cost does not grow with the language count.",
         },
         {
           title: "Email channel owner and code review",
+          short: "Email channel",
           body: "Owner of the email-channel project: estimates calibrated against how long earlier features actually took, dates given as a range, and OAuth scopes kept to the minimum. In code review I caught an authorization-model error.",
         },
         {
           title: "WhatsApp and channel integrations",
+          short: "Channels",
           body: "The WhatsApp Groups API uses one adapter per BSP, with group creation completing on the lifecycle webhook. Media downloads retry with backoff that fits inside the 24-hour life of Meta's media URLs, and the usage API, rewritten to fan out in parallel behind a cache, went from holding a worker for 18 seconds to under 50 ms on a cache hit. Self-serve onboarding moved to Embedded Signup v4, and the backend registers a number only after confirming it belongs to the account the customer authorised.",
           impact: "Three BSPs share one groups interface; media retries back off over eight steps totalling about 22.7 hours, inside the 24-hour URL lifetime; one customer report on permissions led to four defects with a single root.",
           metric: { label: "Usage API (cache hit)", before: 18000, after: 50, beforeText: "18 s", afterText: "< 50 ms", factor: "360×+" },
         },
         {
           title: "A staff booking system I took over",
+          short: "Staff booking",
           body: "Took over the part-time staff booking system of a large Hong Kong membership organisation and became its main developer and operator. Built the waitlist, hold and timeout state machine, with promotion done row by row under FOR UPDATE SKIP LOCKED; after two major incidents, made DateRangePolicy the single exit for every date filter.",
           impact: "After two major incidents every date filter passes through one policy, defaulting to 30 days back and 180 days ahead with a hard cap of 400 days, so a query can no longer run without an upper bound.",
           metric: { label: "Filter query (index restored)", before: 6300, after: 44, beforeText: "6.3 s", afterText: "44 ms", factor: "143×" },
         },
         {
           title: "Inbox, tickets and contacts",
+          short: "Inbox & tickets",
           body: "Ticket assignment got a distributed lock plus optimistic concurrency, answering 409 on a stale assignee; the lock-key derivation was aligned so the PHP core and the Node routing service share one set of Redis locks. Contact updates carry a version, are rejected when stale, and are pushed live.",
         },
         {
           title: "Shared libraries, cron and operations",
+          short: "Libraries & ops",
           body: "Standardised scheduled work on nest-commander with Kubernetes CronJobs, replacing @nestjs/schedule plus Redlock, and moved data retention on a very large collection to batched deletes behind an _id cursor. Added an envelope-encryption library (KMS plus AES-256-GCM); delivery runs through GitLab CI, Helm and ArgoCD onto AWS EKS.",
           impact: "When a framework upgrade silently stopped LLM usage billing, a minimal reproduction located it and the sub-route middleware of 11 modules was restored in one change, now failing loudly.",
         },
@@ -240,7 +266,7 @@ export const en: SiteContent = {
         "Three sales channels (direct, wholesale sign shops, and internal sales quoting on a shop's behalf) across the US and Canada. The systems span the main backend, the CRM and 3D configurator, the sign-shop platform, the subscription payment service, the data platform and NetSuite scripts. I joined the US team remotely.",
       role: "Full-stack engineer owning the quote-to-cash chain: backend, front end, 3D, data models, NetSuite scripts and release coordination, working directly with accounting, finance, legal and sales.",
       tagline: "US · LED digital signage, hardware plus software subscription · Full-stack engineer owning quote-to-cash",
-      stats: [{ figure: "3", label: "sales channels" }, { figure: "0", label: "signed quotes re-priced in the model switch" }, { figure: "6", label: "areas I owned" }],
+      stats: [{ figure: "3", label: "sales channels" }, { figure: "0", label: "signed quotes re-priced in the model switch" }, { figure: "8", label: "draw calls for a 50 × 100 ft sign, was 12,503" }],
       flow: {
         label: "One sign, from design to revenue",
         path: [
@@ -256,33 +282,39 @@ export const en: SiteContent = {
       areas: [
         {
           title: "Unified quoting engine and versioned pricing",
+          short: "Quoting engine",
           body: "Designed a layered quoting engine from scratch, with a cost trace on every line item, plus a versioned pricing layer: strategies live in code behind a registry, unknown versions fail closed, and one pointer flip switches or rolls back. The company moved to hardware-first pricing without re-pricing a single signed quote.An earlier refactor of the legacy engine ran 55 golden-master tests and an old-versus-new comparison, found 11 differences, and switched only at 100% parity.",
           impact: "The business model changed without re-pricing a single signed quote; NetSuite reuses existing items, zero new SKUs.",
           metric: { label: "Legacy refactor: old vs new diffs", before: 11, after: 0, beforeText: "11", afterText: "0" },
         },
         {
           title: "Cellular billing engine: event-sourced, exactly-once charging",
+          short: "Cellular billing",
           body: "Collapsed three generations of cellular billing into one registry, one Stripe writer and one pure policy engine, with a partial unique index that makes double-billing a controller impossible. The ledger is written before Stripe is called, a card is charged only with proof that both reminder emails went out, and the invariants were checked across 39,622 generated cases.",
           impact: "The invariant grid grew from 7,745 to 39,622 cases, with 4 simulated years in 70 minutes; billing a controller twice is blocked by a database constraint.",
         },
         {
           title: "Wholesale sign-shop platform and 3D configurator",
+          short: "Wholesale & 3D",
           body: "Built the wholesale quoting module from scratch: quoting, checkout with e-signature, ACH and card surcharges. The customer proposal is assembled from a type with no cost fields, so cost cannot leak; the 3D configurator moved to InstancedMesh, taking a 50 by 100 ft sign from 12,503 draw calls to 8 and a 290 ms rebuild to 8 ms.",
           impact: "The customer proposal has no cost field in its type, so leaking cost is structurally impossible; 3D changes are pixel-compared across 52 scenarios and 2 angles, 0 px at standard sizes.",
           metric: { label: "Large-sign rebuild", before: 290, after: 8, beforeText: "290 ms", afterText: "8 ms", factor: "36×" },
         },
         {
           title: "Stripe subscription billing",
+          short: "Stripe billing",
           body: "Replaced one lump-sum subscription with itemised billing: checkout mints monthly and annual prices together so switching cycles is just swapping ids, and billing starts after shipment through billing_cycle_anchor instead of a fake trial. Stripe webhooks moved onto a BullMQ pipeline with retries, idempotency and a replayable dead-letter queue.",
           impact: "The case where a new-style order would never be billed after shipment was fixed before the first order shipped; webhooks retry five times with backoff, idempotency keys live 7 days, and the dead-letter queue keeps 30 days for replay.",
         },
         {
           title: "Quote-to-cash sync across systems",
+          short: "CRM / ERP sync",
           body: "A closed HubSpot deal is upserted into NetSuite as customer, contact, opportunity and estimate, and Stripe payments and deposits book themselves. A footprint guard checks NetSuite for documents accounting created by hand before any write; freight is one service with a hard invariant that a carrier failure never writes 0.",
           impact: "Before switching the multi-pallet freight payload, a controlled production price comparison showed zero difference; the payment-terms backfill cut requests to the ERP from thousands to single digits.",
         },
         {
           title: "Release coordination and data models",
+          short: "Release & data",
           body: "Led a subscription billing release across six services and twenty-odd tickets: an adversarial review of my own plan caught three revenue-affecting ordering mistakes, and the runbook has 34 pre-flight checks and a rollback table. On the data platform a colleague built, I own the cellular and subscription dbt and Cube models.",
           impact: "Each of the runbook's 34 pre-flight checks has a stop condition, each of the dozen-odd deploy steps says what breaks if swapped, and the known gaps are listed.",
         },

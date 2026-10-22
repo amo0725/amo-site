@@ -14,21 +14,25 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
  * The areas a stop carries, as coordinates: the same "01…07" index as the
- * list of areas, plotted on the drawing, each linking to its area.
+ * list of areas, plotted on the drawing with the area's short name, each
+ * linking to its area. `bare` drops the name where the drawing already
+ * says it (the side lane's own title).
  */
 function AreaBadges({
   track,
   areas,
   ui,
   hrefBase,
+  bare = false,
 }: {
   track: ExperienceTrack;
   areas: readonly number[];
   ui: UiStrings["experience"];
   hrefBase: string;
+  bare?: boolean;
 }) {
   return (
-    <span className="flex flex-wrap items-center gap-1">
+    <span className="flex flex-wrap items-center gap-2">
       {areas.map((n) => {
         const area = track.areas[n - 1];
         return (
@@ -39,7 +43,10 @@ function AreaBadges({
             title={area?.title}
             className="area-badge"
           >
-            {pad(n)}
+            <span className="area-badge-n">{pad(n)}</span>
+            {!bare && area?.short ? (
+              <span className="area-badge-name">{area.short}</span>
+            ) : null}
           </a>
         );
       })}
@@ -144,6 +151,7 @@ export function TrackFlowView({
                 areas={flow.side.areas}
                 ui={ui}
                 hrefBase={hrefBase}
+                bare
               />
             </span>
           </div>
@@ -157,19 +165,12 @@ export function TrackFlowView({
           />
           <div className="grid gap-1.5">
             <p className="coord">{ui.around}</p>
-            <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
-              {flow.around.map((n) => (
-                <li key={n} className="flex items-center gap-2">
-                  <AreaBadges
-                    track={track}
-                    areas={[n]}
-                    ui={ui}
-                    hrefBase={hrefBase}
-                  />
-                  <span>{track.areas[n - 1]?.title}</span>
-                </li>
-              ))}
-            </ul>
+            <AreaBadges
+              track={track}
+              areas={flow.around}
+              ui={ui}
+              hrefBase={hrefBase}
+            />
           </div>
         </div>
       ) : null}

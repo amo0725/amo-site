@@ -71,7 +71,7 @@ export function CaseBody({
   ui: UiStrings["work"];
 }) {
   return (
-    <div className="case-page grid gap-12 lg:grid-cols-[minmax(0,44rem)_1fr_19rem] lg:gap-x-10">
+    <div className="case-page grid gap-12 lg:grid-cols-[minmax(0,38rem)_1fr_19rem] lg:gap-x-10">
       <div className="space-y-9">
         <p className="text-lg md:text-xl">{entry.problem}</p>
         {entry.cause ? (
@@ -108,6 +108,7 @@ export function CaseBody({
             <InView className="metric-play">
               <MetricBars
                 metrics={entry.metrics}
+                to={ui.to}
                 className="lg:[&_.metric]:grid-cols-1"
               />
             </InView>

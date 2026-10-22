@@ -72,8 +72,9 @@ export function Systems({
                 <PhoneFold
                   key={group.label}
                   className="-mt-4 border-b border-graticule md:mt-0 md:border-0"
-                  summaryClassName="flex items-center justify-between py-3 text-sm font-semibold md:py-0"
+                  summaryClassName="flex items-center justify-between py-3 text-sm font-semibold"
                   summary={group.label}
+                  wide={<h4 className="text-sm font-semibold">{group.label}</h4>}
                 >
                   <div className="pb-3 md:pb-0">{items}</div>
                 </PhoneFold>

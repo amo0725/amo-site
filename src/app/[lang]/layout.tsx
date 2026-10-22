@@ -1,13 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { MotionProvider } from "@/components/providers/motion-provider";
 import { AnchorSettle } from "@/components/providers/anchor-settle";
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
 import { RadarCursor } from "@/components/ui/radar-cursor";
 import { site } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
 import { motionBootScript } from "@/lib/motion/boot";
-import { archivo } from "../fonts";
+import { archivo, archivoName } from "../fonts";
 import "../globals.css";
 
 /** Every route on this site must prerender completely. */
@@ -18,6 +17,37 @@ export function generateStaticParams() {
 }
 
 const localePath = { "zh-TW": "/zh-TW", en: "/en" } as const;
+
+/**
+ * Chromium's speculation rules: a case or a body of work starts loading
+ * when a link to it is hovered or pressed (its script is already cached,
+ * so only ~10 KB of HTML), and opens at once. The home page is only
+ * fetched ahead, never prerendered: it would hydrate and may start the
+ * radar in a hidden tab. Other browsers ignore the script.
+ */
+const speculationRules = JSON.stringify({
+  prerender: [
+    {
+      where: {
+        or: [
+          { href_matches: "/*/work/*" },
+          { href_matches: "/*/experience/*" },
+        ],
+      },
+      eagerness: "moderate",
+    },
+  ],
+  prefetch: [
+    {
+      where: {
+        or: ["/en", "/en#*", "/zh-TW", "/zh-TW#*"].map((href) => ({
+          href_matches: href,
+        })),
+      },
+      eagerness: "conservative",
+    },
+  ],
+});
 
 export async function generateMetadata({
   params,
@@ -71,9 +101,17 @@ export default async function RootLayout({
 
   return (
     // data-motion is set by the boot script before React hydrates.
-    <html lang={htmlLang} className={archivo.variable} suppressHydrationWarning>
+    <html
+      lang={htmlLang}
+      className={`${archivo.variable} ${archivoName.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: motionBootScript }} />
+        <script
+          type="speculationrules"
+          dangerouslySetInnerHTML={{ __html: speculationRules }}
+        />
       </head>
       <body className="bg-paper text-ink antialiased">
         <a
@@ -82,12 +120,12 @@ export default async function RootLayout({
         >
           {ui.skipLink}
         </a>
-        <MotionProvider>
-          <SmoothScroll />
-          <AnchorSettle />
-          <RadarCursor />
-          {children}
-        </MotionProvider>
+        {/* The Motion provider lives on the home page, the only page with
+            Motion components: detail pages don't download it. */}
+        <SmoothScroll />
+        <AnchorSettle />
+        <RadarCursor />
+        {children}
       </body>
     </html>
   );

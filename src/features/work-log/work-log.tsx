@@ -1,13 +1,24 @@
 "use client";
 
-import { AnimatePresence, LayoutGroup, m } from "motion/react";
-import { Suspense, useState, type ReactNode } from "react";
-import type { UiStrings, WorkCategory, WorkEntry } from "@/content/types";
+import { AnimatePresence, LayoutGroup } from "motion/react";
+// The bare m component: the barrel export of "m" pulls the full feature
+// set into the first-load bundle and defeats LazyMotion.
+import * as m from "motion/react-m";
+import {
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+  type SyntheticEvent,
+} from "react";
+import type { UiStrings, WorkCategory } from "@/content/types";
 import { cn } from "@/lib/cn";
+import { fill } from "@/lib/i18n";
 import { useMotionPreference } from "@/lib/motion/preference";
 import { PhoneFold } from "@/components/ui/phone-fold";
 import { caseAnchor } from "./case-steps";
 import { MiniBar } from "./mini-bar";
+import type { WorkLogEntry } from "./log-entry";
+import { OPEN_CASES_KEY } from "./open-cases";
 
 export interface TrackOption {
   id: string;
@@ -15,7 +26,7 @@ export interface TrackOption {
 }
 
 interface WorkLogProps {
-  entries: readonly WorkEntry[];
+  entries: readonly WorkLogEntry[];
   tracks: readonly TrackOption[];
   categories: Readonly<Record<WorkCategory, string>>;
   colors: Readonly<Record<WorkCategory, string>>;
@@ -26,9 +37,58 @@ interface WorkLogProps {
 
 const ALL = "__all__";
 
-/** Opens a featured case on md-and-up screens when it mounts. */
-function openWhenWide(el: HTMLDetailsElement | null) {
-  if (el && window.matchMedia("(min-width: 48rem)").matches) el.open = true;
+/* The filters live in the query string (?type=…&track=…), so a filtered
+   list can be shared and survives Back. The URL is the source of truth;
+   this store re-reads it after every write and on history moves. */
+const FILTER_EVENT = "work-filter";
+function subscribeQuery(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  window.addEventListener(FILTER_EVENT, onChange);
+  return () => {
+    window.removeEventListener("popstate", onChange);
+    window.removeEventListener(FILTER_EVENT, onChange);
+  };
+}
+const readQuery = () => window.location.search;
+const serverQuery = () => "";
+
+function writeQuery(key: "type" | "track", value: string) {
+  const url = new URL(window.location.href);
+  if (value === ALL) url.searchParams.delete(key);
+  else url.searchParams.set(key, value);
+  window.history.replaceState(null, "", url);
+  window.dispatchEvent(new Event(FILTER_EVENT));
+}
+
+/**
+ * A case opened or closed by the reader: the address follows it, so the
+ * Back button (from the case's own page, or after leaving the site) comes
+ * back to it open, and the set of open cases is kept for this tab
+ * (restored by the pre-paint script, see open-cases.ts).
+ */
+function onCaseToggle(e: SyntheticEvent<HTMLDetailsElement>) {
+  // Only the reader's own toggles: not the pre-paint script's (its toggle
+  // events can arrive after hydration), which would put a case nobody
+  // asked for into the address.
+  if (navigator.userActivation && !navigator.userActivation.isActive) return;
+  const el = e.currentTarget;
+  const hash = `#${el.id}`;
+  const url = new URL(window.location.href);
+  if (el.open && url.hash !== hash) {
+    url.hash = hash;
+    window.history.replaceState(null, "", url);
+  } else if (!el.open && url.hash === hash) {
+    url.hash = "";
+    window.history.replaceState(null, "", url);
+  }
+  try {
+    const open = [...document.querySelectorAll("#work details.log-entry[open]")].map(
+      (d) => d.id,
+    );
+    sessionStorage.setItem(OPEN_CASES_KEY, JSON.stringify(open));
+  } catch {
+    // Storage can be unavailable (private mode); the address still works.
+  }
 }
 const ease = [0.16, 1, 0.3, 1] as const;
 const easeInOutQuart = [0.76, 0, 0.24, 1] as const;
@@ -132,8 +192,8 @@ function CategoryMark({ color }: { color: string }) {
 }
 
 function count<T extends string>(
-  entries: readonly WorkEntry[],
-  key: (e: WorkEntry) => T,
+  entries: readonly WorkLogEntry[],
+  key: (e: WorkLogEntry) => T,
 ) {
   const map = new Map<T, number>();
   for (const e of entries) map.set(key(e), (map.get(key(e)) ?? 0) + 1);
@@ -148,8 +208,16 @@ export function WorkLog({
   ui,
   bodies,
 }: WorkLogProps) {
-  const [type, setType] = useState<string>(ALL);
-  const [track, setTrack] = useState<string>(ALL);
+  const query = new URLSearchParams(
+    useSyncExternalStore(subscribeQuery, readQuery, serverQuery),
+  );
+  const pick = (value: string | null, known: readonly string[]) =>
+    value && known.includes(value) ? value : ALL;
+  const type = pick(query.get("type"), Object.keys(categories));
+  const track = pick(
+    query.get("track"),
+    tracks.map((t) => t.id),
+  );
   // Layout animation only once a filter has been used: before that there
   // is nothing to animate, and measuring a dozen rows on load forces a
   // layout of the whole page while it is still hydrating.
@@ -158,15 +226,21 @@ export function WorkLog({
   // clip-path wipes are switched off here.
   const reduced = useMotionPreference() === "reduced";
 
-  const visible = entries.filter(
-    (e) =>
-      (type === ALL || e.category === type) &&
-      (track === ALL || e.track === track),
-  );
+  const matches = (e: WorkLogEntry) =>
+    (type === ALL || e.category === type) &&
+    (track === ALL || e.track === track);
+  const matching = entries.filter(matches);
+  // A filter that arrives with the address (a shared ?type= link) is
+  // applied by hiding rows, not removing them: removal plays an exit
+  // animation, and right after hydration Motion's animation features may
+  // not have loaded yet to play it. Once the reader filters, rows come
+  // and go with their wipes.
+  const rows = filtered ? matching : entries;
 
   const typeCounts = count(entries, (e) => e.category);
   const trackCounts = count(entries, (e) => e.track);
   const trackLabel = new Map(tracks.map((t) => [t.id, t.label]));
+  const featured = entries.filter((e) => e.featured).map((e) => e.id);
 
   const typeOptions: FilterOption[] = [
     { value: ALL, label: ui.all, count: entries.length },
@@ -196,7 +270,7 @@ export function WorkLog({
           what the section opens with. */}
       <PhoneFold
         className="mb-8"
-        summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:sr-only"
+        summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold"
         summary={ui.filter}
       >
         <div className="space-y-4 pt-4 md:pt-0">
@@ -207,7 +281,7 @@ export function WorkLog({
             value={type}
             onChange={(v) => {
               setFiltered(true);
-              setType(v);
+              writeQuery("type", v);
             }}
           />
           <FilterGroup
@@ -217,15 +291,20 @@ export function WorkLog({
             value={track}
             onChange={(v) => {
               setFiltered(true);
-              setTrack(v);
+              writeQuery("track", v);
             }}
           />
         </div>
       </PhoneFold>
+      {/* Says how many cases a filter left, for readers who can't see the
+          rows go. Empty until a filter is used. */}
+      <p role="status" className="sr-only">
+        {filtered ? fill(ui.showing, { count: matching.length }) : ""}
+      </p>
 
       <m.ul layout={filtered} className="border-t border-graticule">
         <AnimatePresence initial={false} mode="popLayout">
-          {visible.map((entry) => (
+          {rows.map((entry) => (
             <m.li
               key={entry.id}
               layout={filtered}
@@ -238,17 +317,18 @@ export function WorkLog({
                   : { duration: 0.25, ease: easeInOutQuart },
               }}
               transition={reduced ? { duration: 0 } : { duration: 0.35, ease }}
+              hidden={!filtered && !matches(entry) ? true : undefined}
               className="border-b border-graticule"
             >
-              {/* Featured cases start open; their figures play when scrolled
-                  into view instead of on page load (see data-featured in CSS). */}
+              {/* Served closed. A script right after the list opens the
+                  featured cases before the first paint (all three from md,
+                  the first on phones), so a shared link lands once; their
+                  figures play when scrolled into view (data-featured). */}
               <details
                 id={caseAnchor(entry.id)}
                 className="log-entry group"
-                // Served closed: phones get the list as an outline. From
-                // md up the featured cases open as they mount (no re-render).
-                ref={entry.featured ? openWhenWide : undefined}
                 data-featured={entry.featured ? "" : undefined}
+                onToggle={onCaseToggle}
               >
                 {/* One grid for every row, so the list reads as a table:
                     category, title, a fixed plot column (the before/after
@@ -259,7 +339,19 @@ export function WorkLog({
                     <CategoryMark color={colors[entry.category]} />
                     {categories[entry.category]}
                   </span>
-                  <div className="col-start-1 row-start-1 md:col-start-2">
+                  <span className="col-start-1 row-start-1 block md:col-start-2">
+                    {entry.featured ? (
+                      <span className="log-featured coord mb-1.5 flex items-center gap-2 text-echo-2-ink">
+                        <span
+                          aria-hidden="true"
+                          className="mark rounded-full bg-echo-2"
+                        />
+                        {fill(ui.featured, {
+                          n: featured.indexOf(entry.id) + 1,
+                          of: featured.length,
+                        })}
+                      </span>
+                    ) : null}
                     <h3 className="text-lg font-semibold text-balance md:text-xl">
                       {entry.title}
                     </h3>
@@ -270,10 +362,10 @@ export function WorkLog({
                       </span>
                       <span>{trackLabel.get(entry.track)}</span>
                     </span>
-                  </div>
+                  </span>
                   <span className="log-plot col-span-2 col-start-1 row-start-2 mt-3 md:col-span-1 md:col-start-3 md:row-start-1 md:mt-0 md:pt-[0.35rem]">
                     {entry.metrics?.[0] ? (
-                      <MiniBar metric={entry.metrics[0]} />
+                      <MiniBar metric={entry.metrics[0]} to={ui.to} />
                     ) : entry.outcome ? (
                       <span className="flex items-start gap-2 text-sm font-semibold">
                         <span
@@ -295,9 +387,10 @@ export function WorkLog({
                     +
                   </span>
                 </summary>
-                {/* Server-rendered body in its own Suspense boundary: React
-                    hydrates each case as a separate, interruptible task. */}
-                <Suspense fallback={null}>{bodies[entry.id]}</Suspense>
+                {/* Server-rendered body, in the HTML with its row: a body in a
+                    Suspense boundary of its own streams in after the list
+                    and grows it after a #link has landed. */}
+                {bodies[entry.id]}
               </details>
             </m.li>
           ))}

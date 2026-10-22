@@ -24,8 +24,10 @@ export function SmoothScroll() {
       const lenis = new Lenis({
         autoRaf: true,
         lerp: 0.12,
-        // Lenis subtracts the html scroll-padding-top (the header) itself.
-        anchors: true,
+        // In-page #links are handled by AnchorSettle, which draws the
+        // sections on the way first and then asks Lenis to glide there
+        // (Lenis subtracts the html scroll-padding-top itself).
+        anchors: false,
         // Hand the wheel to a nested panel only while it can actually scroll
         // vertically. Marking a region as native unconditionally makes the
         // page drop out of smoothing whenever the cursor crosses it, which

@@ -4,14 +4,16 @@
  *
  * Checks what a recruiter's first visit depends on, in both languages and
  * at desktop and phone widths: the page answers, the first screen names
- * the person and the role, the call to action points at the case log, the
- * featured cases are open (none on phones), the hero carries its three
- * proof figures, nothing scrolls sideways, every public project links to its repository,
- * the phone menu opens, the visual summaries are there (evidence cards,
- * flow drawings, screenshots) and a flow badge lands on its area open, the
- * case and experience pages answer and lead back, and nothing logs an
- * error. Also checks the
- * sitemap, robots and the Open Graph image, and that no URL still points
+ * the person and the role, says what they are open to, the calls to action
+ * point at the case log and at contact, the featured cases are marked and
+ * open (the first one on phones), the hero carries its three proof
+ * figures, nothing scrolls sideways, every public project links to its
+ * repository, the phone menu opens, the visual summaries are there
+ * (evidence cards, flow drawings, screenshots), a flow badge lands on its
+ * area open, a filter goes into the address, the case and experience
+ * pages answer, name the author, lead back and end with a way to get in
+ * touch, and nothing logs an error. Also checks the sitemap, robots, the
+ * Open Graph image, the 404s and redirects, and that no URL still points
  * at a placeholder domain.
  *
  *   BASE_URL     server to test         (default: http://localhost:3100)
@@ -42,6 +44,28 @@ async function waitForServer(url, tries = 60) {
 }
 
 await waitForServer(`${BASE}/en`);
+
+// Wrong addresses: the language's own 404, with a 404 status; a language in
+// the wrong case, or a path without one, is sent to the right place.
+for (const [path, status, where] of [
+  ["/no-such-page", 404, null],
+  ["/en/no-such-page", 404, null],
+  ["/en/work/no-such-case", 404, null],
+  ["/EN", 308, "/en"],
+  ["/zh-tw/work/vanishing-index", 308, "/zh-TW/work/vanishing-index"],
+  ["/en/work", 307, "/en#work"],
+]) {
+  const res = await fetch(`${BASE}${path}`, { redirect: "manual" });
+  const location = res.headers.get("location") ?? "";
+  check(
+    res.status === status && (!where || location.endsWith(where)),
+    `${path} answers ${res.status}${location ? ` → ${location}` : ""}`,
+  );
+  if (status === 404 && !path.includes("/work/")) {
+    const body = await res.text();
+    check(/404/.test(body) && body.includes("<h1"), `${path} renders the site's 404 page`);
+  }
+}
 
 for (const path of ["/sitemap.xml", "/robots.txt"]) {
   const res = await fetch(`${BASE}${path}`);
@@ -90,9 +114,16 @@ for (const lang of ["zh-TW", "en"]) {
 
     const cta = page.locator('main a[href="#work"]').first();
     check(await cta.isVisible(), `${label}: case-log call to action is visible`);
+    const contactCta = page.locator('main section a[href="#contact"]').first();
+    check(await contactCta.isVisible(), `${label}: contact call to action is visible`);
+    const status = await page.locator("#hero-title ~ p").filter({ hasText: /\S/ }).count();
+    check(status >= 2, `${label}: positioning and availability lines under the name`);
 
-    // Phones get the log as an outline: every case starts closed (see WorkLog).
-    const want = vp.mobile ? 0 : 3;
+    // The three featured cases are marked; from md all three open, on
+    // phones only the first, so the rest of the list stays an outline.
+    const marked = await page.locator("#work .log-featured").count();
+    check(marked === 3, `${label}: ${marked} cases marked "start here"`);
+    const want = vp.mobile ? 1 : 3;
     const open = await page.locator("#work details.log-entry[open]").count();
     check(open === want, `${label}: ${open} featured cases open (want ${want})`);
 
@@ -153,6 +184,16 @@ for (const lang of ["zh-TW", "en"]) {
     const caseLinks = await page.locator('#work a[href*="/work/"]').count();
     check(caseLinks > 0, `${label}: ${caseLinks} links to full case pages`);
 
+    // A filter is kept in the address, so a filtered list can be shared.
+    if (!vp.mobile) {
+      await page.locator('#work button[aria-pressed="false"]').first().click();
+      await page.waitForTimeout(500);
+      const query = await page.evaluate(() => window.location.search);
+      check(/[?&](type|track)=/.test(query), `${label}: filter goes into the address (${query})`);
+      await page.locator('#work button[aria-pressed="false"]', { hasText: /All|全部/ }).first().click();
+      await page.waitForTimeout(500);
+    }
+
     // A badge on a flow drawing opens its area and lands on it.
     const badge = page.locator("#experience a.area-badge").first();
     const target = (await badge.getAttribute("href"))?.slice(1) ?? "";
@@ -173,6 +214,12 @@ for (const lang of ["zh-TW", "en"]) {
       check((await page.locator("h1").count()) === 1, `${label}: ${path} has one h1`);
       const back = await page.locator("header a").first().getAttribute("href");
       check(!!back && back.startsWith(`/${lang}#`), `${label}: ${path} leads back to ${back}`);
+      const author = await page.locator(`header a[href="/${lang}"]`).innerText();
+      check(author.includes("Amo Feng"), `${label}: ${path} names the author`);
+      const resume = await page
+        .locator('#contact-strip-title ~ * a[href^="mailto:"], section[aria-labelledby="contact-strip-title"] a[href*="body="]')
+        .count();
+      check(resume > 0, `${label}: ${path} ends with a way to get in touch`);
       const over = await page.evaluate(
         () => document.documentElement.scrollWidth - window.innerWidth,
       );
@@ -183,11 +230,13 @@ for (const lang of ["zh-TW", "en"]) {
     await context.close();
   }
 
-  const og = await fetch(`${BASE}/${lang}/opengraph-image/card`);
-  check(
-    og.ok && (og.headers.get("content-type") ?? "").startsWith("image/png"),
-    `${lang}: Open Graph image answers ${og.status}`,
-  );
+  for (const card of ["opengraph-image/card", "work/vanishing-index/opengraph-image/card"]) {
+    const og = await fetch(`${BASE}/${lang}/${card}`);
+    check(
+      og.ok && (og.headers.get("content-type") ?? "").startsWith("image/png"),
+      `${lang}: share card ${card} answers ${og.status}`,
+    );
+  }
 }
 
 await browser.close();

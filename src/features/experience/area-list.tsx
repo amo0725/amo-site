@@ -24,7 +24,7 @@ function AreaDetail({
       ) : null}
       {area.metric ? (
         <InView className="metric-play mt-4 max-w-[34rem]">
-          <MetricBars metrics={[area.metric]} />
+          <MetricBars metrics={[area.metric]} to={ui.to} />
         </InView>
       ) : null}
     </div>

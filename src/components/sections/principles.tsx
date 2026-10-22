@@ -97,6 +97,32 @@ function glyphFor(id: string, index: number): React.ReactNode {
   );
 }
 
+/** A principle's line drawing; it draws itself in on arrival. */
+function Glyph({
+  id,
+  i,
+  className,
+}: {
+  id: string;
+  i: number;
+  className: string;
+}) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 64 64"
+      className={`glyph text-ink ${className}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {glyphFor(id, i)}
+    </svg>
+  );
+}
+
 /**
  * The principles as numbered entries on a rule, not cards: index and line
  * drawing, title, the rule itself, and where it comes from. One column on
@@ -136,31 +162,28 @@ export function Principles({ principles, copy, ui }: PrinciplesProps) {
                   style={{ background: `var(${meta.colorVar})` }}
                 />
                 <PhoneFold
-                  summaryClassName="grid grid-cols-[1.75rem_2rem_1fr_auto] items-center gap-x-3 py-4 md:grid-cols-[1fr_auto] md:gap-y-5 md:py-0"
+                  summaryClassName="grid grid-cols-[1.75rem_2rem_1fr_auto] items-center gap-x-3 py-4"
                   summary={
                     <>
-                      <span
-                        aria-hidden="true"
-                        className="index md:col-start-1 md:row-start-1 md:self-start"
-                      >
+                      <span aria-hidden="true" className="index">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 64 64"
-                        className="glyph size-8 text-ink md:col-start-2 md:row-start-1 md:size-14"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        {glyphFor(p.id, i)}
-                      </svg>
-                      <h3 className="text-lg leading-tight font-extrabold text-balance font-expanded md:col-span-2 md:row-start-2 md:max-w-[11em] md:text-xl md:leading-[1.15]">
+                      <Glyph id={p.id} i={i} className="size-8" />
+                      <h3 className="text-lg leading-tight font-extrabold text-balance font-expanded">
                         {p.title}
                       </h3>
                     </>
+                  }
+                  wide={
+                    <div className="grid grid-cols-[1fr_auto] gap-y-5">
+                      <span aria-hidden="true" className="index self-start">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <Glyph id={p.id} i={i} className="size-14" />
+                      <h3 className="col-span-2 max-w-[11em] text-xl leading-[1.15] font-extrabold text-balance font-expanded">
+                        {p.title}
+                      </h3>
+                    </div>
                   }
                 >
                   <p className="pb-3 text-ink-soft md:mt-3 md:pb-0">{p.body}</p>

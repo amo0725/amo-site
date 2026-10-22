@@ -32,8 +32,9 @@
   --band-9: #6a35c4;
 
   --focus: var(--echo-5);
-  /* Index numbers before they ink in; keeps ≥3:1 for their size. */
-  --unread: color-mix(in oklab, var(--ink) 56%, var(--paper));
+  /* Index numbers before they ink in: 4.5:1, so they read as text even
+     before the pen reaches them. */
+  --unread: color-mix(in oklab, var(--ink) 62%, var(--paper));
   --header-h: 3.5rem;
   /* Outline of a control (pill, header button, switch): ≥3:1 on paper and
      on the display surface in both themes (3.2 at the lowest), which
@@ -143,6 +144,10 @@
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
+/* The name: its own 5 KB cut of Archivo, preloaded (see fonts.ts). */
+@utility font-name {
+  font-family: var(--font-name), var(--font-sans);
+}
 @utility font-expanded {
   font-stretch: 125%;
 }
@@ -274,6 +279,7 @@
 }
 
 .name-letter {
+  font-family: var(--font-name), var(--font-sans);
   font-stretch: var(--stretch, 125%);
   font-weight: var(--weight, 800);
 }
@@ -283,18 +289,20 @@
   animation-delay: calc(var(--i, 0) * 70ms + 150ms);
 }
 
-/* Hero details are wiped in from the left once the name has settled. */
+/* Hero details are wiped in from the left once the name has settled.
+   Backwards fill: once the wipe is over no clip is left on the element, so
+   focus rings and descenders are never cut. */
 @keyframes wipe-in {
   from {
-    clip-path: inset(0 100% 0 0);
+    clip-path: inset(-20% 100% -20% -2%);
   }
   to {
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-20% -2% -20% -2%);
   }
 }
 
 .load-wipe {
-  animation: wipe-in 0.8s var(--ease-out-expo) both;
+  animation: wipe-in 0.8s var(--ease-out-expo) backwards;
   animation-delay: 1s;
 }
 /* First-screen copy: in with the page, not after the name has finished. */
@@ -365,16 +373,35 @@
    The frame clips the push-in a little outside the graph so it never runs
    into the detail panel; the margin keeps edge labels and focus rings whole. */
 .graph-frame {
-  clip-path: inset(-1.5rem);
+  clip-path: inset(-2rem);
 }
 @media (min-width: 48rem) {
   :root:not([data-motion="reduced"]) .graph-camera {
     transition:
-      scale 0.45s var(--ease-out-expo),
-      transform-origin 0.45s var(--ease-out-expo);
+      scale 0.3s var(--ease-out-expo),
+      transform-origin 0.3s var(--ease-out-expo);
   }
+  /* A small push: enough to say "this one", little enough that the nodes
+     at the far edge stay inside the frame with their names whole. */
   :root:not([data-motion="reduced"]) .graph-camera[data-zoom] {
-    scale: 1.12;
+    scale: 1.06;
+  }
+}
+/* A picked node's panel docks to the bottom of the screen below lg: what
+   gets focus scrolls in above it, not under it. */
+@media (max-width: 63.99rem) {
+  html:has(#systems [data-docked]) {
+    scroll-padding-bottom: calc(40svh + 1rem);
+  }
+}
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  html:has(#systems [data-docked]) {
+    scroll-padding-bottom: calc(34svh + 1rem);
+  }
+}
+@media (max-width: 63.99rem) {
+  html:has(#systems [data-docked]) .back-to-top {
+    display: none;
   }
 }
 
@@ -417,6 +444,15 @@
 }
 .echo-keep {
   background: var(--echo-2);
+}
+.mini-track::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 0.75px);
+  height: 1.5px;
+  left: calc((100% + 2px) / var(--cells) * var(--keep));
+  right: 0;
+  background: var(--echo-5);
 }
 .metric-before::after {
   content: "";
@@ -470,14 +506,6 @@
     transform: scaleX(0);
   }
 }
-@keyframes wipe-in {
-  from {
-    clip-path: inset(-20% 100% -20% 0);
-  }
-  to {
-    clip-path: inset(-20% 0 -20% 0);
-  }
-}
 @keyframes stroke-draw {
   from {
     stroke-dashoffset: 1;
@@ -489,40 +517,35 @@
 
 :root:not([data-motion="reduced"]) {
   /* The lit sweep, then the cooling wave from the right; the green cells
-     settle as the wave reaches them. */
+     settle as the wave reaches them. The whole bar settles in about 0.4 s,
+     no cell takes longer than 0.2 s, and the figures are never hidden:
+     the before figure is struck as the wave starts, the after figure and
+     the factor are there throughout. */
   & .echo-cell {
-    --lit: calc(var(--row, 0s) + var(--i) * 9ms);
-    --wave: calc(var(--row, 0s) + 0.55s + var(--j) * 13ms);
+    --lit: calc(var(--row, 0s) + var(--i) * 2ms);
+    --wave: calc(var(--row, 0s) + 0.14s + var(--j) * 3ms);
   }
   & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .echo-drop {
     animation:
-      echo-lit 0.22s ease-out var(--lit) both,
-      echo-cool 0.5s linear var(--wave) forwards;
+      echo-lit 0.1s ease-out var(--lit) both,
+      echo-cool 0.2s linear var(--wave) forwards;
   }
   & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .echo-keep {
     animation:
-      echo-lit 0.22s ease-out var(--lit) both,
-      echo-settle 0.4s ease-out var(--wave) forwards;
+      echo-lit 0.1s ease-out var(--lit) both,
+      echo-settle 0.2s ease-out var(--wave) forwards;
   }
   & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .metric-before::after {
     transform-origin: left center;
-    animation: strike 0.35s cubic-bezier(0.16, 1, 0.3, 1)
-      calc(var(--row, 0s) + 0.45s) both;
-  }
-  & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .metric-new {
-    animation: wipe-in 0.5s cubic-bezier(0.16, 1, 0.3, 1)
-      calc(var(--row, 0s) + 0.55s + (var(--cells) - var(--keep)) * 13ms) both;
-  }
-  & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .metric-factor {
-    animation: wipe-in 0.45s cubic-bezier(0.16, 1, 0.3, 1)
-      calc(var(--row, 0s) + 0.75s + (var(--cells) - var(--keep)) * 13ms) both;
+    animation: strike 0.2s cubic-bezier(0.16, 1, 0.3, 1)
+      calc(var(--row, 0s) + 0.12s) both;
   }
   /* Successive rows of one entry start a little later each. */
   & .metric-play .metric:nth-child(2) {
-    --row: 0.25s;
+    --row: 0.08s;
   }
   & .metric-play .metric:nth-child(3) {
-    --row: 0.5s;
+    --row: 0.16s;
   }
 
   /* Evidence: each box draws itself, then its check, one after another. */
@@ -853,17 +876,21 @@
 .phone-fold[open] > summary .fold-icon {
   rotate: 45deg;
 }
+.phone-fold > .fold-wide {
+  display: none;
+}
 @supports selector(::details-content) {
   @media (min-width: 48rem) {
     .phone-fold::details-content {
       content-visibility: visible;
     }
+    /* Not a control here: the toggle leaves the page (and the tab order),
+       and its plain label takes its place. */
     .phone-fold > summary {
-      cursor: auto;
-      pointer-events: none;
-    }
-    .phone-fold > summary .fold-icon {
       display: none;
+    }
+    .phone-fold > .fold-wide {
+      display: block;
     }
   }
 }
@@ -1061,7 +1088,7 @@
     position: sticky;
     top: var(--pin-top, var(--header-h));
     z-index: 5;
-    padding-block: 0.75rem;
+    padding-block: 0.5rem;
     background: var(--surface, var(--paper));
     /* Pinned, the bar reads as the chart's top axis; a soft shadow below
        shows the case is sliding under it rather than being cut by a line. */
@@ -1069,23 +1096,50 @@
       0 1px 0 var(--control),
       0 10px 14px -12px color-mix(in oklab, var(--ink) 45%, transparent);
     transition: top 0.5s var(--ease-out-expo);
+    /* A control, not text to select: a long press must not start a
+       selection on the bar. */
+    -webkit-user-select: none;
+    user-select: none;
   }
+  /* At most two lines (every title fits in two at this size, so the bar
+     never cuts one short and never changes height as it pins). The
+     category, track and "start here" open the body instead (CaseSummary). */
   .log-entry[open] > summary h3 {
     font-size: var(--text-base);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
   }
-  .log-entry[open] > summary :is(.log-meta, .log-plot) {
+  .log-entry[open] > summary :is(.log-meta, .log-plot, .log-featured) {
     display: none;
+  }
+  /* Anything focused inside an open case scrolls in below the pinned
+     title, not under it. */
+  .log-entry[open] > :not(summary) :is(a, button, summary, input, [tabindex]) {
+    scroll-margin-top: calc(var(--header-h) + 4.75rem);
   }
 }
 :root[data-header-hidden] {
   --pin-top: 0px;
 }
 
+/* Without JavaScript the boot script never sets data-motion: honour the
+   system setting directly. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion]) :is(*, *::before, *::after) {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ---------- Reduced motion: keep every state change, drop the movement ---------- */
 :root[data-motion="reduced"] {
   & *,
   & *::before,
-  & *::after {
+  & *::after,
+  & *::details-content {
     animation: none !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
@@ -1208,20 +1262,27 @@
 }
 
 /* "Go deeper" link, one style everywhere: a leader, the words, an arrow.
-   The leader reaches further on hover. Inline body links keep underlines. */
+   The leader reaches further on hover. Inline body links keep underlines.
+   It is a standalone control, so its hit area is 44px tall; the padding is
+   taken back by the margin, so it sits in the layout like a line of text. */
 .go {
-  display: inline;
+  display: inline-flex;
+  align-items: baseline;
+  padding-block: 0.625rem;
+  margin-block: -0.625rem;
   font-size: var(--text-sm);
+  line-height: 1.6;
   font-weight: 600;
   color: var(--ink);
 }
 .go::before {
   content: "";
-  display: inline-block;
-  vertical-align: middle;
+  flex-shrink: 0;
   width: 0.75rem;
   height: 1px;
   margin-right: 0.5rem;
+  /* From the baseline up to the middle of the lowercase letters. */
+  translate: 0 -0.32em;
   background: var(--control);
   transition:
     width 0.2s var(--ease-out-expo),
@@ -1229,7 +1290,7 @@
 }
 .go::after {
   content: "→";
-  display: inline-block;
+  flex-shrink: 0;
   margin-left: 0.5rem;
   color: var(--ink-soft);
   transition: translate 0.2s var(--ease-out-expo);
@@ -1246,13 +1307,16 @@
   content: none;
 }
 .go-back {
-  display: inline-flex;
   align-items: center;
+  min-height: 2.75rem;
+  padding-block: 0;
+  margin-block: 0;
 }
 .go-back::before {
   content: "←";
   width: auto;
   height: auto;
+  translate: none;
   background: none;
   color: var(--ink-soft);
 }
@@ -1260,6 +1324,19 @@
   width: auto;
   background: none;
   translate: -2px 0;
+}
+/* On the closing panel. */
+.go-inverse {
+  color: var(--on-closing);
+}
+.go-inverse::before {
+  background: color-mix(in oklab, var(--on-closing) 55%, transparent);
+}
+.go-inverse::after {
+  color: color-mix(in oklab, var(--on-closing) 75%, transparent);
+}
+.go-inverse:is(:hover, :focus-visible)::before {
+  background: var(--on-closing);
 }
 
 /* Plate: the frame around a picture, with corner ticks. */
@@ -1421,24 +1498,40 @@
 /* Area badges on a flow: the same coordinate as the list's index, plotted
    on the drawing. Hollow; filled while pointed at. */
 .area-badge {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.75rem;
-  height: 1.375rem;
-  padding-inline: 0.25rem;
+  gap: 0.375rem;
+  min-width: 2rem;
+  min-height: 1.75rem;
+  padding-inline: 0.375rem;
   border: 1px solid var(--control);
   border-radius: 2px;
   background: var(--paper);
   color: var(--ink);
   font-size: 0.75rem;
-  font-weight: 800;
-  font-stretch: 112%;
-  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
   transition:
     background-color 0.15s,
     color 0.15s,
     border-color 0.15s;
+}
+/* Drawn at 28px tall; the hit area reaches 44px without touching the
+   next badge's (badges sit 8px apart). */
+.area-badge::before {
+  content: "";
+  position: absolute;
+  inset: -0.5rem -0.25rem;
+}
+.area-badge-n {
+  font-weight: 800;
+  font-stretch: 112%;
+  font-variant-numeric: tabular-nums;
+}
+.area-badge-name {
+  font-weight: 600;
+  text-align: left;
 }
 .area-badge:hover,
 .area-badge:focus-visible {
@@ -1573,8 +1666,12 @@
     background: color-mix(in oklab, var(--echo-3) 30%, transparent);
   }
 }
-:root:not([data-motion="reduced"]) :is(.area-item, .log-entry):target {
+:root:not([data-motion="reduced"]) :is(.area-item, .log-entry):is(:target, .landed) {
   animation: target-flash 0.6s ease-out;
+}
+/* A jump's target holds the keyboard's place without a ring around it. */
+.focus-point:focus {
+  outline: none;
 }
 
 /* Areas: an open or targeted area shows its index as a selected

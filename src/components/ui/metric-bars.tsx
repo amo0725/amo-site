@@ -21,9 +21,12 @@ const CELLS = 48;
  */
 export function MetricBars({
   metrics,
+  to,
   className,
 }: {
   metrics: readonly Metric[];
+  /** Spoken in place of the arrow: "6.3 s to 44 ms". */
+  to: string;
   className?: string;
 }) {
   return (
@@ -53,6 +56,7 @@ export function MetricBars({
                 <span aria-hidden="true" className="text-ink-soft">
                   →
                 </span>
+                <span className="sr-only">{to}</span>
                 <span className="metric-new">{m.afterText}</span>
                 {m.factor ? (
                   <span className="metric-factor font-normal text-ink-soft">

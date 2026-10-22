@@ -82,7 +82,7 @@ export function Signal({ signal, copy, ui }: SignalProps) {
             {signal.claim}
           </p>
 
-          <InView threshold={0.25}>
+          <InView threshold={0.1}>
             {/* One grid for all four rows (subgrid), so the "looks fine"
                 column is as wide as its longest reading and the leader
                 arrow runs all the way to the "actually" column. */}
@@ -128,9 +128,13 @@ export function Signal({ signal, copy, ui }: SignalProps) {
                         </span>
                         <span className="font-semibold">
                           {pair.actually}
+                        </span>
+                        {/* Says the row is a way in, not only a reading. */}
+                        <span className="coord flex items-center gap-1.5 text-ink">
+                          {ui.see}
                           <span
                             aria-hidden="true"
-                            className="ml-1.5 inline-block text-ink-soft transition-transform group-hover:translate-x-0.5"
+                            className="text-ink-soft transition-transform group-hover:translate-x-0.5"
                           >
                             →
                           </span>

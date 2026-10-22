@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DetailShell } from "@/components/layout/detail-shell";
 import { InView } from "@/components/motion/in-view";
+import { trackHref } from "@/components/sections/experience";
 import { categoryColor, site } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
 import { detailMetadata } from "@/lib/detail-metadata";
+import { fill } from "@/lib/i18n";
 import type { Locale } from "@/content/types";
 import { CaseBody } from "@/features/work-log/case-body";
 import {
@@ -43,6 +45,10 @@ export async function generateMetadata({
     path: `/work/${id}`,
     title: entry.title,
     description,
+    image: {
+      url: `/${lang}/work/${id}/opengraph-image/card`,
+      alt: `${entry.title} · ${content.profile.fullName}`,
+    },
   });
 }
 
@@ -63,6 +69,9 @@ export default async function CasePage({
   const prev = entries[index - 1];
   const next = entries[index + 1];
   const track = c.experience.find((t) => t.id === entry.track);
+  const sameTrack = entries.filter(
+    (e) => e.track === entry.track && e.id !== entry.id,
+  );
   const other = c.ui.switchLanguage.hrefLang;
 
   const jsonLd = {
@@ -102,7 +111,16 @@ export default async function CasePage({
             />
             {c.work.categories[entry.category]}
           </span>
-          {track ? <span>{track.short}</span> : null}
+          {track && !track.earlier ? (
+            <a
+              href={trackHref(lang as Locale, track.id)}
+              className="-my-3 inline-flex min-h-11 items-center underline decoration-control underline-offset-4 hover:text-ink hover:decoration-ink"
+            >
+              {track.short}
+            </a>
+          ) : track ? (
+            <span>{track.short}</span>
+          ) : null}
           <span className="tabular">
             {pad(index + 1)} / {pad(entries.length)}
           </span>
@@ -126,9 +144,40 @@ export default async function CasePage({
         </div>
       </article>
 
+      {track && sameTrack.length > 0 ? (
+        <section aria-labelledby="same-track" className="mt-20">
+          <h2
+            id="same-track"
+            className="coord flex items-center gap-3 after:h-px after:flex-1 after:bg-graticule"
+          >
+            {fill(ui.more, { track: track.short })}
+          </h2>
+          <ul className="mt-3 grid sm:grid-cols-2 sm:gap-x-10">
+            {sameTrack.map((e) => (
+              <li key={e.id} className="border-b border-graticule">
+                <a
+                  href={caseHref(lang as Locale, e.id)}
+                  className="pen-row flex items-start gap-3 py-4 font-semibold"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="mark mt-[0.55em]"
+                    style={{ background: `var(${categoryColor[e.category]})` }}
+                  />
+                  <span className="flex-1 text-balance">{e.title}</span>
+                  <span aria-hidden="true" className="text-ink-soft">
+                    →
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <nav
         aria-label={c.sections.work.label}
-        className="mt-20 grid border-t border-control sm:grid-cols-2 sm:gap-x-10"
+        className="mt-16 grid border-t border-control sm:grid-cols-2 sm:gap-x-10"
       >
         {prev ? (
           <a
@@ -136,7 +185,8 @@ export default async function CasePage({
             className="pen-row grid gap-1.5 border-b border-graticule py-5"
           >
             <span className="coord">
-              ← {ui.prev} · {pad(index)}
+              <span aria-hidden="true">← </span>
+              {ui.prev} · {pad(index)}
             </span>
             <span className="font-semibold text-balance">{prev.title}</span>
           </a>
@@ -149,7 +199,8 @@ export default async function CasePage({
             className="pen-row grid gap-1.5 border-b border-graticule py-5"
           >
             <span className="coord">
-              {ui.next} · {pad(index + 2)} →
+              {ui.next} · {pad(index + 2)}
+              <span aria-hidden="true"> →</span>
             </span>
             <span className="font-semibold text-balance">{next.title}</span>
           </a>

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import type { Locale, SiteContent } from "@/content/types";
+import { ContactStrip } from "./contact-strip";
+import { DetailHeader } from "./detail-header";
 import { SiteFooter } from "./site-footer";
 
 interface DetailShellProps {
@@ -13,9 +15,10 @@ interface DetailShellProps {
 
 /**
  * The frame of a page that expands one item from the home page (a case, a
- * body of work): a quiet bar with the way back and the other language, the
- * article, and the site footer. No section navigation: the way out is back
- * to where the reader came from.
+ * body of work): a bar with the way back, the author and the other
+ * language; the article; a closing contact strip and the site footer. No
+ * section navigation: the way out is back to where the reader came from,
+ * or straight to getting in touch.
  *
  * Links between the home page and these pages are plain anchors (full
  * loads): the smooth-scroll instance and AnchorSettle live in the shared
@@ -33,32 +36,26 @@ export function DetailShell({
   return (
     <>
       <div id="top" />
-      <header className="border-b border-graticule px-5 md:px-10">
-        <div className="mx-auto flex h-[var(--header-h)] max-w-[90rem] items-center justify-between gap-4">
-          <a href={back.href} className="go go-back min-h-10">
-            {back.label}
-          </a>
-          <div className="flex items-center gap-4 text-sm">
-            <a
-              href={`/${content.locale}`}
-              className="hidden font-extrabold font-expanded sm:inline"
-            >
-              {profile.name}
-            </a>
-            <a
-              href={otherPath}
-              hrefLang={other}
-              lang={other}
-              className="flex min-h-10 items-center rounded-[2px] border border-control px-3 font-semibold hover:border-ink"
-            >
-              {ui.switchLanguage.label}
-            </a>
-          </div>
-        </div>
-      </header>
-      <main id="main" className="px-5 py-12 md:px-10 md:py-20">
+      <DetailHeader
+        back={back}
+        home={`/${content.locale}`}
+        name={profile.fullName}
+        role={profile.role}
+        language={{
+          label: ui.switchLanguage.label,
+          href: otherPath,
+          hrefLang: other,
+        }}
+        backToTop={ui.footer.backToTop}
+      />
+      <main
+        id="main"
+        tabIndex={-1}
+        className="px-5 py-12 outline-none md:px-10 md:py-20"
+      >
         <div className="mx-auto max-w-[90rem]">{children}</div>
       </main>
+      <ContactStrip content={content} />
       <SiteFooter profile={profile} ui={ui.footer} />
     </>
   );

@@ -67,7 +67,7 @@ export default async function TrackPage({
   return (
     <DetailShell
       content={c}
-      back={{ label: c.sections.experience.label, href: `/${lang}#xp-${id}` }}
+      back={{ label: ui.back, href: `/${lang}#xp-${id}` }}
       otherPath={`/${other}/experience/${id}`}
     >
       <article aria-labelledby="track-title">
@@ -93,7 +93,7 @@ export default async function TrackPage({
           </div>
         ) : null}
 
-        <div className="mt-14 grid gap-14 lg:grid-cols-[minmax(0,44rem)_1fr_19rem] lg:gap-x-10">
+        <div className="mt-14 grid gap-14 lg:grid-cols-[minmax(0,38rem)_1fr_19rem] lg:gap-x-10">
           <div>
             <div className="space-y-4 md:text-lg">
               <p>{track.domain}</p>
