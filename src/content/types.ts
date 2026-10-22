@@ -19,6 +19,8 @@ export interface Profile {
   /** What the role leans towards, shown after the title. */
   specialty: string;
   place: string;
+  /** One line on what I am open to, for the first screen. */
+  status: string;
   /** Bold lead-in before the summary, e.g. "Full-stack engineer in Taiwan." */
   headline: string;
   /** Full text of the hero heading for assistive tech. */
@@ -33,15 +35,32 @@ export interface Profile {
   /** Three proof points under the hero headline: a figure and what it measures. */
   /** `short` is the phone label, under the figure in a three-column strip. */
   proof: readonly { figure: string; label: string; short: string }[];
-  /** Long-form statement revealed word by word on scroll. */
-  statement: string;
-  /** Secondary note shown after the statement. */
-  aside: string;
 }
 
 export interface SiteLink {
   label: string;
   href: string;
+}
+
+/**
+ * The "what I do" section as evidence: things that looked fine and were
+ * broken, each pointing at the case (or area) where it happened.
+ */
+export interface SignalPair {
+  looks: string;
+  actually: string;
+  /** In-page target: "#case-<id>" or "#xp-<track>-<n>". */
+  href: string;
+}
+
+export interface SignalContent {
+  /** The one-line claim the pairs back up. */
+  claim: string;
+  pairs: readonly SignalPair[];
+  /** How a problem like these is traced and fixed, as one sentence. */
+  trace: string;
+  /** Working context: teams, language, who I translate for. */
+  context: string;
 }
 
 export interface ContactInfo {
@@ -60,6 +79,32 @@ export interface Metric {
   afterText: string;
   /** e.g. "143×"; omitted when it would overstate an approximate figure. */
   factor?: string;
+}
+
+/** A headline figure for a body of work. */
+export interface Stat {
+  figure: string;
+  label: string;
+}
+
+/** One stop on a body of work's flow; `areas` are 1-based area numbers. */
+export interface FlowNode {
+  title: string;
+  note: string;
+  areas: readonly number[];
+}
+
+/**
+ * How the system a body of work belongs to runs, drawn as a path. Areas
+ * of ownership hang on the stops they belong to; work that runs beside the
+ * path (on a schedule, say) is a side lane, and work outside it is listed
+ * under the drawing.
+ */
+export interface TrackFlow {
+  label: string;
+  path: readonly FlowNode[];
+  side?: FlowNode & { label: string };
+  around?: readonly number[];
 }
 
 /** One area of ownership inside a body of work. */
@@ -84,6 +129,10 @@ export interface ExperienceTrack {
   /** Scale and setting in one line: users, region, team. */
   context: string;
   role: string;
+  /** One line under the title: place, product, role. */
+  tagline?: string;
+  stats?: readonly Stat[];
+  flow?: TrackFlow;
   summary: string;
   areas: readonly ScopeArea[];
   stack: readonly string[];
@@ -138,6 +187,14 @@ export interface CaseFlow {
 export type WorkCategory =
   "incident" | "payments" | "integration" | "architecture" | "data" | "product";
 
+/** A case in four lines, for the list; the full write-up has its own page. */
+export interface CaseSteps {
+  symptom: string;
+  cause: string;
+  fix: string;
+  result: string;
+}
+
 export interface WorkEntry {
   id: string;
   title: string;
@@ -145,6 +202,7 @@ export interface WorkEntry {
   /** ExperienceTrack id, used for the second filter. */
   track: string;
   problem: string;
+  steps: CaseSteps;
   cause?: string;
   actions: readonly string[];
   result?: string;
@@ -168,24 +226,29 @@ export interface Principle {
   id: string;
   title: string;
   body: string;
+  /** Where it happened: a case ("#case-<id>") or an area ("#xp-<track>-<n>"). */
+  evidence: { label: string; href: string };
 }
 
 export interface PipelineStep {
   id: string;
   title: string;
   body: string;
+  /** What I do at this step; omitted when the step is the agent's alone. */
+  me?: string;
+  /** What the agent does; omitted when the text gives it no part. */
+  agent?: string;
 }
 
 export interface AiWorkflow {
-  intro: string;
+  /** The division of labour in one sentence. */
+  headline: string;
   steps: readonly PipelineStep[];
   toolsLabel: string;
   tools: readonly string[];
 }
 
 /* ---------- Side projects ---------- */
-
-export type ProjectVisual = "radar" | "grid" | "tiles" | "contour" | "layers";
 
 export interface SideProject {
   id: string;
@@ -199,7 +262,16 @@ export interface SideProject {
   description: string;
   details: readonly string[];
   stack: readonly string[];
-  visual: ProjectVisual;
+  /** A screenshot of the real product (demo data), served from /public. */
+  shot?: {
+    /** False for a live public site shown as it is (real content). */
+    demo: boolean;
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+    device: "desktop" | "phone";
+  };
 }
 
 /* ---------- Off duty ---------- */
@@ -287,31 +359,45 @@ export interface UiStrings {
   switchLanguage: { label: string; href: string; hrefLang: Locale };
   hero: {
     timeLabel: string;
+    /** UTC offset after the clock, with its separator. */
+    offset: string;
     /** {count} */
     ctaWork: string;
     ctaGithub: string;
     /** Quiet text link to the contact section. */
     ctaContact: string;
+    /** The same, on phones. */
+    ctaContactShort: string;
     motionLabel: string;
     motionOn: string;
     motionOff: string;
   };
   experience: {
+    /** Link to a track's own page. */
+    full: string;
+    /** Label of the list of areas under the drawing. */
+    around: string;
+    /** The list of areas of ownership. {count} */
+    areas: string;
     role: string;
     scope: string;
     stack: string;
     earlier: string;
     impact: string;
-    /** {count} */
-    more: string;
     /** Phone fold over an earlier job's bullet list. {count} */
     highlights: string;
-    /** Phone fold with a track's team context and stack. */
-    teamStack: string;
+    /** On a track page: back to the list. */
+    back: string;
+    /** Spoken between a before and an after figure. */
+    to: string;
+    /** After a run-in label ("Impact: …"). */
+    colon: string;
   };
   projects: {
     /** Phone fold over a project's build notes. */
     details: string;
+    /** Caption under a screenshot: real product, demo data. */
+    shotNote: string;
   };
   systems: {
     emptyTitle: string;
@@ -320,6 +406,10 @@ export interface UiStrings {
     flowsTo: string;
     reset: string;
     skillsTitle: string;
+    /** Spoken after a core node's name. */
+    core: string;
+    /** Closes the docked panel on phones. */
+    close: string;
   };
   work: {
     /** Phone fold over the two filter rows. */
@@ -331,6 +421,36 @@ export interface UiStrings {
     actions: string;
     result: string;
     lesson: string;
+    symptom: string;
+    fix: string;
+    /** Link from the list to a case's own page. */
+    readMore: string;
+    /** On a case page: heading over the four steps. */
+    summary: string;
+    /** On a case page: the stack, in the side rail. */
+    stack: string;
+    /** On a case page: back to the list. */
+    back: string;
+    /** Marker on the featured cases. */
+    featured: string;
+    /** On a case page: the other cases of its track. {track} */
+    more: string;
+    /** Announced after filtering. {count} */
+    showing: string;
+    /** Spoken between a before and an after figure. */
+    to: string;
+    /** On a case page: the neighbouring cases. */
+    prev: string;
+    next: string;
+  };
+  ai: {
+    step: string;
+    me: string;
+    agent: string;
+    details: string;
+  };
+  principles: {
+    evidence: string;
   };
   offDuty: {
     hold: string;
@@ -356,8 +476,18 @@ export interface UiStrings {
     resume: string;
     /** Subject line of the résumé request email. */
     resumeSubject: string;
+    /** Prefilled body of the résumé request email, with [placeholders]. */
+    resumeBody: string;
   };
   footer: { now: string; backToTop: string };
+  notFound: {
+    title: string;
+    body: string;
+    hint: string;
+    home: string;
+    cases: string;
+    contact: string;
+  };
 }
 
 export interface SectionCopy {
@@ -386,6 +516,7 @@ export interface SiteContent {
   ogLocale: string;
   meta: { title: string; description: string; ogAlt: string; ogRole: string };
   profile: Profile;
+  signal: SignalContent;
   ui: UiStrings;
   sections: Readonly<Record<SectionKey, SectionCopy>>;
   experience: readonly ExperienceTrack[];

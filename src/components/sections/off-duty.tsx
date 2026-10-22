@@ -33,10 +33,10 @@ export function OffDuty({ content, copy, ui }: OffDutyProps) {
           </article>
 
           <article className="md:col-span-6">
-            <h3 className="text-xl font-bold font-expanded">
+            <h3 className="text-xl font-extrabold font-expanded md:text-2xl">
               {content.rig.title}
             </h3>
-            <p className="mt-2 max-w-[30rem] text-ink-soft">
+            <p className="mt-2 max-w-[30rem]">
               {content.rig.note}
             </p>
             <details className="group/rig mt-6 border-t border-graticule">

@@ -169,6 +169,11 @@ export function ReelPlayer({ copy }: { copy: ReelCopy }) {
   const onFrame = (t: number) => {
     if (scrubRef.current) {
       scrubRef.current.value = String(t);
+      // Spoken as a time, not as a raw number like "1.52".
+      scrubRef.current.setAttribute(
+        "aria-valuetext",
+        `${timecode(t)} / 00:${DURATION}`,
+      );
       scrubRef.current.style.setProperty("--p", `${(t / DURATION) * 100}%`);
     }
     if (timeRef.current) timeRef.current.textContent = timecode(t);
@@ -318,6 +323,7 @@ export function ReelPlayer({ copy }: { copy: ReelCopy }) {
           defaultValue={0}
           disabled={!ready}
           aria-label={copy.scrubber}
+          aria-valuetext={`00:00 / 00:${DURATION}`}
           onPointerDown={() => {
             if (status === "playing") pause();
           }}
@@ -347,7 +353,8 @@ export function ReelPlayer({ copy }: { copy: ReelCopy }) {
         </button>
       </div>
 
-      <nav aria-label={copy.chaptersLabel} className="mt-4">
+      {/* A group of controls, not a list of links: not a nav landmark. */}
+      <div role="group" aria-label={copy.chaptersLabel} className="mt-4">
         <ol className="flex flex-wrap gap-2">
           {copy.chapters.map((c, i) => (
             <li key={c.id}>
@@ -377,7 +384,7 @@ export function ReelPlayer({ copy }: { copy: ReelCopy }) {
             </li>
           ))}
         </ol>
-      </nav>
+      </div>
 
       <MakingOf
         copy={copy}

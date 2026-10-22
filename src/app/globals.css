@@ -32,8 +32,6 @@
   --band-9: #6a35c4;
 
   --focus: var(--echo-5);
-  /* Not-yet-read words in the scrubbed statement; keeps ≥3:1 for large text. */
-  --unread: color-mix(in oklab, var(--ink) 56%, var(--paper));
   --header-h: 3.5rem;
   /* Outline of a control (pill, header button, switch): ≥3:1 on paper and
      on the display surface in both themes (3.2 at the lowest), which
@@ -47,6 +45,13 @@
      step sinks, in dark mode it rises (lighter = nearer, as in Apple's and
      Material's dark themes). */
   --surface-display: #d9dfdd; /* L* 88 */
+
+  /* Text-strength signal inks: --echo-2 on paper is 3.05:1 and --echo-5
+     4.31:1, under 4.5 for small text. */
+  --echo-2-ink: #0b7029; /* 5.18:1 on paper */
+  --echo-5-ink: #b5101a; /* 5.70:1 on paper */
+  /* Numeral on a filled green node: 4.89:1 light, 6.3:1 dark. */
+  --on-echo: #0d1820;
   --closing: var(--ink);
   --on-closing: var(--paper);
 
@@ -79,6 +84,9 @@
     --echo-4: #eb943a;
     --echo-5: #ee5158;
     --echo-6: #c25dbb;
+    --echo-2-ink: var(--echo-2); /* 6.31:1 on paper */
+    --echo-5-ink: var(--echo-5); /* 5.09:1 on paper */
+    --on-echo: #0d1820;
 
     --band-1: #5bbae0;
     --band-2: #6b94e0;
@@ -111,6 +119,9 @@
   --color-echo-4: var(--echo-4);
   --color-echo-5: var(--echo-5);
   --color-echo-6: var(--echo-6);
+  --color-echo-2-ink: var(--echo-2-ink);
+  --color-echo-5-ink: var(--echo-5-ink);
+  --color-on-echo: var(--on-echo);
 
   --font-sans:
     var(--font-archivo), "PingFang TC", "Noto Sans TC", "Microsoft JhengHei",
@@ -130,6 +141,10 @@
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
+/* The name: its own 5 KB cut of Archivo, preloaded (see fonts.ts). */
+@utility font-name {
+  font-family: var(--font-name), var(--font-sans);
+}
 @utility font-expanded {
   font-stretch: 125%;
 }
@@ -157,6 +172,13 @@
     html {
       font-size: 105.88%; /* 18px */
     }
+  }
+
+  /* The viewport too: once every section is laid out (html.cv-measure),
+     the turning range rings round to a pixel past the edge, which body's
+     clip alone does not stop the window from scrolling to. */
+  html {
+    overflow-x: clip;
   }
 
   body {
@@ -254,6 +276,7 @@
 }
 
 .name-letter {
+  font-family: var(--font-name), var(--font-sans);
   font-stretch: var(--stretch, 125%);
   font-weight: var(--weight, 800);
 }
@@ -263,18 +286,20 @@
   animation-delay: calc(var(--i, 0) * 70ms + 150ms);
 }
 
-/* Hero details are wiped in from the left once the name has settled. */
+/* Hero details are wiped in from the left once the name has settled.
+   Backwards fill: once the wipe is over no clip is left on the element, so
+   focus rings and descenders are never cut. */
 @keyframes wipe-in {
   from {
-    clip-path: inset(0 100% 0 0);
+    clip-path: inset(-20% 100% -20% -2%);
   }
   to {
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-20% -2% -20% -2%);
   }
 }
 
 .load-wipe {
-  animation: wipe-in 0.8s var(--ease-out-expo) both;
+  animation: wipe-in 0.8s var(--ease-out-expo) backwards;
   animation-delay: 1s;
 }
 /* First-screen copy: in with the page, not after the name has finished. */
@@ -345,18 +370,33 @@
    The frame clips the push-in a little outside the graph so it never runs
    into the detail panel; the margin keeps edge labels and focus rings whole. */
 .graph-frame {
-  clip-path: inset(-1.5rem);
+  clip-path: inset(-2rem);
 }
 @media (min-width: 48rem) {
   :root:not([data-motion="reduced"]) .graph-camera {
     transition:
-      scale 0.45s var(--ease-out-expo),
-      transform-origin 0.45s var(--ease-out-expo);
+      scale 0.3s var(--ease-out-expo),
+      transform-origin 0.3s var(--ease-out-expo);
   }
+  /* A small push: enough to say "this one", little enough that the nodes
+     at the far edge stay inside the frame with their names whole. */
   :root:not([data-motion="reduced"]) .graph-camera[data-zoom] {
-    scale: 1.12;
+    scale: 1.06;
   }
 }
+/* A picked node's panel docks to the bottom of the screen below lg: what
+   gets focus scrolls in above it, not under it. */
+@media (max-width: 63.99rem) {
+  html:has(#systems [data-docked]) {
+    scroll-padding-bottom: calc(40svh + 1rem);
+  }
+}
+@media (min-width: 48rem) and (max-width: 63.99rem) {
+  html:has(#systems [data-docked]) {
+    scroll-padding-bottom: calc(34svh + 1rem);
+  }
+}
+
 
 /* Mini radar sweeps in the side-project rows: one revolution as the row
    passes through the viewport (scroll-driven, see the @supports block). */
@@ -370,8 +410,14 @@
    Rest state = end state (also the reduced-motion state). The animation
    plays when a work-log entry opens or an experience metric enters view
    (InView sets data-in). Timing on the reel's ease; no count-up, no glow. */
+/* Cleared cells: a step above the graticule so they still read as cells
+   (an empty track otherwise looks like an empty progress bar), most of all
+   in dark mode where the graticule nearly vanishes. */
+:root {
+  --echo-off: color-mix(in oklab, var(--control) 45%, var(--paper));
+}
 .echo-drop {
-  background: var(--graticule);
+  background: var(--echo-off);
 }
 /* The bar before its cells exist (or with motion off): the same end state
    painted as one element. A colour split at the "after" length, cut into
@@ -381,7 +427,7 @@
   background: linear-gradient(
     90deg,
     var(--echo-2) 0 calc(var(--pitch) * var(--keep)),
-    var(--graticule) 0
+    var(--echo-off) 0
   );
   mask-image: repeating-linear-gradient(
     90deg,
@@ -444,14 +490,6 @@
     transform: scaleX(0);
   }
 }
-@keyframes wipe-in {
-  from {
-    clip-path: inset(-20% 100% -20% 0);
-  }
-  to {
-    clip-path: inset(-20% 0 -20% 0);
-  }
-}
 @keyframes stroke-draw {
   from {
     stroke-dashoffset: 1;
@@ -463,135 +501,45 @@
 
 :root:not([data-motion="reduced"]) {
   /* The lit sweep, then the cooling wave from the right; the green cells
-     settle as the wave reaches them. */
+     settle as the wave reaches them. The whole bar settles in about 0.4 s,
+     no cell takes longer than 0.2 s, and the figures are never hidden:
+     the before figure is struck as the wave starts, the after figure and
+     the factor are there throughout. */
   & .echo-cell {
-    --lit: calc(var(--row, 0s) + var(--i) * 9ms);
-    --wave: calc(var(--row, 0s) + 0.55s + var(--j) * 13ms);
+    --lit: calc(var(--row, 0s) + var(--i) * 2ms);
+    --wave: calc(var(--row, 0s) + 0.14s + var(--j) * 3ms);
   }
   & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .echo-drop {
     animation:
-      echo-lit 0.22s ease-out var(--lit) both,
-      echo-cool 0.5s linear var(--wave) forwards;
+      echo-lit 0.1s ease-out var(--lit) both,
+      echo-cool 0.2s linear var(--wave) forwards;
   }
   & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .echo-keep {
     animation:
-      echo-lit 0.22s ease-out var(--lit) both,
-      echo-settle 0.4s ease-out var(--wave) forwards;
+      echo-lit 0.1s ease-out var(--lit) both,
+      echo-settle 0.2s ease-out var(--wave) forwards;
   }
   & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .metric-before::after {
     transform-origin: left center;
-    animation: strike 0.35s cubic-bezier(0.16, 1, 0.3, 1)
-      calc(var(--row, 0s) + 0.45s) both;
-  }
-  & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .metric-new {
-    animation: wipe-in 0.5s cubic-bezier(0.16, 1, 0.3, 1)
-      calc(var(--row, 0s) + 0.55s + (var(--cells) - var(--keep)) * 13ms) both;
-  }
-  & :is(.log-entry[open]:not([data-featured]) .metric-play, .metric-play[data-in]) .metric-factor {
-    animation: wipe-in 0.45s cubic-bezier(0.16, 1, 0.3, 1)
-      calc(var(--row, 0s) + 0.75s + (var(--cells) - var(--keep)) * 13ms) both;
+    animation: strike 0.2s cubic-bezier(0.16, 1, 0.3, 1)
+      calc(var(--row, 0s) + 0.12s) both;
   }
   /* Successive rows of one entry start a little later each. */
   & .metric-play .metric:nth-child(2) {
-    --row: 0.25s;
+    --row: 0.08s;
   }
   & .metric-play .metric:nth-child(3) {
-    --row: 0.5s;
+    --row: 0.16s;
   }
 
   /* Evidence: each box draws itself, then its check, one after another. */
-  & :is(.log-entry[open]:not([data-featured]), .log-entry [data-in]) .evidence-box {
+  & .case-page [data-in] .evidence-box {
     animation: stroke-draw 0.35s ease-in-out calc(0.25s + var(--i) * 0.16s) both;
   }
-  & :is(.log-entry[open]:not([data-featured]), .log-entry [data-in]) .evidence-check {
+  & .case-page [data-in] .evidence-check {
     animation: stroke-draw 0.25s cubic-bezier(0.16, 1, 0.3, 1)
       calc(0.5s + var(--i) * 0.16s) both;
   }
-}
-
-/* Collapsed rows: the headline figure is wiped in as the row passes. */
-@supports (animation-timeline: view()) {
-  :root:not([data-motion="reduced"]) .metric-headline {
-    animation: wipe-in linear both;
-    animation-timeline: view();
-    animation-range: entry 30% cover 35%;
-  }
-  /* Phones: the result line is the point of the row, so it is simply
-     there, not wiped in with the scroll. */
-  @media (max-width: 47.99rem) {
-    :root:not([data-motion="reduced"]) .metric-headline {
-      animation: none;
-    }
-  }
-}
-
-/* ---------- Project row hover details ----------
-   Every one plays once and is drawn or moved, never faded. Hover-only, so
-   phones keep the drawn rest state. */
-
-/* Check-in card: a scan line passes over the QR code. It waits above the
-   code and leaves below it; the svg's own clipping hides it at both ends. */
-.qr-scan {
-  transform: translateY(-11px);
-}
-@keyframes qr-scan {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(92px);
-  }
-}
-
-/* Contours redraw once, innermost ring first, then the dot grows in. */
-.contour-ring {
-  stroke-dasharray: 1;
-}
-.contour-dot,
-.sel-handle {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-@keyframes grow-in {
-  from {
-    scale: 0;
-  }
-}
-
-/* Wireframe: each selection box draws itself, then its handles grow out of
-   the corners. Leaving undraws it quickly and without the stagger. */
-.sel-box {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.2s var(--ease-in-out-quart);
-}
-.sel-handle {
-  scale: 0;
-  transition: scale 0.15s var(--ease-in-out-quart);
-}
-
-@media (hover: hover) {
-  .group:hover .qr-scan {
-    animation: qr-scan 1.1s var(--ease-out-expo) both;
-  }
-  .group:hover .contour-ring {
-    animation: stroke-draw 0.5s var(--ease-out-expo) calc(var(--d) * 60ms) both;
-  }
-  .group:hover .contour-dot {
-    animation: grow-in 0.2s var(--ease-out-expo) 0.54s both;
-  }
-  .group:hover .sel-box {
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 0.3s var(--ease-out-expo)
-      calc(var(--b) * 90ms);
-  }
-  .group:hover .sel-handle {
-    scale: 1;
-    transition: scale 0.2s var(--ease-out-expo) calc(var(--b) * 90ms + 0.3s);
-  }
-}
-.group:hover .layer {
-  translate: 0 calc((var(--l) - 1) * 9px);
 }
 
 /* Rev meter: the car's name widens and gets heavier with the revs. */
@@ -605,33 +553,6 @@
 
 /* ---------- Scroll-driven choreography (compositor only) ---------- */
 @supports (animation-timeline: view()) {
-  /* Statement: words ink in as they cross the viewport. */
-  @keyframes ink-in {
-    from {
-      color: var(--unread);
-    }
-    to {
-      color: var(--ink);
-    }
-  }
-  /* From md up only: on a phone the statement is the reading itself, and
-     text that changes with scroll is harder to read on a small screen. */
-  @media (min-width: 48rem) {
-    .scrub-word {
-      color: var(--unread);
-      animation: ink-in linear both;
-      animation-timeline: view();
-      animation-range: cover 18% cover 42%;
-    }
-  }
-
-  /* Experience: the scope index numbers ink in as their rows arrive. */
-  .index-ink {
-    animation: ink-in linear both;
-    animation-timeline: view();
-    animation-range: entry 20% cover 35%;
-  }
-
   /* Side legend: progress line fills with page scroll. */
   @keyframes progress-grow {
     from {
@@ -686,16 +607,9 @@
     animation-range: 0 90vh;
   }
 
-  /* Section titles are swept in like a radar scan: the swatch grows from
-     the left and the text follows on the same range, as one wipe. */
-  @keyframes scan-text {
-    from {
-      clip-path: inset(0 100% 0 0);
-    }
-    to {
-      clip-path: inset(0 0 0 0);
-    }
-  }
+  /* Section titles: the swatch sweeps in like a radar scan as the title
+     arrives. The title text itself is never hidden: it is what the reader
+     scans for, and text that waits for the scroll slows reading. */
   @keyframes scan-swatch {
     from {
       scale: 0 1;
@@ -703,11 +617,6 @@
     to {
       scale: 1 1;
     }
-  }
-  .scan-text {
-    animation: scan-text linear both;
-    animation-timeline: view();
-    animation-range: entry 30% cover 32%;
   }
   .scan-swatch {
     transform-origin: left center;
@@ -718,7 +627,7 @@
   /* A sticky heading barely moves while its section scrolls, so a view
      timeline would leave it half-scanned. Show it whole instead. */
   @media (min-width: 64rem) {
-    .sticky-heading :is(.scan-text, .scan-swatch) {
+    .sticky-heading .scan-swatch {
       animation: none;
     }
   }
@@ -799,18 +708,6 @@
     animation-timeline: --pipe;
     animation-range: cover calc(30% + var(--i) * 7%) cover
       calc(36% + var(--i) * 7%);
-  }
-
-  /* Mini radar sweeps: one turn while the project's radar crosses the
-     viewport. The timeline is named on the <svg> root, which has a CSS box,
-     rather than taken from the <g> itself. */
-  .mini-radar {
-    view-timeline-name: --mini-radar;
-  }
-  .mini-sweep {
-    animation: sweep linear both;
-    animation-timeline: --mini-radar;
-    animation-range: cover 0% cover 100%;
   }
 
   /* The rev meter title widens as it scrolls into view (until the revs take over). */
@@ -952,6 +849,8 @@
     .phone-fold::details-content {
       content-visibility: visible;
     }
+    /* A heading here, not a control (WideFolds also takes it out of the
+       tab order and marks the fold open). */
     .phone-fold > summary {
       cursor: auto;
       pointer-events: none;
@@ -987,7 +886,7 @@
       --i: var(--c2, 0);
     }
   }
-  @media (min-width: 64rem) {
+  @media (min-width: 80rem) {
     .glyph-card {
       --i: var(--c3, 0);
     }
@@ -995,8 +894,8 @@
   :root:not([data-motion="reduced"]) .glyph * {
     animation: glyph-draw linear both;
     animation-timeline: --glyph-card;
-    animation-range: entry calc(20% + var(--i) * 4%) entry
-      calc(70% + var(--i) * 4%);
+    animation-range: entry calc(var(--i) * 4%) entry
+      calc(55% + var(--i) * 4%);
   }
 }
 /* Hover redraws once on a time-based animation. The shorthand replaces the
@@ -1147,41 +1046,25 @@
 .log-entry[open] .log-chevron {
   transform: rotate(45deg);
 }
-/* Phones: while a case is open its title stays pinned under the header
-   (or the top edge, when the header has stepped aside), so it can be
-   closed from wherever the reader is. Pinned, it drops to one compact row. */
-@media (max-width: 47.99rem) {
-  .log-entry[open] > summary {
-    position: sticky;
-    top: var(--pin-top, var(--header-h));
-    z-index: 5;
-    padding-block: 0.75rem;
-    background: var(--surface, var(--paper));
-    box-shadow: 0 1px 0 var(--graticule);
-    transition: top 0.5s var(--ease-out-expo);
+
+/* Without JavaScript the boot script never sets data-motion: honour the
+   system setting directly. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion]) :is(*, *::before, *::after, *::details-content) {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
   }
-  .log-entry[open] > summary h3 {
-    font-size: var(--text-base);
-  }
-  .log-entry[open] > summary .log-meta {
-    display: none;
-  }
-}
-:root[data-header-hidden] {
-  --pin-top: 0px;
 }
 
 /* ---------- Reduced motion: keep every state change, drop the movement ---------- */
 :root[data-motion="reduced"] {
   & *,
   & *::before,
-  & *::after {
+  & *::after,
+  & *::details-content {
     animation: none !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-  & .scrub-word {
-    color: var(--ink);
   }
   & .edge-flow {
     stroke-dasharray: none;
@@ -1191,10 +1074,6 @@
   }
   & .edge-draw {
     stroke-dasharray: none;
-  }
-  /* State still changes on hover, just without the staggered wait. */
-  & :is(.sel-box, .sel-handle) {
-    transition-delay: 0s !important;
   }
   & .radar-cursor-root {
     display: none;
@@ -1206,3 +1085,360 @@
     scale: 1 1;
   }
 }
+
+/* ==================================================================
+   INSTRUMENT KIT — "plotted, not boxed"
+   The page is one sheet of chart paper and every visual summary is drawn
+   on it the way the hero radar is: hairlines, a few plain labels, and
+   numbered stations only where the order matters. Nothing is put in a box. Four inks,
+   four jobs: --ink content, --ink-soft secondary text, --control (≥3:1)
+   every line that carries meaning, --graticule only for background grid
+   and separators. Motion is a pen stroke: complete at rest, one line or
+   mark draws once, ≤300 ms per element, off under reduced motion (the
+   global rule above removes every animation).
+   ================================================================== */
+
+/* In the components layer, so Tailwind utilities on an element (a colour,
+   a size) win over the kit's defaults. */
+@layer components {
+/* Label: names what follows (a step, a field, a group). Caption size,
+   sentence case, no tracking: a label is read, not decoded. */
+.coord {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+/* Station: every numbered stop on the site is this one 28px node. */
+.node {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: var(--text-xs);
+  line-height: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  position: relative;
+  z-index: 1;
+}
+.node-live {
+  background: var(--echo-2);
+  border-color: var(--echo-2);
+  color: var(--on-echo);
+}
+/* Plotted square: category, outcome, "actually". */
+.mark {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+/* Text link to somewhere else on the site, one style everywhere: the
+   words underlined, an arrow after them. It is a standalone control, so
+   its hit area is 44px tall; the padding is taken back by the margin, so
+   it sits in the layout like a line of text. */
+.go {
+  display: inline-flex;
+  align-items: baseline;
+  min-height: 2.75rem;
+  padding-block: 0.625rem;
+  margin-block: -0.625rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--control);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 0.2s;
+}
+.go::after {
+  content: "→";
+  flex-shrink: 0;
+  margin-left: 0.4em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: translate 0.2s var(--ease-out-expo);
+}
+.go:hover,
+.go:focus-visible {
+  text-decoration-color: var(--ink);
+}
+.go:hover::after {
+  translate: 2px 0;
+}
+/* "Back" in a page's bar: an arrow before the words, no underline. */
+.go-back {
+  align-items: center;
+  min-height: 2.75rem;
+  padding-block: 0;
+  margin-block: 0;
+  text-decoration: none;
+}
+.go-back::after {
+  content: none;
+}
+.go-back::before {
+  content: "←";
+  margin-right: 0.5rem;
+  color: var(--ink-soft);
+  transition: translate 0.2s var(--ease-out-expo);
+}
+.go-back:hover::before {
+  translate: -2px 0;
+}
+
+/* A plain list: small round bullets in the control ink, hanging. */
+.bullets {
+  list-style: disc;
+  padding-left: 1.25em;
+}
+.bullets > li::marker {
+  color: var(--control);
+}
+
+/* Plate: a quiet frame around a screenshot. */
+.plate {
+  padding: 0.375rem;
+  border: 1px solid color-mix(in oklab, var(--control) 60%, var(--paper));
+  background: var(--paper-raised);
+}
+@media (min-width: 48rem) {
+  .plate {
+    padding: 0.5rem;
+  }
+}
+/* A row's pen: a 2px rule in the section's band draws along the top edge
+   on hover (desktop pointers only). */
+.pen-row {
+  position: relative;
+}
+.pen-row::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -1px;
+  height: 2px;
+  background: var(--section-band, var(--ink));
+  transform-origin: left;
+  scale: 0 1;
+  transition: scale 0.25s var(--ease-out-expo);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pen-row:hover::before {
+    scale: 1 1;
+  }
+}
+
+/* Section heading: a chart title — swatch, title and a rule to the edge.
+   The rule scans in with the swatch. */
+@supports (animation-timeline: view()) {
+  .scan-rule {
+    transform-origin: left center;
+    animation: scan-swatch linear both;
+    animation-timeline: view();
+    animation-range: entry 30% cover 32%;
+  }
+  @media (min-width: 64rem) {
+    .sticky-heading .scan-rule {
+      animation: none;
+    }
+  }
+}
+
+/* ---------- Plotted paths (experience flow, signal trail, case steps) ----------
+   A track between stops, drawn per stop so it runs node to node: vertical
+   on phones, left to right from md up, in --control. At rest the path is
+   drawn; as it arrives it fills stop by stop in the signal green. */
+.flow-path {
+  grid-template-columns: 1fr;
+}
+.flow-stop {
+  --dot: 1.75rem;
+  --gap: 1.25rem;
+}
+@media (max-width: 47.99rem) {
+  #signal .flow-stop {
+    --gap: 0.875rem;
+  }
+}
+.flow-stop:not(:last-child)::before,
+.flow-stop:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--dot) / 2 - 0.75px);
+  top: var(--dot);
+  bottom: calc(var(--gap) * -1);
+  width: 1.5px;
+  background: var(--control);
+}
+.flow-stop:not(:last-child)::after {
+  background: var(--echo-2);
+  transform-origin: top;
+}
+@media (min-width: 48rem) {
+  .flow-path {
+    grid-template-columns: repeat(var(--stops, 3), minmax(0, 1fr));
+  }
+  .flow-stop {
+    --gap: 1.75rem;
+  }
+  .flow-stop:not(:last-child)::before,
+  .flow-stop:not(:last-child)::after {
+    left: calc(var(--dot) + 0.375rem);
+    right: calc(var(--gap) * -1 + 0.375rem);
+    top: calc(var(--dot) / 2 - 0.75px);
+    bottom: auto;
+    width: auto;
+    height: 1.5px;
+  }
+  .flow-stop:not(:last-child)::after {
+    transform-origin: left;
+  }
+}
+@keyframes flow-fill-y {
+  from {
+    scale: 1 0;
+  }
+}
+@keyframes flow-fill-x {
+  from {
+    scale: 0 1;
+  }
+}
+@keyframes node-ink {
+  from {
+    background: var(--paper);
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+}
+:root:not([data-motion="reduced"]) [data-in] {
+  & .flow-stop:not(:last-child)::after {
+    animation: flow-fill-y 0.3s var(--ease-out-expo)
+      calc(0.1s + var(--i, 0) * 0.25s) both;
+  }
+  & .flow-stop .node-live {
+    animation: node-ink 0.22s ease-out calc(0.1s + var(--i, 0) * 0.25s) both;
+  }
+}
+@media (min-width: 48rem) {
+  :root:not([data-motion="reduced"]) [data-in] .flow-stop:not(:last-child)::after {
+    animation-name: flow-fill-x;
+  }
+}
+
+/* ---------- Pen strokes ---------- */
+@keyframes draw-x {
+  from {
+    scale: 0 1;
+  }
+}
+/* ---------- Work log ---------- */
+/* Case steps: a line from node to node with an arrowhead at the next
+   node; vertical on phones, a row from md. */
+.case-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(0.875rem - 0.75px);
+  top: 1.75rem;
+  bottom: 0;
+  width: 1.5px;
+  background: var(--control);
+}
+@media (min-width: 48rem) {
+  .case-steps-row .case-step:not(:last-child)::after {
+    left: 2.125rem;
+    right: -1rem;
+    top: calc(0.875rem - 0.75px);
+    bottom: auto;
+    width: auto;
+    height: 1.5px;
+  }
+  .case-steps-row .case-step:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    left: -0.875rem;
+    top: calc(0.875rem - 4px);
+    border-block: 4px solid transparent;
+    border-left: 6px solid var(--control);
+  }
+}
+@keyframes step-rise {
+  from {
+    translate: 0 6px;
+  }
+}
+:root:not([data-motion="reduced"]) :is(.log-entry[open], [data-in]) .case-step {
+  animation: step-rise 0.26s var(--ease-out-expo) calc(var(--i, 0) * 0.07s)
+    both;
+  & .node-live {
+    animation: node-ink 0.2s ease-out 0.45s both;
+  }
+}
+
+/* A badge, card or link that jumps to an item marks where it landed. */
+@keyframes target-flash {
+  from {
+    background: color-mix(in oklab, var(--echo-3) 30%, transparent);
+  }
+}
+:root:not([data-motion="reduced"]) :is(.area-item, .log-entry):is(:target, .landed) {
+  animation: target-flash 0.6s ease-out;
+}
+/* A jump's target holds the keyboard's place without a ring around it. */
+.focus-point:focus {
+  outline: none;
+}
+
+/* Principles: the section's pen draws each entry's rule on arrival. */
+.principle-rule {
+  transform-origin: left;
+}
+:root:not([data-motion="reduced"]) [data-in] .principle-rule {
+  animation: draw-x 0.3s var(--ease-out-expo) calc(var(--i, 0) * 0.09s) both;
+}
+
+/* AI lanes (lg): each station draws its connector to the next. */
+@media (min-width: 64rem) {
+  .pipe-stop:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: calc(0.875rem - 0.75px);
+    left: 2.25rem;
+    right: 0.5rem;
+    height: 1.5px;
+    background: var(--control);
+  }
+}
+
+/* zh figure titles need room for the glyphs' height. */
+:lang(zh) :is(.track-flow .flow-title, .case-steps p, .pipe h3, .principle h3) {
+  line-height: 1.3;
+}
+:lang(zh) {
+  text-autospace: normal;
+}
+
+}
+
+/* Each section's pen, for hover rules and marks (the scroll-driven band
+   rule above sets the same values inside its @supports block). */
+#signal { --section-band: var(--band-1); }
+#work { --section-band: var(--band-2); }
+#experience { --section-band: var(--band-3); }
+#systems { --section-band: var(--band-4); }
+#principles { --section-band: var(--band-5); }
+#ai { --section-band: var(--band-6); }
+#projects { --section-band: var(--band-7); }
+#off-duty { --section-band: var(--band-8); }
+#contact { --section-band: var(--band-9); }

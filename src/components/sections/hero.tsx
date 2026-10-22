@@ -36,15 +36,16 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
             timeZone={profile.timeZone}
             className="text-ink"
           />
+          <span className="text-ink-soft">{ui.offset}</span>
         </p>
       </div>
 
       {/* The field is a region of its own. Below lg it is a block in the flow
-          that takes the height left above the copy (at least a third of a
-          phone screen; less on short phones). From lg it is pinned to the
+          that takes the height left above the copy (at least 30% of a phone
+          screen; less on short phones). From lg it is pinned to the
           right half of the section, its left fifth fading out before the
           copy. */}
-      <div className="hero-field relative -z-10 min-h-[34svh] flex-1 [@media(max-height:700px)]:min-h-[24svh] lg:absolute lg:inset-y-0 lg:right-0 lg:left-[52%] lg:min-h-0 lg:[@media(max-height:700px)]:min-h-0">
+      <div className="hero-field relative -z-10 min-h-[30svh] flex-1 [@media(max-height:700px)]:min-h-[24svh] lg:absolute lg:inset-y-0 lg:right-0 lg:left-[52%] lg:min-h-0 lg:[@media(max-height:700px)]:min-h-0">
         <HeroVisual poster={<RadarPoster />} />
       </div>
 
@@ -55,7 +56,9 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
           {/* The separators are real text, so a screen reader hears the
               title line as three parts rather than one run-on phrase. */}
           <p className="load-wipe load-wipe-early text-base text-ink md:text-lg">
-            <span className="font-semibold">{profile.nativeName}</span>
+            <span lang="zh-Hant-TW" className="font-semibold">
+              {profile.nativeName}
+            </span>
             <span className="text-ink-soft"> / </span>
             <span className="font-semibold">{profile.role}</span>{" "}
             <span className="whitespace-nowrap">{profile.specialty}</span>
@@ -70,7 +73,9 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
               text={profile.fullName}
               // Size containment makes the name its own layout root, so the width
               // animation never re-lays out the rest of the page.
-              className="flex h-[0.86em] w-full items-end select-none [contain:size_layout_style] text-[clamp(3.25rem,min(8vw,13svh),7.5rem)]"
+              // Narrow phones scale the name with the width, so it never runs
+              // past the edge (320px, or with user text spacing).
+              className="flex h-[0.86em] w-full items-end select-none [contain:size_layout_style] text-[min(11.5vw,3.25rem)] md:text-[clamp(3.25rem,min(8vw,13svh),7.5rem)]"
             />
           </h1>
 
@@ -95,7 +100,7 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
                 <dt className="text-xl leading-none font-extrabold whitespace-nowrap text-echo-2 tabular md:text-2xl">
                   {p.figure}
                 </dt>
-                <dd className="mt-1.5 text-[0.8125rem] leading-snug text-ink-soft [word-break:keep-all] [overflow-wrap:anywhere] md:mt-0 md:text-base md:text-balance md:text-ink">
+                <dd className="mt-1.5 text-sm leading-snug text-ink-soft [word-break:keep-all] [overflow-wrap:anywhere] md:mt-0 md:text-base md:text-balance md:text-ink">
                   <span className="md:hidden">{p.short}</span>
                   <span className="hidden md:inline">{p.label}</span>
                 </dd>
@@ -103,7 +108,16 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
             ))}
           </dl>
 
-          <div className="load-wipe load-wipe-early mt-6 flex flex-wrap items-center gap-x-3 gap-y-3 md:mt-7 [@media(max-height:760px)]:mt-5">
+          {/* What a recruiter checks first: what I am open to, and where. */}
+          <p className="load-wipe load-wipe-early mt-5 flex items-baseline gap-2.5 text-sm font-semibold md:mt-6 [@media(max-height:760px)]:mt-4">
+            <span
+              aria-hidden="true"
+              className="mark translate-y-[-0.05em] rounded-full bg-echo-2"
+            />
+            {profile.status}
+          </p>
+
+          <div className="load-wipe load-wipe-early mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 md:mt-5 [@media(max-height:760px)]:mt-3">
             <a
               href="#work"
               className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-4 font-semibold text-paper transition-transform active:scale-95 min-[380px]:px-5 sm:px-6"
@@ -112,12 +126,22 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
               <span aria-hidden="true">↓</span>
             </a>
             <a
+              href="#contact"
+              className="inline-flex h-12 items-center gap-2 rounded-full border border-ink px-4 font-semibold transition-colors hover:bg-paper-raised min-[380px]:px-5 sm:px-6"
+            >
+              <span className="sm:hidden">{ui.ctaContactShort}</span>
+              <span className="hidden sm:inline">{ui.ctaContact}</span>
+              <span aria-hidden="true">→</span>
+            </a>
+            <a
               href={githubHref}
               target="_blank"
               rel="me noopener"
-              className="group inline-flex h-12 items-center gap-2 rounded-full border border-ink px-4 font-semibold transition-colors hover:bg-paper-raised min-[380px]:px-5 sm:px-6"
+              className="group inline-flex h-12 items-center gap-1.5 px-2 font-semibold"
             >
-              {ui.ctaGithub}
+              <span className="underline decoration-control decoration-1 underline-offset-[0.3em] transition-colors group-hover:decoration-ink">
+                {ui.ctaGithub}
+              </span>
               <span
                 aria-hidden="true"
                 className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -125,17 +149,11 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
                 ↗
               </span>
             </a>
-            <a
-              href="#contact"
-              className="hidden h-12 items-center gap-1.5 md:inline-flex px-2 font-semibold underline decoration-graticule decoration-2 underline-offset-4 transition-colors hover:decoration-ink"
-            >
-              {ui.ctaContact}
-              <span aria-hidden="true">→</span>
-            </a>
           </div>
-          {/* The stack, for readers scanning for keywords; tablets and up,
-              when the screen is tall enough. */}
-          <p className="load-wipe load-wipe-early mt-5 hidden max-w-[38rem] text-[0.8125rem] text-ink-soft md:block [@media(max-height:760px)]:hidden">
+          {/* The stack, for readers scanning for keywords, when the screen
+              is tall enough. No entrance: it may appear or go as the
+              window's height changes. */}
+          <p className="mt-4 max-w-[38rem] text-sm text-ink-soft md:mt-5 [@media(max-height:760px)]:hidden">
             {profile.focus}
           </p>
         </div>

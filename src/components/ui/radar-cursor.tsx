@@ -129,7 +129,7 @@ export function RadarCursor() {
       >
         <div
           ref={ringRef}
-          className="radar-cursor group/cursor absolute top-0 left-0 rounded-full border border-white/70 data-[locked='1']:rounded-md data-[locked='1']:border-white"
+          className="radar-cursor group/cursor absolute top-0 left-0 rounded-full border border-white/70 data-[locked='1']:rounded-[2px] data-[locked='1']:border-white"
           style={{ width: RING_IDLE, height: RING_IDLE }}
         >
           {/* Range ticks; they turn into target-box corners when locked. */}

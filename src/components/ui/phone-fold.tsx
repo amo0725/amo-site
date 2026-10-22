@@ -13,8 +13,12 @@ interface PhoneFoldProps {
  * Progressive disclosure for phones, with no JavaScript. Served closed:
  * on a phone the reader sees one line per item with the detail a tap away.
  * From md up CSS shows the content anyway and the summary reads as a
- * heading (see .phone-fold in globals.css), so desktops lay out as before.
- * The content stays in the HTML either way, for search and find-in-page.
+ * heading (see .phone-fold in globals.css), so desktops lay out as before;
+ * WideFolds then marks those folds open and takes their summaries out of
+ * the tab order, so assistive tech hears the true state and keyboard users
+ * meet no toggle that does nothing. One header in the markup at every
+ * width: nothing can show twice in any browser. The content stays in the
+ * HTML either way, for search and find-in-page.
  */
 export function PhoneFold({
   summary,

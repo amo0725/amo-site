@@ -61,11 +61,13 @@ export function MotionToggle({
           data-knob
           className={cn(
             "absolute top-1/2 left-0.5 size-3.5 -translate-y-1/2 rounded-full transition-transform duration-300 ease-[var(--ease-out-expo)]",
-            enabled ? "translate-x-4 bg-echo-2" : "bg-coast",
+            enabled ? "translate-x-4 bg-echo-2" : "bg-control",
           )}
         />
       </span>
       <span
+        // The switch's checked state already says on or off.
+        aria-hidden="true"
         className={cn(
           "w-6 text-left text-ink tabular",
           compact && "sr-only xl:not-sr-only",

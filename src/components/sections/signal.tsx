@@ -1,12 +1,10 @@
-import { ScrubText } from "@/components/motion/scrub-text";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
-import type { Profile, SectionCopy } from "@/content/types";
+import type { SectionCopy, SignalContent } from "@/content/types";
 
 interface SignalProps {
-  profile: Profile;
+  signal: SignalContent;
   copy: SectionCopy;
-  locale: string;
 }
 
 /**
@@ -53,31 +51,59 @@ function RangeRings() {
   );
 }
 
-export function Signal({ profile, copy, locale }: SignalProps) {
+/**
+ * What I do, said plainly: the claim, four times it was true (each what
+ * looked fine and what was actually broken, in one sentence that links to
+ * where it happened), how I trace and fix such things, and how I work.
+ */
+export function Signal({ signal, copy }: SignalProps) {
   const meta = sectionMeta("signal");
   // overflow-clip, not overflow-hidden: a hidden box is a scroll container,
-  // and every view() timeline inside it (the inked words, the heading scan,
-  // the rings) would bind to it and stay frozen at 50%.
+  // and every view() timeline inside it would bind to it and stay frozen.
   return (
     <section
       id={meta.id}
       aria-labelledby={`${meta.id}-title`}
-      className="relative isolate overflow-clip px-5 py-20 md:px-10 md:py-44"
+      className="relative isolate overflow-clip px-5 py-20 md:px-10 md:py-36"
     >
       <RangeRings />
       <div className="mx-auto grid max-w-[90rem] md:grid-cols-12">
-        <div className="md:col-span-9 md:col-start-3 lg:col-span-8 lg:col-start-3">
+        <div className="md:col-span-10 md:col-start-2 lg:col-span-8 lg:col-start-3">
           <SectionHeading id={meta.id} colorVar={meta.colorVar}>
             {copy.label}
           </SectionHeading>
-          <ScrubText
-            text={profile.statement}
-            locale={locale}
-            className="max-w-[24em] text-[1.375rem] leading-[1.55] font-medium tracking-tight md:text-[2.15rem] md:leading-[1.55]"
-          />
-          <p className="mt-12 max-w-[32rem] text-ink-soft md:ml-[30%]">
-            {profile.aside}
+          <p className="max-w-[24em] text-[1.375rem] leading-[1.45] font-semibold tracking-tight text-balance md:text-[2.15rem] [:lang(zh)_&]:leading-[1.5]">
+            {signal.claim}
           </p>
+
+          <ul className="mt-8 max-w-[44rem] border-t border-graticule md:mt-12">
+            {signal.pairs.map((pair) => (
+              <li key={pair.href} className="border-b border-graticule">
+                <a
+                  href={pair.href}
+                  className="vs-row group grid grid-cols-[0.625rem_1fr] items-baseline gap-x-4 py-4 md:text-lg"
+                >
+                  <span aria-hidden="true" className="mark bg-echo-5" />
+                  <span>
+                    <span className="text-ink-soft">{pair.looks}</span>
+                    {pair.looks.endsWith("，") ? "" : " "}
+                    <span className="font-semibold underline decoration-control decoration-1 underline-offset-[0.3em] transition-colors group-hover:decoration-ink">
+                      {pair.actually}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="ml-1.5 inline-block text-ink-soft transition-transform group-hover:translate-x-0.5"
+                    >
+                      →
+                    </span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-10 max-w-[40rem] md:text-lg">{signal.trace}</p>
+          <p className="mt-4 max-w-[40rem]">{signal.context}</p>
         </div>
       </div>
     </section>

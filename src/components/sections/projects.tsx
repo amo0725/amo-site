@@ -1,8 +1,55 @@
-import { PhoneFold } from "@/components/ui/phone-fold";
+import { getImageProps } from "next/image";
+import { Fold } from "@/components/ui/fold";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
 import type { SectionCopy, SideProject, UiStrings } from "@/content/types";
-import { ProjectVisualView } from "./project-visuals";
+
+/**
+ * The product itself, on a plate: a screenshot of the real app in a quiet
+ * frame, one shape for every project (16:10; a shorter 2:1 crop of the top
+ * on phones, where the plate is full width), with a "demo data" caption
+ * where it applies. A phone screen stands upright in the middle.
+ */
+function Plate({
+  shot,
+  note,
+}: {
+  shot: NonNullable<SideProject["shot"]>;
+  note: string;
+}) {
+  const phone = shot.device === "phone";
+  // The optimised srcset without the client image component: a plain,
+  // lazy <img> needs no JavaScript.
+  const { props: img } = getImageProps({
+    src: shot.src,
+    alt: shot.alt,
+    width: shot.width,
+    height: shot.height,
+    sizes: phone
+      ? "(min-width: 48rem) 14vw, 26vw"
+      : "(min-width: 90rem) 37rem, (min-width: 48rem) 40vw, 100vw",
+  });
+  return (
+    <figure>
+      <div className="plate">
+        <div className="relative aspect-[2/1] max-w-full overflow-hidden bg-surface-display md:aspect-[16/10]">
+          {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text -- getImageProps supplies src, srcSet and alt */}
+          <img
+            {...img}
+            className={
+              phone
+                ? "absolute top-[7%] left-1/2 h-[125%] w-auto -translate-x-1/2 rounded-[0.9rem] border-[3px] border-ink object-cover object-top"
+                : "size-full object-cover object-top-left"
+            }
+          />
+        </div>
+      </div>
+      {shot.demo ? (
+        <figcaption className="mt-2 text-sm text-ink-soft">{note}</figcaption>
+      ) : null}
+    </figure>
+  );
+}
 
 /** "github.com/owner/repo" from a repository URL. */
 function repoLabel(href: string) {
@@ -15,6 +62,11 @@ interface ProjectsProps {
   ui: UiStrings["projects"];
 }
 
+/**
+ * Side projects as a column of plates with their notes: the screenshot is
+ * the evidence, the name and one line say what it is, how it is built is a
+ * tap away. Titles stay below the section heading's size.
+ */
 export function Projects({ projects, copy, ui }: ProjectsProps) {
   const meta = sectionMeta("projects");
   return (
@@ -29,84 +81,77 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
         </SectionHeading>
 
         <ul className="border-t border-graticule">
-          {projects.map((project, i) => (
+          {projects.map((project) => (
             <li
               key={project.id}
-              className="group relative isolate grid gap-4 border-b border-graticule py-8 md:grid-cols-12 md:gap-8 md:py-12"
+              className="group pen-row grid gap-6 border-b border-graticule py-10 md:grid-cols-12 md:gap-10 md:py-14"
             >
-              {/* Hover wash: wipes in from the left in the section's band colour. */}
-              <span
-                aria-hidden="true"
-                className="absolute inset-y-0 -right-5 -left-5 -z-10 origin-left scale-x-0 bg-paper-raised transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-100 md:-right-10 md:-left-10"
-              />
-              <div className="size-14 md:col-span-2 md:size-auto md:max-w-32">
-                <div className="aspect-square">
-                  <ProjectVisualView visual={project.visual} seed={i * 7 + 3} />
-                </div>
-              </div>
               <div className="md:col-span-5">
-                <h3 className="text-2xl leading-tight font-extrabold md:text-4xl">
+                {project.shot ? (
+                  <Plate shot={project.shot} note={ui.shotNote} />
+                ) : null}
+              </div>
+              <div className="md:col-span-7 md:pt-1">
+                <h3 className="text-xl leading-tight font-extrabold font-expanded md:text-2xl">
                   {project.href ? (
                     <a
                       href={project.href}
                       target="_blank"
                       rel="noopener"
-                      className="underline decoration-coast decoration-2 underline-offset-[6px] transition-colors hover:decoration-ink"
+                      className="group/name inline-flex items-baseline gap-2 hover:text-ink-soft"
                     >
                       {project.name}
+                      <span
+                        aria-hidden="true"
+                        className="text-xl text-ink-soft transition-transform group-hover/name:translate-x-0.5 group-hover/name:-translate-y-0.5"
+                      >
+                        ↗
+                      </span>
                     </a>
                   ) : (
                     project.name
                   )}
                 </h3>
-                <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-soft">
-                  {project.alias ? <span>{project.alias}</span> : null}
-                  {project.year ? (
-                    <span className="tabular">{project.year}</span>
-                  ) : null}
+                <p className="coord mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  {project.status ? <span>{project.status}</span> : null}
                   {project.href ? (
                     <a
                       href={project.href}
                       target="_blank"
                       rel="noopener"
-                      className="group/repo inline-flex items-center gap-1 rounded-full border border-ink px-2.5 py-0.5 text-xs font-semibold text-ink"
+                      className="-my-3 inline-flex min-h-11 items-center underline decoration-control underline-offset-4 hover:text-ink"
                     >
                       {repoLabel(project.href)}
-                      <span
-                        aria-hidden="true"
-                        className="transition-transform group-hover/repo:translate-x-0.5 group-hover/repo:-translate-y-0.5"
-                      >
+                      <span aria-hidden="true" className="ml-1 no-underline">
                         ↗
                       </span>
                     </a>
                   ) : null}
-                  {project.status ? (
-                    <span className="rounded-full border border-echo-4 px-2.5 py-0.5 text-xs font-semibold text-ink">
-                      {project.status}
-                    </span>
+                  {project.alias && project.alias !== project.name ? (
+                    <span>{project.alias}</span>
                   ) : null}
+                  {project.year ? <span>{project.year}</span> : null}
                 </p>
-              </div>
-              <div className="max-w-[34rem] md:col-span-5">
-                <p className="md:text-lg">{project.description}</p>
+                <p className="mt-4 max-w-[40rem] md:text-lg">
+                  {project.description}
+                </p>
                 {project.details.length > 0 ? (
-                  <PhoneFold
-                    className="mt-3 md:mt-4"
-                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:sr-only"
-                    summary={<>{ui.details}</>}
+                  <Fold
+                    className="mt-5 max-w-[40rem]"
+                    summaryClassName="border-y border-graticule py-3 text-sm font-semibold"
+                    summary={
+                      <span>
+                        {ui.details}
+                        <span className="sr-only">: {project.name}</span>
+                      </span>
+                    }
                   >
-                    <ul className="mt-3 space-y-1.5 text-ink-soft md:mt-0">
+                    <ul className="bullets mt-3 space-y-1.5 pb-2">
                       {project.details.map((d) => (
-                        <li key={d} className="flex gap-3">
-                          <span
-                            aria-hidden="true"
-                            className="mt-[0.75em] h-px w-3 shrink-0 bg-coast"
-                          />
-                          {d}
-                        </li>
+                        <li key={d}>{d}</li>
                       ))}
                     </ul>
-                  </PhoneFold>
+                  </Fold>
                 ) : null}
                 <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
                   {project.stack.map((s) => (

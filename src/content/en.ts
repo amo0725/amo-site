@@ -20,22 +20,31 @@ export const en: SiteContent = {
     role: "Full-stack engineer",
     specialty: "Backend and systems architecture",
     place: "Taiwan",
+    status: "Open to full-stack / backend roles · Taiwan or remote",
     headline: "Full-stack engineer in Taiwan.",
     a11yName: "Amo Feng (馮聖淳), full-stack engineer in Taiwan",
     timeZone: "Asia/Taipei",
     focus: "NestJS · React · PHP · MySQL / PostgreSQL / MongoDB · RabbitMQ · Kubernetes",
     positioning: "Systems that touch money should add up at every step.",
     proof: [
-      { figure: "2,000+", label: "businesses on the support platform whose prepaid billing I wrote", short: "businesses; I wrote the billing" },
-      { figure: "0", label: "signed quotes repriced when the pricing model changed", short: "signed quotes repriced" },
+      { figure: "2,000+", label: "businesses on the support platform whose prepaid billing I wrote", short: "businesses on a platform whose billing I wrote" },
+      { figure: "0", label: "signed quotes repriced when the pricing model changed", short: "signed quotes repriced in a pricing switch" },
       { figure: "44 ms", label: "booking query, from 6.3\u00a0s: found the indexes the ORM had dropped", short: "booking query, was 6.3\u00a0s" },
     ],
     summary:
       "Prepaid credit billing, AI and channel integrations on a customer-messaging platform used by 2,000+ businesses, and a quote-to-cash chain from 3D quote and contract to Stripe subscriptions, synced with HubSpot and NetSuite. When I find a root cause, I fix it at the point that keeps the whole class of bug out.",
-    statement:
-      "I am best at finding things that look healthy and are already broken.\n\nThe socket is still connected, yet nothing consumes the events. The migration log says it ran, yet the index is gone from the database. The framework upgrade went fine, yet a middleware quietly stopped running. The test suite is green, yet it tests a state production never reaches.\n\nNone of that shows up on a dashboard. You find it by following the code, the queue and the database. Once I have it, the fix I want is the one choke point that keeps the whole class of bug out.",
-    aside:
-      "I have joined teams in Hong Kong and the US remotely, working in English for docs, code review and meetings. I also turn the technical detail from a standup into something product, sales and accounting can act on. An architecture decision is finished when the people who depend on it understand it.",
+  },
+
+  signal: {
+    claim: "I am best at finding things that look healthy and are already broken.",
+    pairs: [
+      { looks: "The socket is still connected,", actually: "but nothing consumes the events.", href: "#case-inbox-freeze" },
+      { looks: "The migration log says it ran,", actually: "but the index is gone from the database.", href: "#case-vanishing-index" },
+      { looks: "The framework upgrade went fine,", actually: "but a middleware quietly stopped running.", href: "#xp-messaging-7" },
+      { looks: "The test suite is green,", actually: "but it tests a state production never reaches.", href: "#case-ai-replies-lost" },
+    ],
+    trace: "None of it shows on a dashboard. I follow it down through the code, the queue and the database, and fix it at the choke point, so the whole class of bug stays out.",
+    context: "I work remotely with Hong Kong and US teams, in English: docs, reviews and meetings. I translate the technical detail for product, sales and accounting, and a decision is only done when the people who depend on it understand it.",
   },
 
   ui: {
@@ -47,21 +56,25 @@ export const en: SiteContent = {
     switchLanguage: { label: "中文", href: "/zh-TW", hrefLang: "zh-TW" },
     hero: {
       timeLabel: "Taiwan time",
+      offset: " · UTC+8",
       ctaWork: "Read {count} real cases",
       ctaGithub: "GitHub",
       ctaContact: "Contact / request résumé",
+      ctaContactShort: "Contact",
       motionLabel: "Motion",
       motionOn: "On",
       motionOff: "Off",
     },
-    experience: { role: "Role", scope: "Scope", stack: "Stack", earlier: "Earlier work", impact: "Impact", more: "{count} more areas", highlights: "{count} highlights", teamStack: "Team and stack" },
-    projects: { details: "How it's built" },
+    experience: { role: "Role", scope: "Scope", stack: "Stack", earlier: "Earlier work", impact: "Impact", highlights: "{count} highlights", full: "Read the full write-up", around: "Around it", areas: "{count} areas of ownership", back: "Back to experience", to: "to", colon: ": " },
+    projects: { details: "How it's built", shotNote: "Demo data" },
     systems: {
       emptyTitle: "Pick a node to see what flows through it.",
       emptyBody:
         "The map shows {nodes} systems and {edges} connections I have built. Dark nodes are core systems; the rest are outside platforms.",
       flowsTo: "to",
       reset: "Reset layout",
+      core: "core system",
+      close: "Close",
       skillsTitle: "Stack and tooling",
     },
     work: {
@@ -73,7 +86,21 @@ export const en: SiteContent = {
       actions: "What I did",
       result: "Result",
       lesson: "Lesson",
+      symptom: "Symptom",
+      fix: "Fix",
+      summary: "In four steps",
+      stack: "Stack",
+      readMore: "Read the full case",
+      back: "Back to the case log",
+      featured: "Start here",
+      more: "More from {track}",
+      showing: "{count} cases shown",
+      to: "to",
+      prev: "Previous",
+      next: "Next",
     },
+    ai: { step: "Step", me: "Me", agent: "Agent", details: "How each step works" },
+    principles: { evidence: "Where it happened" },
     offDuty: {
       hold: "Hold to rev",
       holdKeys: "or hold the space bar",
@@ -92,14 +119,23 @@ export const en: SiteContent = {
       copied: "Email copied",
       copyFailed: "Couldn't copy. Select the address instead.",
       status: "Open to full-stack and backend roles, in Taiwan or remote.",
-      resume: "Request my résumé (EN / 中文)",
+      resume: "Request my résumé (English or Chinese)",
       resumeSubject: "Résumé request",
+      resumeBody: "Hi Amo,\n\nI'm hiring for [role] at [company] ([location / remote]).\nCould you send your résumé in [English / Chinese]?\n\nThanks,\n[name]",
     },
     footer: { now: "It is now, in Taiwan,", backToTop: "Back to top" },
+    notFound: {
+      title: "No signal at this address.",
+      body: "The page may have moved, or the URL has a typo.",
+      hint: "Looking for a case? The three marked “Start here” are the place to begin.",
+      home: "Home page",
+      cases: "The case log",
+      contact: "Contact",
+    },
   },
 
   sections: {
-    signal: { label: "What I do", nav: "About" },
+    signal: { label: "What I do", nav: "What I do" },
     experience: {
       label: "Experience",
       nav: "Experience",
@@ -108,11 +144,11 @@ export const en: SiteContent = {
     systems: {
       label: "Systems I've connected",
       nav: "Systems",
-      lead: "Every line is a real integration carrying money, orders or messages. Dark nodes are core systems I have built in; pick one to see what flows through it.",
+      lead: "Every line is a real integration carrying money, orders or messages. Dark nodes are core systems I have worked on; pick one to see what flows through it.",
     },
     work: {
-      label: "Incident log",
-      nav: "Log",
+      label: "Case log",
+      nav: "Cases",
       lead: "Real cases: the problem, the root cause, the fix and the lesson. Client and internal names are anonymised. Open one for the details.",
     },
     principles: {
@@ -146,6 +182,18 @@ export const en: SiteContent = {
       context:
         "Multi-tenant platform serving 2,000+ businesses, plus enterprise and private-cloud deployments. A PHP monolith with NestJS microservices and a RabbitMQ event bus, running on AWS EKS. I joined the Hong Kong team remotely; the working language is English.",
       role: "Full-stack engineer: PHP and NestJS backend, React front end, AI integration, architecture planning and code review, and owner of the email-channel project.",
+      tagline: "Hong Kong · AI omnichannel messaging SaaS · Full-stack engineer, email-channel owner",
+      stats: [{ figure: "2,000+", label: "businesses use it" }, { figure: "6", label: "chat channels, plus email" }, { figure: "360×", label: "faster usage API: 18 s to under 50 ms" }],
+      flow: {
+        label: "The path of one message",
+        path: [
+          { title: "A message arrives", note: "WhatsApp and five other chat channels, plus email", areas: [3, 4] },
+          { title: "AI, where it applies", note: "Speech-to-text, translation, AI agent replies", areas: [2] },
+          { title: "Sent, or handed to a person", note: "Inbox, ticket assignment, contact sync", areas: [6] },
+        ],
+        side: { label: "Beside the path: usage settled every hour", title: "Prepaid credit billing", note: "Pulls WhatsApp, LLM and workflow usage and deducts credits; daily reconciliation, monthly statements", areas: [1] },
+        around: [5, 7],
+      },
       summary:
         "I work on what sits behind the conversations: how messages arrive and leave, how they are billed, and how they are handed to AI. I started with subscription plans and prepaid credit billing, took over a large staff booking system for an enterprise client, then built the WhatsApp Groups API, speech-to-text, translation and an AI agent that replies to customers end to end, while taking several production incidents down to their root cause.",
       areas: [
@@ -208,6 +256,18 @@ export const en: SiteContent = {
       context:
         "Three sales channels (direct, wholesale sign shops, and internal sales quoting on a shop's behalf) across the US and Canada. The systems span the main backend, the CRM and 3D configurator, the sign-shop platform, the subscription payment service, the data platform and NetSuite scripts. I joined the US team remotely.",
       role: "Full-stack engineer owning the quote-to-cash chain: backend, front end, 3D, data models, NetSuite scripts and release coordination, working directly with accounting, finance, legal and sales.",
+      tagline: "US · LED digital signage, hardware plus software subscription · Full-stack engineer owning quote-to-cash",
+      stats: [{ figure: "3", label: "sales channels" }, { figure: "0", label: "signed quotes re-priced in the model switch" }, { figure: "8", label: "draw calls for a 50 × 100 ft sign, was 12,503" }],
+      flow: {
+        label: "One sign, from design to revenue",
+        path: [
+          { title: "Design", note: "End customers in the 3D configurator, sign shops on the wholesale platform", areas: [3] },
+          { title: "Quote", note: "One quoting engine, versioned pricing", areas: [1] },
+          { title: "Sign, pay, subscribe", note: "Stripe subscriptions; cellular billing for the SIM in each sign", areas: [4, 2] },
+          { title: "Sync to CRM / ERP", note: "HubSpot, NetSuite, freight and payment terms", areas: [5] },
+        ],
+        around: [6],
+      },
       summary:
         "I own the path from a sign design to revenue: the 3D configurator, the quoting engine, Stripe subscription billing, HubSpot and NetSuite sync, and the wholesale platform sign shops run their business on. When money is involved the point is correctness: payments can be retried without charging twice, errors say exactly what went wrong, and decisions are checked against real data.",
       areas: [
@@ -490,6 +550,12 @@ export const en: SiteContent = {
           "The company was moving from monthly subscriptions priced by sign area to hardware purchases with freely combined add-ons. Three separately evolved quoting paths duplicated rules and drifted, and no signed quote could be re-priced during the switch.",
         cause:
           "A pricing change is usually a rewrite of the logic, so config-as-data was never enough; environment variables give no audit trail and no rollback; an access-control toggle violates single responsibility. Logic and numbers had to be versioned together.",
+        steps: {
+          symptom: "A new business model, three drifting quoting paths, and no signed quote could be re-priced",
+          cause: "Pricing changes rewrite logic; config, environment variables and access toggles give no audit trail or rollback",
+          fix: "A versioned pricing engine: strategies in code, each quote stamped with its version, a pointer flip to switch or roll back",
+          result: "0 signed quotes re-priced, zero new NetSuite SKUs",
+        },
         actions: [
           "Designed the layered Quote v3 from scratch: domain, catalogs, fee policies, margin, orchestrator, output adapters, with a cost trace on every line item",
           "A versioned pricing engine: strategies live in code behind a registry, resolved in the order quote stamp, global active pointer, default, and unknown versions fail closed",
@@ -530,6 +596,12 @@ export const en: SiteContent = {
           "On the booking system I had taken over, admins reported that filtering by staff number showed people who did not match. It looked like a filter bug.",
         cause:
           "Without a date filter the backend was timing out and returning 500. The front end's SWR had keepPreviousData on, so a failed request kept showing the previous results, and a backend error was disguised as a data error. Underneath, the migration log showed both index migrations had run, while SHOW INDEX said they did not exist: Strapi v4 runs migrations on boot and then a schema sync that drops every index not declared in the content type. With no index, MySQL could only plan the CTE as a full hash join.",
+        steps: {
+          symptom: "Filtering by staff number showed people who did not match",
+          cause: "Strapi's boot-time schema sync dropped the undeclared index; the front end kept old data and disguised a 500 as a data error",
+          fix: "Declare the index in schema.json, add a guard test, show the error instead of stale data",
+          result: "6.3 s → 44 ms (143×), and the index survives restarts",
+        },
         actions: [
           "Declared the index in Strapi's schema.json so the ORM maintains it itself",
           "Added a guard test so editing the schema through the Content-Type Builder cannot wipe the index",
@@ -557,6 +629,12 @@ export const en: SiteContent = {
         problem:
           "The internal quoting tool had to handle 50 by 100 ft signs: 2,500 block clones, 12,500 meshes and as many draw calls, rebuilt from scratch on every size change. Dragging a slider froze the page.",
         cause: "Every block part was its own mesh, shared resources were disposed on each rebuild, and the GPU re-uploaded and recompiled shaders every time.",
+        steps: {
+          symptom: "A 50 by 100 ft sign meant 12,500 meshes, and dragging a slider froze the page",
+          cause: "Every part was its own mesh, and each rebuild threw away shared resources and re-uploaded to the GPU",
+          fix: "InstancedMesh with shared geometry and materials, one rebuild per frame, and pixel diffs to prove nothing changed",
+          result: "12,503 → 8 draw calls, 0 px difference at standard sizes",
+        },
         actions: [
           "One InstancedMesh per part, sharing geometry and material, with shared resources no longer disposed on rebuild",
           "Coalesced slider drags into at most one rebuild per frame with requestAnimationFrame",
@@ -588,6 +666,12 @@ export const en: SiteContent = {
         problem:
           "Sign controllers carry a SIM, and billing starts when the prepaid period ends, under different rules for three order types. Three generations of billing coexisted without knowing about each other: an old cron, a coverage engine and back-billing. Double charges were possible, several Stripe writers overwrote each other's quantities, and validation once triggered a Stripe refund. The requirement was blunt: when someone asks later why two units were charged, the records have to answer.",
         cause: "There was no single source of truth and no single writer.",
+        steps: {
+          symptom: "Three generations of billing coexisted: double charges were possible and Stripe writers overwrote each other",
+          cause: "No single source of truth and no single writer",
+          fix: "An event log and a unit register, one Stripe writer, ledger before charge, and no charge without proof of notice",
+          result: "Double billing blocked by a database constraint; a four-phase rollout, each phase reversible",
+        },
         actions: [
           "A pure domain policy, decide(term, history, today), importing no framework",
           "Every state change is an append-only event with a deterministic eventId under a unique index, and the event count serves as optimistic concurrency control",
@@ -630,6 +714,12 @@ export const en: SiteContent = {
           "The old subscription was one lump sum, so customers could not see what they paid for. Billing after shipment was modelled with Stripe's trial_end, so paying customers saw a free trial and receipts printed TRIAL. An audit then found that for new-style orders the monthly fee, reminder emails and second instalment would never fire after shipment.",
         cause:
           "The cron that creates subscriptions read the ship date from the old collection, while new orders record shipping in a different one, and nothing advanced new quotes into the state the detector looked for.",
+        steps: {
+          symptom: "Paying customers saw a free trial and TRIAL receipts, and new orders would never be charged after shipping",
+          cause: "Billing after shipment was modelled as trial_end, and the subscription cron read ship dates from the old collection",
+          fix: "A pending-shipment state, subscriptions created on shipment, one ship-date reader, rehearsed on Stripe test clocks",
+          result: "Fixed before the first new order shipped; no more TRIAL receipts",
+        },
         actions: [
           "Itemised billing with one Stripe item per product, with checkout minting monthly and annual counterpart prices together so switching cycles is just swapping ids",
           "A pending_shipment state: the Stripe subscription is created after shipment, using billing_cycle_anchor with proration_behavior none in place of a trial",
@@ -656,6 +746,12 @@ export const en: SiteContent = {
           "After the AI agent was deployed to the test environment, no AI reply reached a customer. The LLM answer was right and the AI service had sent the result back; the core system simply never wrote it.",
         cause:
           "Saving a message went through the change log, the assigned agent and the agent's name before reading the current tenant on the fourth level, and the first three looked unrelated to tenancy. The handler runs in an internal daemon with no HTTP Host, so tenant initialisation threw. The catch treated that as transient and rethrew it, the message was redelivered forever, and the pod was OOMKilled. The existing end-to-end test set the tenant itself at the top, which supplied exactly what the handler lacked: 27 assertions passed against a state production never reaches.",
+        steps: {
+          symptom: "No AI reply reached a customer, while 27 end-to-end assertions passed",
+          cause: "The handler ran in a daemon with no HTTP Host and threw on the tenant lookup; the test set the tenant itself and hid it",
+          fix: "Resolve the tenant at the start of the handler and clear it at the end; red run in CI first; fake-green tests rewritten to execute the handler",
+          result: "Every AI reply delivered; the pod is no longer OOMKilled",
+        },
         actions: [
           "The handler now resolves the tenant into a slot at the start, accepts only active tenants, and clears the slot in finally so a long-running process cannot bleed one tenant into the next message",
           "Committed the tests alone first so CI recorded the red run, then committed the fix",
@@ -679,6 +775,12 @@ export const en: SiteContent = {
         problem: "Sales kept reporting that saving a quote failed with a 500. The message said nothing, nobody knew the cause, and support had nothing to trace.",
         cause:
           "A read-only production census ruled out the data hypotheses first; every count came back 0. Actually executing the global exception filter showed the real cause: only custom exceptions and 404s kept their status code, and roughly 385 intentional 4xx errors across the repo were flattened into 500s, which turned every status-based branch in the front end into dead code.",
+        steps: {
+          symptom: "Saving a quote kept failing with a bare 500; nobody knew why and support could not trace it",
+          cause: "The global exception filter flattened ~385 intentional 4xx errors into 500s",
+          fix: "An ordered chain of error mappers with a request id on every error, idempotency keys, and a front end that branches on error codes",
+          result: "~385 flattened 4xx → 0, and every error is traceable",
+        },
         actions: [
           "An ordered chain of ExceptionMappers replaced the single filter, and every error carries a requestId that support can trace",
           "Upstream HubSpot failures map to 502 without the upstream body; only 5xx goes to Sentry",
@@ -712,6 +814,12 @@ export const en: SiteContent = {
           "Our fork of the workflow engine prunes old execution records daily. While pruning ran, every customer webhook insert timed out and the automations built on them stopped.",
         cause:
           "The original range DELETE on a large execution table held gap locks for a long time. After backporting two-phase pruning, the soft-delete UPDATE was planned as an index_merge intersect, held a supremum lock, and blocked every INSERT of new data.",
+        steps: {
+          symptom: "Every customer webhook insert timed out while daily pruning ran",
+          cause: "The pruning UPDATE was planned as an index_merge holding a supremum lock that blocked every INSERT",
+          fix: "Select ids, then update; pin the plan; READ COMMITTED; a 30 s cap. Four layers",
+          result: "Pruning runs and webhooks flow",
+        },
         actions: [
           "Split it into select the ids, then update by id, to shrink the lock footprint",
           "FORCE INDEX to pin the execution plan",
@@ -733,6 +841,12 @@ export const en: SiteContent = {
           "Once an agent searched the inbox, new messages stopped appearing. Only a page reload brought them back. Every monitor said healthy.",
         cause:
           "Real-time updates ran on three redux-saga workers consuming one STOMP channel. A return inside the loop was meant to skip an event; inside a generator it ends the whole worker. Search made that branch fire often, so all three workers died quickly. The socket stayed connected and the heartbeat kept going, so monitoring called it fine.",
+        steps: {
+          symptom: "After a search the inbox stopped updating, while every monitor said healthy",
+          cause: "A return inside a generator ended the whole worker; all three died while the socket and heartbeat carried on",
+          fix: "Per-event try/catch, reconnect only on transport errors, and unit tests for the loop",
+          result: "Live updates survive a search; liveness tracks the last processed event",
+        },
         actions: [
           "Extracted processStompEvent and runStompWorkerLoop, with each event in its own try/catch",
           "Only transport errors exit the loop now, and they trigger a reconnect",
@@ -750,6 +864,12 @@ export const en: SiteContent = {
         outcome: "~50 MB → a few MB, licence-clean",
         problem: "Speech-to-text decodes audio to PCM with ffmpeg first. A dependency check showed ffmpeg-static was built with the nonfree flag, which FFmpeg's licence does not allow to be redistributed.",
         cause: "A convenient prebuilt package carried its licensing risk with it, and nobody had read its configure flags.",
+        steps: {
+          symptom: "The ffmpeg-static behind speech-to-text was built nonfree and could not be redistributed",
+          cause: "A prebuilt package carried its licence risk, and nobody had read its configure flags",
+          fix: "A minimal LGPL build with only the needed decoders, and a build that fails on GPL or nonfree flags",
+          result: "About 50 MB → a few MB, licence-clean",
+        },
         actions: [
           "Built a minimal LGPL ffmpeg with --disable-everything, statically linked against musl, containing only the decoders needed",
           "A build-time guard fails the build if a GPL or nonfree flag appears",
@@ -769,6 +889,12 @@ export const en: SiteContent = {
           "In the credit billing system the daily recalculation was failing for every service. The report had a long blank stretch, with no alert.",
         cause:
           "To support soft deletes the unique index had become partial (deletedAt: null). MongoDB's $merge requires a non-partial unique index, so every recalculation failed with error 51183.",
+        steps: {
+          symptom: "The daily spending report had a long blank stretch, with no alert",
+          cause: "Once the unique index became partial, MongoDB's $merge failed on every recalculation",
+          fix: "bulkWrite upserts that leave the partial index alone, then a backfill",
+          result: "Report backfilled; CI test memory 2 GB+ → 166 MB",
+        },
         actions: [
           "Switched to bulkWrite upserts keyed on (account, date, type, service, deletedAt: null), leaving the partial index untouched",
           "Backfilled history through an initialize endpoint",
@@ -788,6 +914,12 @@ export const en: SiteContent = {
         track: "messaging",
         problem: "When the billing system pulled WhatsApp usage from the BSP, a single call held a PHP worker for 18 seconds while other jobs queued behind it.",
         cause: "Channels were called one after another with no cURL timeout, so one slow channel slowed the whole batch.",
+        steps: {
+          symptom: "One WhatsApp usage query held a PHP worker for 18 seconds",
+          cause: "Channels were called one by one with no cURL timeout",
+          fix: "Cache the time windows that can no longer change, fetch in parallel with curl_multi and timeouts, stay at 2/3 of the BSP rate limit",
+          result: "18 s → under 50 ms on a cache hit",
+        },
         actions: [
           "Time windows that are already closed are cached in Redis with a 5-minute safety margin; any channel failure skips the cache write, and cache reads and writes fail open",
           "Fetches run in parallel through curl_multi with a concurrency of 4, a 15-second total limit and a 5-second connect limit per request",
@@ -809,77 +941,93 @@ export const en: SiteContent = {
       id: "root-cause",
       title: "Fix at the source, never with a patch",
       body: "Find the one choke point that makes the whole class of bug impossible. The booking system's DateRangePolicy is the single exit for every date filter; the duplicated fallback logic in ticket assignment collapsed into one assignWithValidation.",
+      evidence: { label: "Experience · A staff booking system I took over", href: "#xp-messaging-5" },
     },
     {
       id: "final-state",
       title: "Verify the final state, distrust the log",
       body: "A migration that ran does not prove the index exists, and a healthy heartbeat does not prove anyone is processing events. Look at what is actually in the database and when the last event was actually handled.",
+      evidence: { label: "The vanishing index", href: "#case-vanishing-index" },
     },
     {
       id: "tests-fail",
       title: "A test counts only if it can fail",
       body: "Commit the red run before the fix so CI keeps the evidence. A test that stays green with the guard condition inverted gets rewritten as a behaviour test that executes the code; the false-green tests found after the AI reply incident were all fixed that way.",
+      evidence: { label: "Every AI reply went nowhere, with a green test suite", href: "#case-ai-replies-lost" },
     },
     {
       id: "disprove",
       title: "Falsify the hypothesis before trusting it",
       body: "When LLM billing stopped, the first theory was disproved with logs, and a minimal reproduction on the deployed package versions found the middleware that the framework upgrade had silently skipped on child routes. A reviewer's claim gets the same treatment: check it against the code before adopting it.",
+      evidence: { label: "Experience · Shared libraries, cron and operations", href: "#xp-messaging-7" },
     },
     {
       id: "money",
       title: "Money paths fail closed",
       body: "Write the ledger before calling Stripe, one idempotency key per attempt; no proof of notification, no charge; an unknown pricing version is rejected outright. A carrier failure never writes 0, because downstream 0 reads as free.",
+      evidence: { label: "Cellular billing: charge exactly once, notify at least once", href: "#case-cellular-billing" },
     },
     {
       id: "contracts",
       title: "Validate contracts at the outermost layer",
       body: "Cross-service events are validated with their envelope and round-tripped through JSON. A response interceptor once rewrote the language code zh-Hant to zh-_hant; five rounds of review and unit tests in three repos missed it, because each side was consistent with itself and the fault lived only in the wire contract.",
+      evidence: { label: "Experience · AI pipeline", href: "#xp-messaging-2" },
     },
     {
       id: "humble",
       title: "Stay humble toward external systems",
       body: "Rate-limit BSP calls to two thirds of the official quota; defend against cursors that never advance or get rejected; fit the retry backoff inside the 24-hour life of a media URL; when FedEx turns out to skip address validation, run your own preflight.",
+      evidence: { label: "One usage query held a worker for 18 seconds", href: "#case-usage-api-worker" },
     },
     {
       id: "admit",
       title: "Admit mistakes and leave a record",
       body: "A wrong call gets reverted with the reason in the commit. I once decided WhatsApp groups had no 24-hour service window and added an exemption; the next day I confirmed they do, and reverted it the same day. A regression I introduced in one merge request was fixed and documented in the next.",
+      evidence: { label: "Experience · WhatsApp and channel integrations", href: "#xp-messaging-4" },
     },
   ],
 
   ai: {
-    intro:
-      "Claude Code does most of my daily development. Requirements, every decision, what to verify, rollout order and production operations stay with me; verifying code, writing specs and tickets, implementation, review and E2E runs go to agents. Every change walks the same pipeline before it becomes a merge request.",
+    headline: "Decisions and production stay with me, the rest goes to agents, and every change walks the same pipeline.",
     steps: [
       {
         id: "spec",
         title: "Spec first",
         body: "Proposal, design, tasks and spec in OpenSpec. Decisions are numbered, each with the reason and what was rejected; large features get sequence diagrams.",
+        me: "Brings the requirements, decides each point",
+        agent: "Writes the proposal, design, spec and tickets",
       },
       {
         id: "verify",
         title: "Verify, then design",
         body: "Read the code and cite file:line, run a read-only production census with permission, read the official docs. Mark what is verified apart from what is inferred.",
+        me: "Sets what to verify, approves a read-only census",
+        agent: "Reads code and docs, marks verified apart from inferred",
       },
       {
         id: "tdd",
         title: "TDD, with the red run in CI",
         body: "Commit the failing test, then commit the fix. One git worktree per repo, and only the affected tests run.",
+        agent: "Commits the failing test, then implements",
       },
       {
         id: "review",
         title: "Adversarial review",
         body: "A separate read-only agent reviews with HIGH, MEDIUM and LOW severities. Every finding is handled one by one, nothing is accepted wholesale, and anything declined gets a written reason.",
+        me: "Decides finding by finding, writes why when declining",
+        agent: "Reviews independently, read-only, by severity",
       },
       {
         id: "e2e",
         title: "Scripted local E2E",
         body: "The harness lives in a temp directory and is deleted afterwards; no endpoints are added for testing. Payment flows are rehearsed against real Stripe test clocks.",
+        agent: "Scripted local E2E, rehearsals on Stripe test clocks",
       },
       {
         id: "mr",
         title: "Then the MR and the runbook",
         body: "Every deploy step says what breaks if you swap it, backfills dry-run first, and flags go on one at a time. Production writes and merges are done by me.",
+        me: "Sets rollout order, merges, writes to production",
       },
     ],
     toolsLabel: "Tools",
@@ -905,7 +1053,14 @@ export const en: SiteContent = {
         "Supabase Auth invitation and magic-link flows, Resend email notifications, SWR caching",
       ],
       stack: ["Next.js 16", "React 19", "TypeScript", "Supabase", "PostgreSQL", "Vitest"],
-      visual: "layers",
+      shot: {
+        demo: true,
+        src: "/projects/prflow.webp",
+        alt: "Financial report page: four summary tiles for total budget, spend, profit and average ROI, above a table of each project's budget, spend and profit.",
+        width: 1600,
+        height: 1000,
+        device: "desktop",
+      },
     },
     {
       id: "restaurant-cms",
@@ -920,7 +1075,14 @@ export const en: SiteContent = {
         "Lighthouse-driven performance work, JSON-LD and a sitemap; Husky + lint-staged keep lint failures out of commits",
       ],
       stack: ["Next.js 16", "Tailwind CSS v4", "GSAP", "iron-session", "Upstash Redis", "Vercel Blob"],
-      visual: "contour",
+      shot: {
+        demo: false,
+        src: "/projects/restaurant.webp",
+        alt: "Restaurant website hero: a full-bleed photo of chefs at work in the kitchen, with the wordmark and a reservation button.",
+        width: 1600,
+        height: 1000,
+        device: "desktop",
+      },
     },
     {
       id: "orbit",
@@ -936,7 +1098,14 @@ export const en: SiteContent = {
         "Google OAuth sign-in, Workbox precaching and an offline fallback page",
       ],
       stack: ["Next.js 15", "Supabase", "PostgreSQL", "Web Push", "Workbox", "Tailwind CSS"],
-      visual: "radar",
+      shot: {
+        demo: true,
+        src: "/projects/orbit.webp",
+        alt: "The phone home screen, 'My galaxy': four habit orbits shown as planets, with a button to create one at the bottom.",
+        width: 780,
+        height: 1688,
+        device: "phone",
+      },
     },
     {
       id: "event-checkin",
@@ -950,7 +1119,14 @@ export const en: SiteContent = {
         "GitHub Actions calls a Vercel deploy hook on every push to main; Renovate keeps dependencies current",
       ],
       stack: ["Next.js", "TypeScript", "MongoDB", "Resend", "GitHub Actions", "Vercel"],
-      visual: "tiles",
+      shot: {
+        demo: true,
+        src: "/projects/checkin.webp",
+        alt: "Event check-in admin list: each attendee's morning and afternoon status, organisation, name, masked ID number and check-in time.",
+        width: 1600,
+        height: 1000,
+        device: "desktop",
+      },
     },
   ],
 

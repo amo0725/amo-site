@@ -99,13 +99,23 @@ export function RevMeter({ name, note, ui }: RevMeterProps) {
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  // Pointer and keys hold the throttle. A bare click with neither (a
+  // screen reader's activation, switch access) blips it for a moment.
+  const lastInput = useRef(0);
   const press = () => {
+    lastInput.current = performance.now();
     throttle.current = true;
     kick.current();
   };
   const release = () => {
+    lastInput.current = performance.now();
     throttle.current = false;
     kick.current();
+  };
+  const blip = () => {
+    if (performance.now() - lastInput.current < 500) return;
+    press();
+    window.setTimeout(release, 900);
   };
 
   const ticks = Array.from({ length: MAX / 1000 + 1 }, (_, i) => i);
@@ -117,13 +127,14 @@ export function RevMeter({ name, note, ui }: RevMeterProps) {
       style={{ "--rev": 0, "--needle": `${START}deg` } as React.CSSProperties}
     >
       <h3
-        // Sized to its column so the title still fits on one line at full
-        // revs, when it is about 1.36x wider than at idle.
-        className="rev-name text-[min(7.5rem,14cqw)] leading-[0.85] tracking-[-0.03em] whitespace-nowrap"
+        // An item title like the others (below the section heading), and
+        // narrow enough to stay on one line at full revs, when it is about
+        // 1.36x wider than at idle.
+        className="rev-name text-[min(var(--text-xl),14cqw)] leading-[0.9] tracking-[-0.02em] whitespace-nowrap md:text-[min(var(--text-2xl),14cqw)]"
       >
         {name}
       </h3>
-      <p className="mt-6 max-w-[26rem] text-ink-soft">{note}</p>
+      <p className="mt-4 max-w-[26rem]">{note}</p>
 
       <div className="mt-8 flex flex-wrap items-center gap-6">
         <svg
@@ -165,7 +176,7 @@ export function RevMeter({ name, note, ui }: RevMeterProps) {
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill={
-                    t * 1000 >= REDLINE ? "var(--echo-5)" : "var(--ink-soft)"
+                    t * 1000 >= REDLINE ? "var(--echo-5-ink)" : "var(--ink-soft)"
                   }
                 >
                   {t}
@@ -221,15 +232,19 @@ export function RevMeter({ name, note, ui }: RevMeterProps) {
             onKeyUp={(e) => {
               if (e.key === " " || e.key === "Enter") release();
             }}
+            onClick={blip}
             onContextMenu={(e) => e.preventDefault()}
             className="touch-none rounded-full bg-ink px-6 py-3 font-semibold text-paper select-none active:scale-95"
           >
             {ui.hold}
           </button>
-          <p className="text-xs text-ink-soft">{ui.holdKeys}</p>
+          {/* Only where there is a keyboard to hold a key on. */}
+          <p className="hidden text-xs text-ink-soft [@media(hover:hover)]:block">
+            {ui.holdKeys}
+          </p>
           <p
             className={cn(
-              "text-sm font-semibold text-echo-5 transition-opacity",
+              "text-sm font-semibold text-echo-5-ink transition-opacity",
               redline ? "opacity-100" : "opacity-0",
             )}
             aria-live="polite"

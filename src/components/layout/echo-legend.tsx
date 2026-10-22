@@ -22,7 +22,10 @@ export function EchoLegend({
       aria-label={label}
       className={cn(
         "fixed top-1/2 right-5 z-30 hidden -translate-y-1/2 transition-opacity duration-500 2xl:block",
-        active ? "opacity-100" : "pointer-events-none opacity-0",
+        // Faded out over the hero, but shown whenever it holds focus.
+        active
+          ? "opacity-100"
+          : "pointer-events-none opacity-0 focus-within:pointer-events-auto focus-within:opacity-100",
       )}
     >
       <div className="flex gap-2">

@@ -1,12 +1,24 @@
 "use client";
 
-import { AnimatePresence, LayoutGroup, m } from "motion/react";
-import { Suspense, useState, type ReactNode } from "react";
-import type { UiStrings, WorkCategory, WorkEntry } from "@/content/types";
-import { metricHeadline } from "@/components/ui/metric-bars";
+import { AnimatePresence, LayoutGroup } from "motion/react";
+// The bare m component: the barrel export of "m" pulls the full feature
+// set into the first-load bundle and defeats LazyMotion.
+import * as m from "motion/react-m";
+import {
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+  type SyntheticEvent,
+} from "react";
+import type { Metric, UiStrings, WorkCategory } from "@/content/types";
 import { cn } from "@/lib/cn";
+import { fill } from "@/lib/i18n";
 import { useMotionPreference } from "@/lib/motion/preference";
 import { PhoneFold } from "@/components/ui/phone-fold";
+import { caseAnchor } from "./case-steps";
+import type { WorkLogEntry } from "./log-entry";
+import { applyOpenCases, OPEN_CASES_KEY } from "./open-cases";
 
 export interface TrackOption {
   id: string;
@@ -14,7 +26,7 @@ export interface TrackOption {
 }
 
 interface WorkLogProps {
-  entries: readonly WorkEntry[];
+  entries: readonly WorkLogEntry[];
   tracks: readonly TrackOption[];
   categories: Readonly<Record<WorkCategory, string>>;
   colors: Readonly<Record<WorkCategory, string>>;
@@ -25,9 +37,58 @@ interface WorkLogProps {
 
 const ALL = "__all__";
 
-/** Opens a featured case on md-and-up screens when it mounts. */
-function openWhenWide(el: HTMLDetailsElement | null) {
-  if (el && window.matchMedia("(min-width: 48rem)").matches) el.open = true;
+/* The filters live in the query string (?type=…&track=…), so a filtered
+   list can be shared and survives Back. The URL is the source of truth;
+   this store re-reads it after every write and on history moves. */
+const FILTER_EVENT = "work-filter";
+function subscribeQuery(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  window.addEventListener(FILTER_EVENT, onChange);
+  return () => {
+    window.removeEventListener("popstate", onChange);
+    window.removeEventListener(FILTER_EVENT, onChange);
+  };
+}
+const readQuery = () => window.location.search;
+const serverQuery = () => "";
+
+function writeQuery(key: "type" | "track", value: string) {
+  const url = new URL(window.location.href);
+  if (value === ALL) url.searchParams.delete(key);
+  else url.searchParams.set(key, value);
+  window.history.replaceState(null, "", url);
+  window.dispatchEvent(new Event(FILTER_EVENT));
+}
+
+/**
+ * A case opened or closed by the reader: the address follows it, so the
+ * Back button (from the case's own page, or after leaving the site) comes
+ * back to it open, and the set of open cases is kept for this tab
+ * (restored by the pre-paint script, see open-cases.ts).
+ */
+function onCaseToggle(e: SyntheticEvent<HTMLDetailsElement>) {
+  // Only the reader's own toggles: not the pre-paint script's (its toggle
+  // events can arrive after hydration), which would put a case nobody
+  // asked for into the address.
+  if (navigator.userActivation && !navigator.userActivation.isActive) return;
+  const el = e.currentTarget;
+  const hash = `#${el.id}`;
+  const url = new URL(window.location.href);
+  if (el.open && url.hash !== hash) {
+    url.hash = hash;
+    window.history.replaceState(null, "", url);
+  } else if (!el.open && url.hash === hash) {
+    url.hash = "";
+    window.history.replaceState(null, "", url);
+  }
+  try {
+    const open = [...document.querySelectorAll("#work details.log-entry[open]")].map(
+      (d) => d.id,
+    );
+    sessionStorage.setItem(OPEN_CASES_KEY, JSON.stringify(open));
+  } catch {
+    // Storage can be unavailable (private mode); the address still works.
+  }
 }
 const ease = [0.16, 1, 0.3, 1] as const;
 const easeInOutQuart = [0.76, 0, 0.24, 1] as const;
@@ -69,7 +130,7 @@ function FilterGroup({
     >
       <p
         id={`filter-${id}-label`}
-        className="mb-2 text-xs font-semibold text-ink-soft md:mb-0 md:w-24 md:shrink-0"
+        className="coord mb-2 md:mb-0 md:w-28 md:shrink-0"
       >
         {label}
       </p>
@@ -83,7 +144,7 @@ function FilterGroup({
               aria-pressed={on}
               onClick={() => onChange(opt.value)}
               className={cn(
-                "relative isolate flex min-h-10 items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors",
+                "relative isolate flex min-h-10 items-center gap-2 rounded-[2px] border px-3 py-1.5 text-sm transition-colors",
                 on
                   ? "border-ink text-paper"
                   : "border-control hover:border-ink",
@@ -92,7 +153,7 @@ function FilterGroup({
               {on ? (
                 <m.span
                   layoutId={`pill-${id}`}
-                  className="absolute inset-0 -z-10 rounded-full bg-ink"
+                  className="absolute inset-0 -z-10 rounded-[1px] bg-ink"
                   transition={{ duration: 0.35, ease }}
                 />
               ) : null}
@@ -106,7 +167,7 @@ function FilterGroup({
               <span>{opt.label}</span>
               <span
                 className={cn(
-                  "tabular",
+                  "text-sm font-semibold tabular",
                   on ? "text-paper/70" : "text-ink-soft",
                 )}
               >
@@ -120,19 +181,34 @@ function FilterGroup({
   );
 }
 
+/** "6.3 s → 44 ms (143×)": the measured change. */
+function Outcome({ metric, to }: { metric: Metric; to: string }) {
+  return (
+    <>
+      {metric.beforeText}
+      <span aria-hidden="true"> → </span>
+      <span className="sr-only"> {to} </span>
+      {metric.afterText}
+      {metric.factor ? (
+        <span className="font-normal text-ink-soft"> ({metric.factor})</span>
+      ) : null}
+    </>
+  );
+}
+
 function CategoryMark({ color }: { color: string }) {
   return (
     <span
       aria-hidden="true"
-      className="inline-block size-2.5 shrink-0"
+      className="mark log-mark"
       style={{ background: `var(${color})` }}
     />
   );
 }
 
 function count<T extends string>(
-  entries: readonly WorkEntry[],
-  key: (e: WorkEntry) => T,
+  entries: readonly WorkLogEntry[],
+  key: (e: WorkLogEntry) => T,
 ) {
   const map = new Map<T, number>();
   for (const e of entries) map.set(key(e), (map.get(key(e)) ?? 0) + 1);
@@ -147,21 +223,40 @@ export function WorkLog({
   ui,
   bodies,
 }: WorkLogProps) {
-  const [type, setType] = useState<string>(ALL);
-  const [track, setTrack] = useState<string>(ALL);
+  const query = new URLSearchParams(
+    useSyncExternalStore(subscribeQuery, readQuery, serverQuery),
+  );
+  const pick = (value: string | null, known: readonly string[]) =>
+    value && known.includes(value) ? value : ALL;
+  const type = pick(query.get("type"), Object.keys(categories));
+  const track = pick(
+    query.get("track"),
+    tracks.map((t) => t.id),
+  );
   // Layout animation only once a filter has been used: before that there
   // is nothing to animate, and measuring a dozen rows on load forces a
   // layout of the whole page while it is still hydrating.
   const [filtered, setFiltered] = useState(false);
+  // If React had to render the rows again on the client (they no longer
+  // carry the pre-paint script's mark), decide which are open once more.
+  useEffect(() => {
+    const row = document.querySelector("#work details.log-entry");
+    if (row && !row.hasAttribute("data-pre")) applyOpenCases(OPEN_CASES_KEY);
+  }, []);
   // Motion's reducedMotion setting only drops transforms and layout, so the
   // clip-path wipes are switched off here.
   const reduced = useMotionPreference() === "reduced";
 
-  const visible = entries.filter(
-    (e) =>
-      (type === ALL || e.category === type) &&
-      (track === ALL || e.track === track),
-  );
+  const matches = (e: WorkLogEntry) =>
+    (type === ALL || e.category === type) &&
+    (track === ALL || e.track === track);
+  const matching = entries.filter(matches);
+  // A filter that arrives with the address (a shared ?type= link) is
+  // applied by hiding rows, not removing them: removal plays an exit
+  // animation, and right after hydration Motion's animation features may
+  // not have loaded yet to play it. Once the reader filters, rows come
+  // and go with their wipes.
+  const rows = filtered ? matching : entries;
 
   const typeCounts = count(entries, (e) => e.category);
   const trackCounts = count(entries, (e) => e.track);
@@ -206,7 +301,7 @@ export function WorkLog({
             value={type}
             onChange={(v) => {
               setFiltered(true);
-              setType(v);
+              writeQuery("type", v);
             }}
           />
           <FilterGroup
@@ -216,15 +311,20 @@ export function WorkLog({
             value={track}
             onChange={(v) => {
               setFiltered(true);
-              setTrack(v);
+              writeQuery("track", v);
             }}
           />
         </div>
       </PhoneFold>
+      {/* Says how many cases a filter left, for readers who can't see the
+          rows go. Empty until a filter is used. */}
+      <p role="status" className="sr-only">
+        {filtered ? fill(ui.showing, { count: matching.length }) : ""}
+      </p>
 
       <m.ul layout={filtered} className="border-t border-graticule">
         <AnimatePresence initial={false} mode="popLayout">
-          {visible.map((entry) => (
+          {rows.map((entry) => (
             <m.li
               key={entry.id}
               layout={filtered}
@@ -237,55 +337,68 @@ export function WorkLog({
                   : { duration: 0.25, ease: easeInOutQuart },
               }}
               transition={reduced ? { duration: 0 } : { duration: 0.35, ease }}
+              hidden={!filtered && !matches(entry) ? true : undefined}
               className="border-b border-graticule"
             >
-              {/* Featured cases start open; their figures play when scrolled
-                  into view instead of on page load (see data-featured in CSS). */}
+              {/* Served closed. A script right after the list opens the
+                  featured cases before the first paint (all three from md,
+                  the first on phones), so a shared link lands once; their
+                  figures play when scrolled into view (data-featured). */}
               <details
+                id={caseAnchor(entry.id)}
                 className="log-entry group"
-                // Served closed: phones get the list as an outline. From
-                // md up the featured cases open as they mount (no re-render).
-                ref={entry.featured ? openWhenWide : undefined}
                 data-featured={entry.featured ? "" : undefined}
+                onToggle={onCaseToggle}
               >
-                {/* Phones: two columns, the category joins the line under the
-                    title so the title gets the full width. */}
-                <summary className="grid grid-cols-[1fr_auto] items-baseline gap-x-4 py-5 md:grid-cols-[7rem_1fr_auto] md:gap-x-8 md:py-6">
-                  <span className="hidden items-center gap-2 text-sm text-ink-soft md:flex">
+                {/* One grid for every row, so the list reads as a table:
+                    category, title, the outcome and the toggle. From 90rem
+                    the outcome has a column of its own; below that it sits
+                    under the title, so the title keeps the width to read in
+                    two lines (the list shares the row with the filters from
+                    lg). Phones: title and toggle, then the category, then
+                    the outcome full width. */}
+                <summary className="pen-row grid grid-cols-[1fr_auto] items-start gap-x-4 py-5 md:grid-cols-[7rem_1fr_1.5rem] md:gap-x-8 md:py-6 min-[90rem]:grid-cols-[7rem_1fr_18rem_1.5rem]">
+                  <span className="hidden items-center gap-2 pt-[0.3rem] text-sm text-ink-soft md:col-start-1 md:row-start-1 md:flex">
                     <CategoryMark color={colors[entry.category]} />
                     {categories[entry.category]}
                   </span>
-                  <div>
+                  <span className="col-start-1 row-start-1 block md:col-start-2">
+                    {entry.featured ? (
+                      <span className="log-featured mb-1 block text-sm font-semibold text-echo-2-ink">
+                        {ui.featured}
+                      </span>
+                    ) : null}
                     <h3 className="text-lg font-semibold text-balance md:text-xl">
                       {entry.title}
                     </h3>
-                    <span className="log-meta mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-ink-soft md:mt-0">
+                    <span className="log-meta coord mt-1.5 flex flex-wrap items-center gap-x-3">
                       <span className="flex items-center gap-2 md:hidden">
                         <CategoryMark color={colors[entry.category]} />
                         {categories[entry.category]}
                       </span>
                       <span>{trackLabel.get(entry.track)}</span>
-                      {entry.metrics?.[0] ? (
-                        <span className="metric-headline font-semibold text-ink tabular">
-                          {metricHeadline(entry.metrics[0])}
-                        </span>
-                      ) : entry.outcome ? (
-                        <span className="metric-headline font-semibold text-ink">
-                          {entry.outcome}
-                        </span>
-                      ) : null}
                     </span>
-                  </div>
+                  </span>
+                  {/* The outcome, as text: the measured change, or what it
+                      came to. */}
+                  <span className="log-plot col-span-2 col-start-1 row-start-2 mt-2 font-semibold tabular md:col-span-1 md:col-start-2 min-[90rem]:col-start-3 min-[90rem]:row-start-1 min-[90rem]:mt-0 min-[90rem]:pt-[0.2rem]">
+                    {entry.metrics?.[0] ? (
+                      <Outcome metric={entry.metrics[0]} to={ui.to} />
+                    ) : (
+                      entry.outcome
+                    )}
+                  </span>
                   <span
                     aria-hidden="true"
-                    className="log-chevron text-2xl leading-none font-light text-ink-soft"
+                    className="log-chevron col-start-2 row-start-1 text-2xl leading-none font-light text-ink-soft md:col-start-3 min-[90rem]:col-start-4"
                   >
                     +
                   </span>
                 </summary>
-                {/* Server-rendered body in its own Suspense boundary: React
-                    hydrates each case as a separate, interruptible task. */}
-                <Suspense fallback={null}>{bodies[entry.id]}</Suspense>
+                {/* Server-rendered body, in the HTML with its row: a body in a
+                    Suspense boundary of its own streams in after the list
+                    and grows it after a #link has landed. */}
+                {bodies[entry.id]}
               </details>
             </m.li>
           ))}

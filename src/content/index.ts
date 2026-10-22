@@ -2,7 +2,9 @@ import { en } from "./en";
 import type { Locale, SiteContent } from "./types";
 import { zhTW } from "./zh-TW";
 
-export const locales = ["zh-TW", "en"] as const satisfies readonly Locale[];
+import { locales } from "./locales";
+
+export { locales };
 export const defaultLocale: Locale = "zh-TW";
 
 const content: Readonly<Record<Locale, SiteContent>> = { "zh-TW": zhTW, en };

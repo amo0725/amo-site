@@ -20,6 +20,7 @@ export const zhTW: SiteContent = {
     role: "全端工程師",
     specialty: "後端・系統架構",
     place: "台灣",
+    status: "找全端／後端職缺・台灣或遠端",
     headline: "全端工程師（後端・系統架構），在台灣。",
     a11yName: "Amo Feng 馮聖淳，台灣的全端工程師",
     timeZone: "Asia/Taipei",
@@ -32,10 +33,18 @@ export const zhTW: SiteContent = {
     ],
     summary:
       "做過服務 2,000+ 企業的客服平台上的預付點數計費、AI 與通路整合，和一條從 3D 報價、簽約、付款到 Stripe 訂閱計費，並與 HubSpot、NetSuite 同步的 quote-to-cash 鏈。追到根因之後，修在讓同一類 bug 進不來的那個點。",
-    statement:
-      "我最擅長找出看起來正常、其實已經壞掉的問題。\n\nsocket 還連著，卻沒有人在處理事件；migration 紀錄說跑過了，index 卻不在資料庫裡；框架升級順利，middleware 卻默默不再執行；測試全綠，測的卻是 production 不存在的狀態。\n\n這些都不會出現在儀表板上，要從程式碼、佇列和資料庫一路追下去。追到之後，我要的修法是找到那一個關鍵點，讓同一類 bug 再也進不來。",
-    aside:
-      "遠端加入過香港與美國的團隊，文件、code review 和會議都用英文。也習慣把 standup 裡的技術細節翻成 PM、業務和會計讀得懂的版本。架構決策要讓依賴它的人都看得懂，才算做完。",
+  },
+
+  signal: {
+    claim: "我最擅長找出看起來正常、其實已經壞掉的問題。",
+    pairs: [
+      { looks: "socket 還連著，", actually: "其實沒有人在處理事件。", href: "#case-inbox-freeze" },
+      { looks: "migration 紀錄說跑過了，", actually: "其實 index 不在資料庫裡。", href: "#case-vanishing-index" },
+      { looks: "框架升級很順利，", actually: "其實有個 middleware 默默不再執行。", href: "#xp-messaging-7" },
+      { looks: "測試全綠，", actually: "其實測的是 production 不存在的狀態。", href: "#case-ai-replies-lost" },
+    ],
+    trace: "這些都不會出現在儀表板上。我會沿著程式碼、佇列、資料庫一路追下去，修在源頭，讓同一類 bug 進不來。",
+    context: "遠端和香港、美國團隊合作，文件、review 與會議都用英文；技術細節由我翻譯給 PM、業務與會計，決策要讓依賴它的人看懂，才算完成。",
   },
 
   ui: {
@@ -47,21 +56,25 @@ export const zhTW: SiteContent = {
     switchLanguage: { label: "EN", href: "/en", hrefLang: "en" },
     hero: {
       timeLabel: "台灣時間",
+      offset: "・UTC+8",
       ctaWork: "看 {count} 則真實案例",
       ctaGithub: "GitHub",
       ctaContact: "聯絡／索取履歷",
+      ctaContactShort: "聯絡／索取履歷",
       motionLabel: "動態效果",
       motionOn: "開",
       motionOff: "關",
     },
-    experience: { role: "角色", scope: "負責範圍", stack: "技術", earlier: "更早的工作", impact: "影響", more: "其餘 {count} 項負責範圍", highlights: "{count} 項重點", teamStack: "團隊與技術" },
-    projects: { details: "做法與細節" },
+    experience: { role: "角色", scope: "負責範圍", stack: "技術", earlier: "更早的工作", impact: "影響", highlights: "{count} 項重點", full: "看完整經歷", around: "周邊", areas: "{count} 項負責範圍", back: "回到經歷", to: "降到", colon: "：" },
+    projects: { details: "做法與細節", shotNote: "示範資料" },
     systems: {
       emptyTitle: "選一個節點，看看資料怎麼流動。",
       emptyBody:
         "圖上有 {nodes} 個系統、{edges} 條我實際接過的連線。深色的是核心系統，其他是外部平台。",
       flowsTo: "傳到",
       reset: "恢復排列",
+      core: "核心系統",
+      close: "關閉",
       skillsTitle: "技術範圍",
     },
     work: {
@@ -73,7 +86,21 @@ export const zhTW: SiteContent = {
       actions: "怎麼處理",
       result: "結果",
       lesson: "學到的事",
+      symptom: "症狀",
+      fix: "修法",
+      summary: "四步驟摘要",
+      stack: "技術",
+      readMore: "讀完整案例",
+      back: "回到案例紀錄",
+      featured: "先看這三則",
+      more: "{track}的其他案例",
+      showing: "顯示 {count} 則案例",
+      to: "降到",
+      prev: "上一則",
+      next: "下一則",
     },
+    ai: { step: "步驟", me: "我", agent: "Agent", details: "每一步怎麼做" },
+    principles: { evidence: "出處" },
     offDuty: {
       hold: "按住踩油門",
       holdKeys: "也可以按住空白鍵",
@@ -94,12 +121,21 @@ export const zhTW: SiteContent = {
       status: "正在找全端或後端職缺，台灣或海外遠端都可以。",
       resume: "索取履歷（中／英）",
       resumeSubject: "索取履歷",
+      resumeBody: "Amo 你好，\n\n我們在找 [職缺]（[公司]，[地點／遠端]）。\n方便提供你的履歷嗎？（[中文／英文]）\n\n謝謝，\n[姓名]",
     },
     footer: { now: "現在是台灣時間", backToTop: "回到頂端" },
+    notFound: {
+      title: "這個網址沒有訊號。",
+      body: "頁面可能已經移走，或網址打錯了。",
+      hint: "想找案例？標著「先看這三則」的是最好的起點。",
+      home: "回到首頁",
+      cases: "案例紀錄",
+      contact: "聯絡",
+    },
   },
 
   sections: {
-    signal: { label: "我做什麼", nav: "關於" },
+    signal: { label: "我做什麼", nav: "我做什麼" },
     experience: {
       label: "經歷",
       nav: "經歷",
@@ -111,8 +147,8 @@ export const zhTW: SiteContent = {
       lead: "每一條線都是真實的整合，上面流動的是錢、訂單或訊息。深色節點是我做過的核心系統，點一下看資料怎麼流。",
     },
     work: {
-      label: "事件紀錄",
-      nav: "紀錄",
+      label: "案例紀錄",
+      nav: "案例",
       lead: "真實處理過的案子：問題、根因、怎麼修、學到什麼。客戶與內部名稱已去識別化，點開一則看細節。",
     },
     principles: {
@@ -146,6 +182,18 @@ export const zhTW: SiteContent = {
       context:
         "多租戶平台，服務 2,000+ 企業，另有企業版與私有雲部署。PHP 單體加 NestJS 微服務，RabbitMQ 事件匯流排，跑在 AWS EKS 上；遠端加入香港團隊，工作語言英文。",
       role: "全端工程師：PHP 與 NestJS 後端、React 前端、AI 整合、架構規劃與 code review，並擔任 Email 通路專案的 owner",
+      tagline: "香港・AI 全通路客服 SaaS・全端工程師，Email 通路 owner",
+      stats: [{ figure: "2,000+", label: "企業在用" }, { figure: "6", label: "個聊天通路，加上 Email" }, { figure: "360 倍", label: "用量 API 加速：18 秒到 50 毫秒以下" }],
+      flow: {
+        label: "一則訊息經過的路",
+        path: [
+          { title: "訊息進來", note: "WhatsApp 等 6 個聊天通路與 Email", areas: [3, 4] },
+          { title: "需要時交給 AI", note: "語音轉文字、翻譯、AI Agent 回覆", areas: [2] },
+          { title: "送出・交給客服", note: "收件匣、工單指派、聯絡人同步", areas: [6] },
+        ],
+        side: { label: "旁路：每小時結算用量", title: "預付點數計費", note: "拉 WhatsApp、LLM、workflow 的用量扣點，每日對帳、月結", areas: [1] },
+        around: [5, 7],
+      },
       summary:
         "負責對話背後的系統：訊息怎麼進來、怎麼送出、怎麼計費、怎麼交給 AI 處理。從訂閱方案與預付點數計費做起，接手一套大型機構的預約系統，之後主做 WhatsApp 群組、語音轉文字、翻譯與 AI Agent 自動回覆的整條鏈路，並處理多起 production 事故到根因。",
       areas: [
@@ -208,6 +256,18 @@ export const zhTW: SiteContent = {
       context:
         "直客、批發招牌商、內部業務代報價三種通路，服務美國與加拿大。系統橫跨主後端、CRM 與 3D 報價器、招牌商批發平台、訂閱付款服務、資料平台與 NetSuite 腳本；遠端加入美國團隊。",
       role: "quote-to-cash 鏈的主力全端工程師：後端、前端、3D、資料模型、NetSuite 腳本與發版協調，並直接和會計、財務、法務、業務對接",
+      tagline: "美國・LED 數位招牌，硬體附軟體訂閱・quote-to-cash 主力全端工程師",
+      stats: [{ figure: "3", label: "種銷售通路" }, { figure: "0 張", label: "換定價模型時重算的已簽約報價" }, { figure: "8 個", label: "50×100 英尺招牌的 draw call，原本 12,503 個" }],
+      flow: {
+        label: "一張招牌，從設計到入帳",
+        path: [
+          { title: "設計", note: "終端客戶用 3D 報價器，招牌商走批發平台", areas: [3] },
+          { title: "報價", note: "統一報價引擎，定價版本化", areas: [1] },
+          { title: "簽約付款與訂閱", note: "Stripe 訂閱；招牌內建 SIM 的行動網路計費", areas: [4, 2] },
+          { title: "同步到 CRM／ERP", note: "HubSpot、NetSuite、運費與付款條件", areas: [5] },
+        ],
+        around: [6],
+      },
       summary:
         "負責從一張招牌設計到一筆入帳的整條路：3D 報價器、報價引擎、Stripe 訂閱計費、HubSpot 與 NetSuite 同步、給招牌商用的批發平台。牽涉到錢的系統，重點是正確：可以重試，但不會重複扣款；錯誤要講清楚發生什麼事；判斷要用真實資料驗證。",
       areas: [
@@ -490,6 +550,12 @@ export const zhTW: SiteContent = {
           "公司要從依招牌面積收月訂閱，轉成硬體買斷加自由組合的加購。原本三套各自演進的報價邏輯重複又會漂移，而切換時已簽約的報價絕對不能被重新定價。",
         cause:
           "定價變更常常是整段邏輯重寫，光改數字的 config 不夠；用環境變數切換沒有稽核、無法回滾；用權限開關違反單一職責。所以邏輯和數字要一起版本化。",
+        steps: {
+          symptom: "換商業模式時，三套報價邏輯重複又漂移，已簽約的報價不能被重新定價",
+          cause: "定價變更常是整段邏輯重寫；只改數字的 config、環境變數、權限開關都沒有稽核和回滾",
+          fix: "版本化定價引擎：策略放在 code，報價自帶版本 stamp，翻 pointer 就能切換或回滾",
+          result: "已簽約報價重算 0 張，NetSuite 零新 SKU",
+        },
         actions: [
           "從零設計分層的 Quote v3：domain、catalog、費用政策、毛利、orchestrator、output adapter，每條 line item 附 cost trace",
           "版本化定價引擎：策略放在 code 裡的 registry，依報價自己的 stamp、全域 active pointer、預設的順序解析，未知版本 fail-closed",
@@ -530,6 +596,12 @@ export const zhTW: SiteContent = {
           "接手維運的預約系統，管理員回報「用員工編號篩選，結果出現不相干的人」。看起來像篩選邏輯寫錯。",
         cause:
           "後端沒帶日期時其實已經逾時回 500；前端 SWR 開了 keepPreviousData，失敗時繼續顯示上一次的資料，後端錯誤被偽裝成資料錯誤。再往下查，migration 紀錄顯示兩支 index migration 都跑過，SHOW INDEX 卻說不存在：Strapi v4 開機先跑 migration，接著 schema sync 把沒宣告在 content-type 裡的 index 全部刪掉。沒有 index，MySQL 只能把 CTE 規劃成全表 hash join。",
+        steps: {
+          symptom: "用員工編號篩選，結果出現不相干的人",
+          cause: "Strapi 開機同步 schema 時刪掉沒宣告的 index；前端沿用舊資料，把 500 偽裝成資料錯誤",
+          fix: "index 宣告進 schema.json，加 guard test，前端失敗時顯示錯誤",
+          result: "6.3 s → 44 ms（143×），重啟後 index 仍在",
+        },
         actions: [
           "把 index 宣告進 Strapi 的 schema.json，交給 ORM 自己維護",
           "加 guard test，防止用 Content-Type Builder 改 schema 時把 index 洗掉",
@@ -557,6 +629,12 @@ export const zhTW: SiteContent = {
         problem:
           "內部報價工具要支援 50×100 英尺的超大招牌，等於 2,500 個 block、12,500 個 mesh 和等量的 draw call，而且每次改尺寸都整個重建，拖曳 slider 就卡住。",
         cause: "每個 block 部件各自一個 mesh，共享資源也在重建時被 dispose，GPU 每次重新上傳並重新編譯 shader。",
+        steps: {
+          symptom: "50×100 英尺的招牌有 12,500 個 mesh，拖曳 slider 就卡住",
+          cause: "每個部件各自一個 mesh，每次重建都丟掉共享資源、重新上傳 GPU",
+          fix: "InstancedMesh 共用 geometry 與 material，拖曳合併成每幀一次，再用像素比對證明畫面沒變",
+          result: "draw call 12,503 → 8，標準尺寸 0 px 差異",
+        },
         actions: [
           "每個部件改成一個 InstancedMesh，共用 geometry 與 material，重建時不再 dispose 共享資源",
           "用 requestAnimationFrame 把 slider 拖曳合併成每幀最多一次重建",
@@ -588,6 +666,12 @@ export const zhTW: SiteContent = {
         problem:
           "招牌控制器內建 SIM，預付期滿後要開始收費，三類訂單規則不同。三代互不相認的機制並存：舊 cron、coverage 引擎、補收。可能雙重收費，多個 Stripe writer 互相覆蓋數量，驗證時甚至觸發過 Stripe 退款。要求很直接：日後有人問為什麼收 2 台，要能直接從紀錄回答。",
         cause: "沒有單一的真實來源，也沒有單一的寫入者。",
+        steps: {
+          symptom: "三代計費機制並存，可能雙重收費，多個 Stripe writer 互相覆蓋數量",
+          cause: "沒有單一的真實來源，也沒有單一的寫入者",
+          fix: "事件 log 加登記表，只留一個 Stripe writer，先寫 ledger 再扣款，沒有通知證明就不扣",
+          result: "雙重收費由資料層約束擋下，四階段切換、每階段可回滾",
+        },
         actions: [
           "純 domain 政策 decide(term, history, today)，不 import 任何框架",
           "所有狀態變化寫進 append-only 事件 log，確定性 eventId 加 unique index，用事件筆數做樂觀並行控制",
@@ -630,6 +714,12 @@ export const zhTW: SiteContent = {
           "舊訂閱是一筆加總金額，客戶看不出自己付了什麼。用 Stripe 的 trial_end 表示「出貨後才計費」，付費客戶卻看到免費試用，收據還印著 TRIAL。盤點時又發現：新版訂單出貨後，月費、提醒信與分期第二筆全部不會觸發。",
         cause:
           "建訂閱的 cron 讀的是舊 collection 的出貨日，新版訂單的出貨資訊在另一個 collection；也沒有任何程式把新版報價推進到偵測要看的狀態。",
+        steps: {
+          symptom: "付費客戶看到免費試用、收據印 TRIAL；新版訂單出貨後根本不會扣款",
+          cause: "用 trial_end 表示出貨後計費；建訂閱的 cron 讀的是舊 collection 的出貨日",
+          fix: "新增待出貨狀態，出貨後才建訂閱，統一出貨日讀取，用 Stripe Test Clock 演練",
+          result: "在第一筆新版訂單出貨前修好，收據不再印 TRIAL",
+        },
         actions: [
           "逐項計費，每個產品一個 Stripe item，結帳時同時鑄造月繳與年繳的 counterpart price，切換週期只是換 id",
           "新增 pending_shipment 狀態，出貨後才建 Stripe 訂閱，用 billing_cycle_anchor 加 proration_behavior none 取代試用期",
@@ -656,6 +746,12 @@ export const zhTW: SiteContent = {
           "AI Agent 部署到測試環境後，每一則 AI 回覆都沒送到客戶。LLM 的答案是對的，AI 服務也把結果送回來了，核心系統就是沒寫入。",
         cause:
           "存訊息時經過變更紀錄、指派客服、取客服名字，第 4 層才讀取目前租戶，前三層看起來和租戶毫無關係。這個 handler 在內部 daemon 裡執行，沒有 HTTP Host，租戶初始化直接丟例外；catch 把它判成暫時性錯誤並 rethrow，訊息無限重送，pod 最後被 OOMKilled。原本的端對端測試在開頭自己設好了租戶，剛好補上 handler 缺的東西，27 個斷言全過，測的是 production 不存在的狀態。",
+        steps: {
+          symptom: "AI 回覆一則都沒送到客戶，端對端測試卻 27 個斷言全過",
+          cause: "handler 在沒有 HTTP Host 的 daemon 裡讀租戶就丟例外；測試自己先設好租戶，剛好把問題蓋住",
+          fix: "handler 開頭就解析租戶、結束時清掉；先讓 CI 留下紅燈再修，假綠測試改成真正執行的行為測試",
+          result: "AI 回覆全部送達，pod 不再被 OOMKilled",
+        },
         actions: [
           "handler 一開始就解析租戶放進 slot，只接受正常狀態的租戶，結束時在 finally 清掉，避免長駐程序把下一則訊息算到錯的租戶",
           "先提交只有測試、沒有修正的 commit，讓 CI 留下紅燈，再提交修正",
@@ -679,6 +775,12 @@ export const zhTW: SiteContent = {
         problem: "業務不斷回報「存檔 500」，訊息模糊，沒人知道原因，客服也無從追起。",
         cause:
           "先用 production 唯讀普查排除資料面的假設，全部是 0。實際執行全域 exception filter 才發現：只有自訂例外和 404 保留狀態碼，全 repo 約 385 處刻意拋出的 4xx 全被壓成 500，前端依狀態碼分流的分支因此全是死碼。",
+        steps: {
+          symptom: "報價存檔一直回 500，沒人知道原因，客服也無從追起",
+          cause: "全域 exception filter 把約 385 處刻意拋出的 4xx 全壓成 500",
+          fix: "有序的錯誤對應鏈，每個錯誤帶 requestId；冪等鍵防重複建單，前端依錯誤碼分流",
+          result: "被壓成 500 的 4xx：約 385 處 → 0，每個錯誤都追得到",
+        },
         actions: [
           "有序的 ExceptionMapper 鏈取代單一 filter，每個錯誤都帶 requestId，客服可以直接追查",
           "上游 HubSpot 的錯誤一律回 502，不回傳上游 body；只有 5xx 進 Sentry",
@@ -712,6 +814,12 @@ export const zhTW: SiteContent = {
           "自家 fork 的 workflow 引擎每天清理舊的執行紀錄。清理跑起來時，客戶的 webhook 寫入全部逾時，建在上面的自動化跟著停擺。",
         cause:
           "原本的範圍 DELETE 在大型執行紀錄表上長時間持有 gap lock；backport 兩階段清理之後，軟刪除的 UPDATE 被 optimizer 選成 index_merge intersect，持有 supremum lock，把新資料的 INSERT 全部擋住。",
+        steps: {
+          symptom: "每天清理執行紀錄時，客戶的 webhook 寫入全部逾時",
+          cause: "清理的 UPDATE 被規劃成 index_merge，持有 supremum lock，擋住所有新資料的 INSERT",
+          fix: "先查 id 再更新、固定執行計畫、READ COMMITTED、30 秒上限，四層防禦",
+          result: "清理照跑，webhook 不再被擋",
+        },
         actions: [
           "拆成「先查 id、再依 id 更新」兩步，縮小鎖的範圍",
           "FORCE INDEX 固定執行計畫，不讓 optimizer 換",
@@ -733,6 +841,12 @@ export const zhTW: SiteContent = {
           "客服在收件匣用過搜尋後，新訊息就不再出現，只能重新整理頁面。監控全部顯示健康。",
         cause:
           "即時更新靠 3 個 redux-saga worker 消費同一個 STOMP channel。迴圈裡用 return 來跳過這筆事件，但 generator 裡的 return 會結束整個 worker。搜尋讓這個分支頻繁觸發，3 個 worker 很快死光；socket 還連著、心跳照常，監控就判定一切正常。",
+        steps: {
+          symptom: "用過搜尋之後，收件匣就不再即時更新，監控卻全部健康",
+          cause: "generator 裡的 return 結束了整個 worker，3 個 worker 死光，socket 和心跳照常",
+          fix: "每筆事件各自 try/catch，只有傳輸層錯誤才重連，補上單元測試",
+          result: "搜尋之後也持續即時更新，存活檢查改看最後一次成功處理",
+        },
         actions: [
           "抽出 processStompEvent 與 runStompWorkerLoop，每筆事件各自 try/catch",
           "只有傳輸層錯誤才退出迴圈並重新連線",
@@ -750,6 +864,12 @@ export const zhTW: SiteContent = {
         outcome: "約 50 MB → 數 MB，可合規散佈",
         problem: "語音轉文字要先用 ffmpeg 把音訊解成 PCM。檢查依賴時發現 ffmpeg-static 是用 nonfree 旗標編譯的，依 FFmpeg 授權不可再散佈。",
         cause: "方便的預編譯套件把授權風險一起打包進來，沒有人檢查過它的 configure 旗標。",
+        steps: {
+          symptom: "語音轉文字用的 ffmpeg-static 以 nonfree 旗標編譯，依授權不能再散佈",
+          cause: "預編譯套件把授權風險一起打包進來，沒人檢查過 configure 旗標",
+          fix: "自行編只含需要 decoder 的 LGPL 最小版本，build 遇到 GPL 或 nonfree 旗標就失敗",
+          result: "約 50 MB → 數 MB，授權可合規散佈",
+        },
         actions: [
           "用 --disable-everything 自行編一個 musl 靜態連結、只含需要的 decoder 的 LGPL 最小版本",
           "建置時有 guard：發現 GPL 或 nonfree 旗標就讓 build 失敗",
@@ -769,6 +889,12 @@ export const zhTW: SiteContent = {
           "點數計費系統裡，所有服務的每日重算都在失敗，報表空了一大段，沒有任何告警。",
         cause:
           "為了支援軟刪除，unique index 改成 partial（deletedAt: null），但 MongoDB 的 $merge 要求非 partial 的 unique index，每次重算都報 error 51183。",
+        steps: {
+          symptom: "每日消費報表空了一大段，沒有任何告警",
+          cause: "unique index 改成 partial 之後，MongoDB 的 $merge 每次重算都報錯",
+          fix: "改用 bulkWrite upsert，partial index 不動，再回填歷史資料",
+          result: "報表回填完成；CI 測試記憶體 2 GB+ → 166 MB",
+        },
         actions: [
           "改用 bulkWrite upsert，key 為（帳戶、日期、類型、服務、deletedAt: null），partial index 完全不用動",
           "用 initialize 端點回填歷史資料",
@@ -788,6 +914,12 @@ export const zhTW: SiteContent = {
         track: "messaging",
         problem: "計費系統向 BSP 拉 WhatsApp 用量時，一次呼叫會把 PHP worker 佔住 18 秒，其他工作排在後面等。",
         cause: "逐一 channel 串行呼叫 BSP，cURL 沒有設 timeout；任何一個 channel 慢，整批都慢。",
+        steps: {
+          symptom: "一次 WhatsApp 用量查詢佔住 PHP worker 18 秒",
+          cause: "逐一 channel 串行呼叫 BSP，cURL 沒設 timeout",
+          fix: "不會再變的時間窗寫進快取，curl_multi 並行加 timeout，對 BSP 只用官方上限的 2/3",
+          result: "快取命中時 18 s → 50 ms 以下",
+        },
         actions: [
           "已經過去、不會再變的時間視窗寫進 Redis 快取，保留 5 分鐘安全邊際；任何 channel 失敗就不寫快取，快取讀寫 fail-open",
           "用 curl_multi 並行抓取，concurrency 4；每個請求 15 秒總上限、5 秒連線上限",
@@ -809,77 +941,93 @@ export const zhTW: SiteContent = {
       id: "root-cause",
       title: "修在源頭，不打補丁",
       body: "找到那一個 choke point，讓同一類 bug 沒辦法再發生。預約系統的 DateRangePolicy 是所有日期條件的唯一出口；工單指派重複的 fallback 邏輯收斂成一個 assignWithValidation。",
+      evidence: { label: "經歷・接手的兼職人員預約系統", href: "#xp-messaging-5" },
     },
     {
       id: "final-state",
       title: "驗證最終狀態，不信過程紀錄",
       body: "migration 跑過不代表 index 存在，心跳正常不代表有人在處理事件。要去看資料庫裡真正有什麼，看最後一次成功處理是什麼時候。",
+      evidence: { label: "消失的 index", href: "#case-vanishing-index" },
     },
     {
       id: "tests-fail",
       title: "測試要能失敗才算數",
       body: "先提交紅燈再提交修正，讓 CI 留下證據。把 guard 條件反過來仍然全綠的測試，一律改成真正執行的行為測試；AI 回覆事故後找出的假綠測試都是這樣修的。",
+      evidence: { label: "AI 回覆全部石沉大海，測試卻全綠", href: "#case-ai-replies-lost" },
     },
     {
       id: "disprove",
       title: "推論先證偽，再採信",
       body: "LLM 計費中斷時，第一個推論用 log 推翻，再以部署版本的套件組合做最小重現，才找到框架升級後在子路由靜默跳過的 middleware。審查者的主張也一樣，先對照程式碼再採用。",
+      evidence: { label: "經歷・共用程式庫、Cron 與維運", href: "#xp-messaging-7" },
     },
     {
       id: "money",
       title: "錢的路徑 fail-closed",
       body: "先寫 ledger 再呼叫 Stripe，每次嘗試一把冪等鍵；沒有通知證明就不扣款；未知的定價版本直接拒絕。承運商失敗絕不寫成 0，因為 0 在下游會被讀成免費。",
+      evidence: { label: "行動網路計費：扣款恰好一次，通知至少一次", href: "#case-cellular-billing" },
     },
     {
       id: "contracts",
       title: "契約驗到最外層",
       body: "跨服務的事件連 envelope 一起驗，做 JSON round-trip。翻譯結果的語言代碼曾被回應攔截器從 zh-Hant 改成 zh-_hant，五輪 review 和三個 repo 的單元測試都沒抓到，因為兩邊各自自洽，問題只在中間的 wire contract。",
+      evidence: { label: "經歷・AI 鏈路", href: "#xp-messaging-2" },
     },
     {
       id: "humble",
       title: "對外部系統保持謙遜",
       body: "對 BSP 限速只用官方上限的 2/3；分頁 cursor 要防不前進和拒絕舊 cursor；重試退避塞在媒體連結 24 小時的有效期內；FedEx 不驗證地址，就自己做 preflight。",
+      evidence: { label: "一次用量查詢佔住 worker 18 秒", href: "#case-usage-api-worker" },
     },
     {
       id: "admit",
       title: "承認錯誤，留下紀錄",
       body: "判斷錯了就 revert，並在 commit 寫清楚理由。曾認定 WhatsApp 群組沒有 24 小時客服視窗並加上豁免，隔天確認有，當天撤回；在 MR 裡引入的回歸，下一個 MR 自己修正並記下來。",
+      evidence: { label: "經歷・WhatsApp 與通路整合", href: "#xp-messaging-4" },
     },
   ],
 
   ai: {
-    intro:
-      "Claude Code 是我日常開發的主力。需求、所有決策、查證要求、上線順序和 production 操作由我負責；查證程式碼、寫 spec 與票、實作、審查、E2E 交給 agent。每一次改動都走同一條流程，走完才會變成 MR。",
+    headline: "決策和 production 由我負責，其餘交給 agent；每次改動都走同一條流程。",
     steps: [
       {
         id: "spec",
         title: "規格先行",
         body: "用 OpenSpec 寫 proposal、design、tasks 與 spec。決策逐條編號，附「為什麼」和「排除了什麼」；大功能附 sequence diagram。",
+        me: "提需求，拍板每條決策",
+        agent: "寫 proposal、design、spec 與票",
       },
       {
         id: "verify",
         title: "先查證，再設計",
         body: "讀程式碼時引用 file:line，經同意後做 production 唯讀普查，讀官方文件。把「已驗證」和「推估」分開標示。",
+        me: "定查證要求，同意唯讀普查",
+        agent: "讀程式碼與文件，分開已驗證和推估",
       },
       {
         id: "tdd",
         title: "TDD，紅燈先進 CI",
         body: "先提交會失敗的測試，再提交修正。每個 repo 一個 git worktree，只跑受影響的測試。",
+        agent: "先交失敗的測試，再實作",
       },
       {
         id: "review",
         title: "對抗式 review",
         body: "獨立的唯讀 agent 審一次，嚴重度分 HIGH、MEDIUM、LOW。意見逐條處理，不照單全收，沒採納的寫理由。",
+        me: "逐條決定採納，沒採納的寫理由",
+        agent: "獨立唯讀審查，分嚴重度",
       },
       {
         id: "e2e",
         title: "腳本化本機 E2E",
         body: "harness 只放暫存目錄、跑完就刪，不為測試新增端點。金流用真實的 Stripe test clock 演練未來的帳單。",
+        agent: "腳本化本機 E2E，用 Stripe test clock 演練",
       },
       {
         id: "mr",
         title: "然後才是 MR 與 runbook",
         body: "部署順序每一步寫「反過來會怎樣」，backfill 先 dry-run，旗標一支一支開。production 寫入與合併由我親自執行。",
+        me: "定上線順序、合併、production 寫入",
       },
     ],
     toolsLabel: "工具",
@@ -905,7 +1053,14 @@ export const zhTW: SiteContent = {
         "Supabase Auth 的邀請與 magic link 流程、Resend 通知信、SWR 快取",
       ],
       stack: ["Next.js 16", "React 19", "TypeScript", "Supabase", "PostgreSQL", "Vitest"],
-      visual: "layers",
+      shot: {
+        demo: true,
+        src: "/projects/prflow.webp",
+        alt: "財務報表頁：總預算、總支出、總利潤與平均 ROI 四張摘要卡，下方是各專案的預算、支出與利潤表。",
+        width: 1600,
+        height: 1000,
+        device: "desktop",
+      },
     },
     {
       id: "restaurant-cms",
@@ -920,7 +1075,14 @@ export const zhTW: SiteContent = {
         "以 Lighthouse 為準做效能調整，加上 JSON-LD 與 sitemap；Husky + lint-staged 把 lint 問題擋在 commit 之前",
       ],
       stack: ["Next.js 16", "Tailwind CSS v4", "GSAP", "iron-session", "Upstash Redis", "Vercel Blob"],
-      visual: "contour",
+      shot: {
+        demo: false,
+        src: "/projects/restaurant.webp",
+        alt: "餐廳官網首屏：主廚在廚房備餐的全幅照片，疊上品牌字標與訂位按鈕。",
+        width: 1600,
+        height: 1000,
+        device: "desktop",
+      },
     },
     {
       id: "orbit",
@@ -936,7 +1098,14 @@ export const zhTW: SiteContent = {
         "Google OAuth 登入、Workbox 預快取與離線頁面",
       ],
       stack: ["Next.js 15", "Supabase", "PostgreSQL", "Web Push", "Workbox", "Tailwind CSS"],
-      visual: "radar",
+      shot: {
+        demo: true,
+        src: "/projects/orbit.webp",
+        alt: "手機版「我的星系」首頁：四個習慣軌道以星球呈現，底部是新增軌道的按鈕。",
+        width: 780,
+        height: 1688,
+        device: "phone",
+      },
     },
     {
       id: "event-checkin",
@@ -950,7 +1119,14 @@ export const zhTW: SiteContent = {
         "GitHub Actions 在 push 到 main 時呼叫 Vercel deploy hook；Renovate 管依賴更新",
       ],
       stack: ["Next.js", "TypeScript", "MongoDB", "Resend", "GitHub Actions", "Vercel"],
-      visual: "tiles",
+      shot: {
+        demo: true,
+        src: "/projects/checkin.webp",
+        alt: "活動報到後台名單：每位與會者的上下午簽到狀態、單位、姓名、遮罩後的身分證號與簽到時間。",
+        width: 1600,
+        height: 1000,
+        device: "desktop",
+      },
     },
   ],
 

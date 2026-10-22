@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { EchoLegend } from "@/components/layout/echo-legend";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { MotionProvider } from "@/components/providers/motion-provider";
 import { AiWorkflowSection } from "@/components/sections/ai-workflow";
 import { Contact } from "@/components/sections/contact";
 import { Experience } from "@/components/sections/experience";
@@ -51,7 +52,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   };
 
   return (
-    <>
+    <MotionProvider>
       <div id="top" />
       <SiteHeader
         name={c.profile.name}
@@ -64,9 +65,11 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           off: c.ui.hero.motionOff,
         }}
         language={c.ui.switchLanguage}
+        backToTop={c.ui.footer.backToTop}
       />
       <EchoLegend nav={nav} label={c.ui.sectionNav} />
-      <main id="main">
+      {/* Focusable, so the skip link moves focus here in every browser. */}
+      <main id="main" tabIndex={-1} className="outline-none">
         <Hero
           profile={c.profile}
           ui={c.ui.hero}
@@ -75,7 +78,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         />
         {/* Suspense boundaries let React hydrate below-the-fold sections in separate, interruptible tasks. */}
         <Suspense fallback={null}>
-          <Signal profile={c.profile} copy={c.sections.signal} locale={lang} />
+          <Signal signal={c.signal} copy={c.sections.signal} />
         </Suspense>
         <Suspense fallback={null}>
           <Work
@@ -85,6 +88,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             colors={categoryColor}
             copy={c.sections.work}
             ui={c.ui.work}
+            locale={lang}
           />
         </Suspense>
         <Suspense fallback={null}>
@@ -92,6 +96,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             tracks={c.experience}
             copy={c.sections.experience}
             ui={c.ui.experience}
+            locale={lang}
           />
         </Suspense>
         <Suspense fallback={null}>
@@ -106,10 +111,14 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           />
         </Suspense>
         <Suspense fallback={null}>
-          <Principles principles={c.principles} copy={c.sections.principles} />
+          <Principles
+            principles={c.principles}
+            copy={c.sections.principles}
+            ui={c.ui.principles}
+          />
         </Suspense>
         <Suspense fallback={null}>
-          <AiWorkflowSection workflow={c.ai} copy={c.sections.ai} />
+          <AiWorkflowSection workflow={c.ai} copy={c.sections.ai} ui={c.ui.ai} />
         </Suspense>
         <Suspense fallback={null}>
           <Projects
@@ -143,6 +152,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c"),
         }}
       />
-    </>
+    </MotionProvider>
   );
 }

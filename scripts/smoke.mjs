@@ -4,11 +4,16 @@
  *
  * Checks what a recruiter's first visit depends on, in both languages and
  * at desktop and phone widths: the page answers, the first screen names
- * the person and the role, the call to action points at the case log, the
- * featured cases are open (none on phones), the hero carries its three
- * proof figures, nothing scrolls sideways, every public project links to its repository,
- * the phone menu opens, and nothing logs an error. Also checks the
- * sitemap, robots and the Open Graph image, and that no URL still points
+ * the person and the role, says what they are open to, the calls to action
+ * point at the case log and at contact, the featured cases are marked and
+ * the first one is open from md (phones get the outline), the hero
+ * carries its three proof figures, nothing scrolls sideways, every public project links to its
+ * repository, the phone menu opens, the visual summaries are there
+ * (evidence rows, flow drawings, screenshots), a link to an area lands on
+ * it open, a filter goes into the address, the case and experience
+ * pages answer, name the author, lead back and end with a way to get in
+ * touch, and nothing logs an error. Also checks the sitemap, robots, the
+ * Open Graph image, the 404s and redirects, and that no URL still points
  * at a placeholder domain.
  *
  *   BASE_URL     server to test         (default: http://localhost:3100)
@@ -40,11 +45,39 @@ async function waitForServer(url, tries = 60) {
 
 await waitForServer(`${BASE}/en`);
 
+// Wrong addresses: the language's own 404, with a 404 status; a language in
+// the wrong case, or a path without one, is sent to the right place.
+for (const [path, status, where] of [
+  ["/no-such-page", 404, null],
+  ["/en/no-such-page", 404, null],
+  ["/en/work/no-such-case", 404, null],
+  ["/EN", 308, "/en"],
+  ["/zh-tw/work/vanishing-index", 308, "/zh-TW/work/vanishing-index"],
+  ["/en/work", 307, "/en#work"],
+]) {
+  const res = await fetch(`${BASE}${path}`, { redirect: "manual" });
+  const location = res.headers.get("location") ?? "";
+  check(
+    res.status === status && (!where || location.endsWith(where)),
+    `${path} answers ${res.status}${location ? ` → ${location}` : ""}`,
+  );
+  if (status === 404 && !path.includes("/work/")) {
+    const body = await res.text();
+    check(/404/.test(body) && body.includes("<h1"), `${path} renders the site's 404 page`);
+  }
+}
+
 for (const path of ["/sitemap.xml", "/robots.txt"]) {
   const res = await fetch(`${BASE}${path}`);
   const body = await res.text();
   check(res.ok, `${path} answers ${res.status}`);
   check(!body.includes("example.com"), `${path} has no placeholder domain`);
+  if (path === "/sitemap.xml") {
+    check(
+      body.includes("/work/vanishing-index") && body.includes("/experience/messaging"),
+      `${path} lists the case and experience pages`,
+    );
+  }
 }
 
 const browser = await chromium.launch(
@@ -81,9 +114,16 @@ for (const lang of ["zh-TW", "en"]) {
 
     const cta = page.locator('main a[href="#work"]').first();
     check(await cta.isVisible(), `${label}: case-log call to action is visible`);
+    const contactCta = page.locator('main section a[href="#contact"]').first();
+    check(await contactCta.isVisible(), `${label}: contact call to action is visible`);
+    const status = await page.locator("#hero-title ~ p").filter({ hasText: /\S/ }).count();
+    check(status >= 2, `${label}: positioning and availability lines under the name`);
 
-    // Phones get the log as an outline: every case starts closed (see WorkLog).
-    const want = vp.mobile ? 0 : 3;
+    // The three featured cases are marked; from md the first one is open
+    // as an example, and phones get the list as an outline.
+    const marked = await page.locator("#work .log-featured").count();
+    check(marked === 3, `${label}: ${marked} cases marked "start here"`);
+    const want = vp.mobile ? 0 : 1;
     const open = await page.locator("#work details.log-entry[open]").count();
     check(open === want, `${label}: ${open} featured cases open (want ${want})`);
 
@@ -133,15 +173,73 @@ for (const lang of ["zh-TW", "en"]) {
       );
     }
 
+    // The visual first layer: evidence rows, a flow drawing per main
+    // track, a screenshot per project, and the way to each full write-up.
+    const cards = await page.locator("#signal a.vs-row").count();
+    check(cards === 4, `${label}: ${cards} looks-fine / actually rows`);
+    const flows = await page.locator("#experience .track-flow").count();
+    check(flows === 2, `${label}: ${flows} experience flow drawings`);
+    const shots = await page.locator("#projects figure img").count();
+    check(shots >= 4, `${label}: ${shots} project screenshots`);
+    const caseLinks = await page.locator('#work a[href*="/work/"]').count();
+    check(caseLinks > 0, `${label}: ${caseLinks} links to full case pages`);
+
+    // A filter is kept in the address, so a filtered list can be shared.
+    if (!vp.mobile) {
+      await page.locator('#work button[aria-pressed="false"]').first().click();
+      await page.waitForTimeout(500);
+      const query = await page.evaluate(() => window.location.search);
+      check(/[?&](type|track)=/.test(query), `${label}: filter goes into the address (${query})`);
+      await page.locator('#work button[aria-pressed="false"]', { hasText: /All|全部/ }).first().click();
+      await page.waitForTimeout(500);
+    }
+
+    // A link to an area of ownership (shared, or from the other language)
+    // opens it and lands on it.
+    const target = await page
+      .locator("#experience li.area-item")
+      .nth(1)
+      .getAttribute("id");
+    await page.goto(`${BASE}/${lang}#${target}`, { waitUntil: "networkidle" });
+    await page.waitForTimeout(1200);
+    const landed = await page.evaluate((id) => {
+      const el = document.getElementById(id);
+      const top = el?.getBoundingClientRect().top ?? -1;
+      return [!!el?.querySelector("details[open]"), top >= 0 && top < 200];
+    }, target);
+    check(landed[0] && landed[1], `${label}: a link to #${target} opens it and lands on it`);
+
+    // One case page and one experience page: they answer, carry an h1,
+    // lead back to the item they expand, and don't scroll sideways.
+    for (const path of [`/${lang}/work/vanishing-index`, `/${lang}/experience/messaging`]) {
+      const r = await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+      check(r?.ok(), `${label}: ${path} answers ${r?.status()}`);
+      check((await page.locator("h1").count()) === 1, `${label}: ${path} has one h1`);
+      const back = await page.locator("header a").first().getAttribute("href");
+      check(!!back && back.startsWith(`/${lang}#`), `${label}: ${path} leads back to ${back}`);
+      const author = await page.locator(`header a[href="/${lang}"]`).innerText();
+      check(author.includes("Amo Feng"), `${label}: ${path} names the author`);
+      const resume = await page
+        .locator('#contact-strip-title ~ * a[href^="mailto:"], section[aria-labelledby="contact-strip-title"] a[href*="body="]')
+        .count();
+      check(resume > 0, `${label}: ${path} ends with a way to get in touch`);
+      const over = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      check(over <= 0, `${label}: ${path} no horizontal scroll (${over}px over)`);
+    }
+
     check(errors.length === 0, `${label}: no console errors ${errors.join(" | ")}`);
     await context.close();
   }
 
-  const og = await fetch(`${BASE}/${lang}/opengraph-image/card`);
-  check(
-    og.ok && (og.headers.get("content-type") ?? "").startsWith("image/png"),
-    `${lang}: Open Graph image answers ${og.status}`,
-  );
+  for (const card of ["opengraph-image/card", "work/vanishing-index/opengraph-image/card"]) {
+    const og = await fetch(`${BASE}/${lang}/${card}`);
+    check(
+      og.ok && (og.headers.get("content-type") ?? "").startsWith("image/png"),
+      `${lang}: share card ${card} answers ${og.status}`,
+    );
+  }
 }
 
 await browser.close();

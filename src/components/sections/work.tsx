@@ -1,12 +1,16 @@
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
 import type {
+  Locale,
   SectionCopy,
   UiStrings,
   WorkCategory,
   WorkEntry,
 } from "@/content/types";
-import { CaseBody } from "@/features/work-log/case-body";
+import { InlineScript } from "@/components/ui/inline-script";
+import { CaseSummary } from "@/features/work-log/case-steps";
+import { openCasesScript } from "@/features/work-log/open-cases";
+import { toLogEntry } from "@/features/work-log/log-entry";
 import { type TrackOption, WorkLog } from "@/features/work-log/work-log";
 
 interface WorkProps {
@@ -16,6 +20,7 @@ interface WorkProps {
   colors: Readonly<Record<WorkCategory, string>>;
   copy: SectionCopy;
   ui: UiStrings["work"];
+  locale: Locale;
 }
 
 export function Work({
@@ -25,6 +30,7 @@ export function Work({
   colors,
   copy,
   ui,
+  locale,
 }: WorkProps) {
   const meta = sectionMeta("work");
   return (
@@ -37,6 +43,7 @@ export function Work({
         <div className="lg:col-span-3">
           <div className="sticky-heading lg:sticky lg:top-24">
             <SectionHeading
+              compact
               id={meta.id}
               colorVar={meta.colorVar}
               lead={copy.lead}
@@ -47,7 +54,7 @@ export function Work({
         </div>
         <div className="lg:col-span-9">
           <WorkLog
-            entries={entries}
+            entries={entries.map(toLogEntry)}
             tracks={tracks}
             categories={categories}
             colors={colors}
@@ -55,10 +62,11 @@ export function Work({
             bodies={Object.fromEntries(
               entries.map((e) => [
                 e.id,
-                <CaseBody key={e.id} entry={e} ui={ui} />,
+                <CaseSummary key={e.id} entry={e} ui={ui} locale={locale} />,
               ]),
             )}
           />
+          <InlineScript html={openCasesScript} />
         </div>
       </div>
     </section>

@@ -1,6 +1,9 @@
 "use client";
 
-import { AnimatePresence, m } from "motion/react";
+import { AnimatePresence } from "motion/react";
+// The bare m component: the barrel export of "m" pulls the full feature
+// set into the first-load bundle and defeats LazyMotion.
+import * as m from "motion/react-m";
 import { useState } from "react";
 import type {
   GraphLayout,
@@ -64,10 +67,22 @@ export function IntegrationMap({
     onSelect: select,
     onPreview: setPreviewId,
     resetLabel: ui.reset,
+    coreLabel: ui.core,
   };
+  const selected = selectedId ? byId.get(selectedId) : undefined;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-12 lg:gap-8">
+    <div
+      className="grid gap-6 lg:grid-cols-12 lg:gap-8"
+      // Escape puts the picked node back, as the panel's close does.
+      onKeyDown={(e) => {
+        if (e.key === "Escape" && selectedId) select(selectedId);
+      }}
+    >
+      {/* What a pick changed, said once; hovering never speaks. */}
+      <p className="sr-only" aria-live="polite">
+        {selected ? selected.label : ""}
+      </p>
       <div className="lg:col-span-8">
         <GraphView
           {...shared}
@@ -83,8 +98,12 @@ export function IntegrationMap({
       </div>
 
       <div
-        aria-live="polite"
         data-native-scroll
+        data-docked={selectedId ? "" : undefined}
+        // Docked and scrollable on phones and tablets: reachable by keyboard.
+        tabIndex={selectedId ? 0 : undefined}
+        aria-labelledby={active ? "systems-panel-title" : undefined}
+        role={active ? "region" : undefined}
         // Below lg the map is taller than the screen, so a picked node's
         // panel docks to the bottom edge; otherwise a tap would change
         // nothing in view. With nothing picked it sits after the map.
@@ -92,6 +111,18 @@ export function IntegrationMap({
           selectedId ? "sticky bottom-0 z-10 max-h-[40svh] overflow-y-auto bg-surface-display md:max-h-[34svh]" : ""
         }`}
       >
+        {selectedId ? (
+          <button
+            type="button"
+            onClick={() => select(selectedId)}
+            className="relative z-10 float-right -mt-1 ml-3 inline-flex min-h-11 items-center gap-1.5 rounded-full border border-control bg-surface-display px-3 text-sm font-semibold hover:border-ink lg:hidden"
+          >
+            {ui.close}
+            <span aria-hidden="true" className="text-lg leading-none font-light">
+              ×
+            </span>
+          </button>
+        ) : null}
         {/* Only a click (or tap, or Enter) wipes the panel. Hovering a node
             swaps the text inside the current panel, so sweeping the pointer
             across a row of nodes never sets off a run of wipes. */}
@@ -114,7 +145,10 @@ export function IntegrationMap({
           >
             {active ? (
               <>
-                <h3 className="text-lg font-bold font-expanded lg:text-xl">
+                <h3
+                  id="systems-panel-title"
+                  className="text-lg font-bold font-expanded lg:text-xl"
+                >
                   {active.label}
                 </h3>
                 <p className="mt-1 text-sm text-ink-soft lg:mt-2 lg:text-base">
@@ -125,12 +159,10 @@ export function IntegrationMap({
                     <li key={`${flow.from}-${flow.to}`}>
                       <p className="text-sm font-semibold">
                         {byId.get(flow.from)?.label}
-                        <span
-                          className="px-2 text-coast"
-                          aria-label={ui.flowsTo}
-                        >
+                        <span aria-hidden="true" className="px-2 text-ink-soft">
                           →
                         </span>
+                        <span className="sr-only"> {ui.flowsTo} </span>
                         {byId.get(flow.to)?.label}
                       </p>
                       <p className="text-sm text-ink-soft">{flow.flow}</p>

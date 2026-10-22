@@ -115,7 +115,7 @@ function connect(
 
 /**
  * Owns the lifecycle of the 3D radar: decides whether to load it at all,
- * loads three.js off the critical path, and only renders while visible.
+ * loads the WebGL renderer off the critical path, and only renders while visible.
  * Re-initialises when the visitor changes the motion preference.
  */
 export function HeroVisual({ poster }: HeroVisualProps) {
@@ -130,9 +130,7 @@ export function HeroVisual({ poster }: HeroVisualProps) {
     const canvas = canvasRef.current;
     if (!host || !canvas) return;
 
-    const detected = detectRenderTier(preference === "reduced");
-    if (detected === "none") return;
-    let tier: ActiveTier = detected;
+    let tier: ActiveTier = "static";
 
     let renderer: HeroRenderer | null = null;
     let disconnect: (() => void) | undefined;
@@ -152,7 +150,12 @@ export function HeroVisual({ poster }: HeroVisualProps) {
       renderer.setQuality(RADAR_QUALITY[tier]);
     };
 
+    // Probing the GPU creates (and drops) WebGL contexts: done when the
+    // page is idle, not in the middle of hydration.
     const cancelIdle = onIdle(async () => {
+      const detected = detectRenderTier(preference === "reduced");
+      if (detected === "none" || disposed) return;
+      tier = detected;
       const { RadarRenderer } = await import("./radar-renderer");
       if (disposed) return;
       renderer = new RadarRenderer(canvas, {

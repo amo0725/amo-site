@@ -79,15 +79,9 @@ export function MakingOf({ copy, ready, playheadRef, onSeek }: MakingOfProps) {
             <h3 className="text-sm font-semibold text-ink-soft">
               {m.rulesLabel}
             </h3>
-            <ul className="mt-2 space-y-1.5">
+            <ul className="bullets mt-2 space-y-1.5">
               {m.rules.map((r) => (
-                <li key={r} className="flex gap-3">
-                  <span
-                    aria-hidden="true"
-                    className="mt-[0.7em] h-px w-3 shrink-0 bg-coast"
-                  />
-                  {r}
-                </li>
+                <li key={r}>{r}</li>
               ))}
             </ul>
           </div>
@@ -123,8 +117,10 @@ export function MakingOf({ copy, ready, playheadRef, onSeek }: MakingOfProps) {
                     <button
                       type="button"
                       disabled={!ready}
+                      // The title is hidden on phones; the name stays.
+                      aria-label={c.title}
                       onClick={() => onSeek(c.at + 0.01)}
-                      className="flex h-full w-full flex-col justify-end gap-1.5 pr-1 text-left text-xs disabled:opacity-40"
+                      className="flex h-full w-full flex-col justify-end gap-1.5 pr-1 text-left text-sm disabled:opacity-40"
                     >
                       <span className="hidden truncate sm:block">{c.title}</span>
                       <span
@@ -197,14 +193,17 @@ export function MakingOf({ copy, ready, playheadRef, onSeek }: MakingOfProps) {
             {SIGNAL_STATES.map((s) => m.states[s.id]).join(" → ")}
           </p>
 
-          <p className="mt-6 max-w-[40rem] text-ink-soft">{m.build}</p>
+          <p className="mt-6 max-w-[40rem]">{m.build}</p>
           <p className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <a
               href={copy.video.src}
               download
-              className="font-semibold underline decoration-coast underline-offset-4 hover:decoration-ink"
+              className="font-semibold underline decoration-control underline-offset-[0.3em] hover:decoration-ink"
             >
               {m.download}
+              <span aria-hidden="true" className="ml-1 inline-block no-underline">
+                ↓
+              </span>
             </a>
             <span className="text-sm text-ink-soft">{m.downloadMeta}</span>
           </p>
