@@ -32,6 +32,12 @@ const nextConfig: NextConfig = {
   experimental: {
     // One 404 page for every unmatched URL, since the root layout lives under [lang].
     globalNotFound: true,
+    // No Turbopack cache between builds. Vercel restores .next/cache from
+    // the last deploy, and a warm build once shipped a stylesheet compiled
+    // from the previous globals.css against the current markup: every
+    // label, node and mark unstyled, site-wide. A cold build is a minute
+    // slower and always matches the commit.
+    turbopackFileSystemCacheForBuild: false,
   },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

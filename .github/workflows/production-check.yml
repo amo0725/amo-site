@@ -1,0 +1,35 @@
+name: Production check
+
+# After every production deploy, run the smoke test against the live site.
+# CI tests a fresh build of the commit; this tests what Vercel actually
+# shipped (its build can differ, e.g. with a restored build cache).
+on:
+  deployment_status:
+
+jobs:
+  live:
+    name: Smoke test the live site
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment.environment == 'Production'
+    # Same pin as CI: the smoke test's browser setup is known good on 24.04.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Smoke test (https://amo-site.vercel.app, desktop and phone, both languages)
+        env:
+          BASE_URL: https://amo-site.vercel.app
+          EXPECT_COMMIT: ${{ github.event.deployment.sha }}
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run smoke
