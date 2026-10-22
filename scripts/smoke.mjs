@@ -6,11 +6,11 @@
  * at desktop and phone widths: the page answers, the first screen names
  * the person and the role, says what they are open to, the calls to action
  * point at the case log and at contact, the featured cases are marked and
- * open (the first one on phones), the hero carries its three proof
- * figures, nothing scrolls sideways, every public project links to its
+ * the first one is open from md (phones get the outline), the hero
+ * carries its three proof figures, nothing scrolls sideways, every public project links to its
  * repository, the phone menu opens, the visual summaries are there
- * (evidence cards, flow drawings, screenshots), a flow badge lands on its
- * area open, a filter goes into the address, the case and experience
+ * (evidence rows, flow drawings, screenshots), a link to an area lands on
+ * it open, a filter goes into the address, the case and experience
  * pages answer, name the author, lead back and end with a way to get in
  * touch, and nothing logs an error. Also checks the sitemap, robots, the
  * Open Graph image, the 404s and redirects, and that no URL still points
@@ -119,11 +119,11 @@ for (const lang of ["zh-TW", "en"]) {
     const status = await page.locator("#hero-title ~ p").filter({ hasText: /\S/ }).count();
     check(status >= 2, `${label}: positioning and availability lines under the name`);
 
-    // The three featured cases are marked; from md all three open, on
-    // phones only the first, so the rest of the list stays an outline.
+    // The three featured cases are marked; from md the first one is open
+    // as an example, and phones get the list as an outline.
     const marked = await page.locator("#work .log-featured").count();
     check(marked === 3, `${label}: ${marked} cases marked "start here"`);
-    const want = vp.mobile ? 1 : 3;
+    const want = vp.mobile ? 0 : 1;
     const open = await page.locator("#work details.log-entry[open]").count();
     check(open === want, `${label}: ${open} featured cases open (want ${want})`);
 
@@ -173,10 +173,10 @@ for (const lang of ["zh-TW", "en"]) {
       );
     }
 
-    // The visual first layer: evidence cards, a flow drawing per main
+    // The visual first layer: evidence rows, a flow drawing per main
     // track, a screenshot per project, and the way to each full write-up.
     const cards = await page.locator("#signal a.vs-row").count();
-    check(cards === 4, `${label}: ${cards} looks-fine / actually cards`);
+    check(cards === 4, `${label}: ${cards} looks-fine / actually rows`);
     const flows = await page.locator("#experience .track-flow").count();
     check(flows === 2, `${label}: ${flows} experience flow drawings`);
     const shots = await page.locator("#projects figure img").count();
@@ -194,17 +194,20 @@ for (const lang of ["zh-TW", "en"]) {
       await page.waitForTimeout(500);
     }
 
-    // A badge on a flow drawing opens its area and lands on it.
-    const badge = page.locator("#experience a.area-badge").first();
-    const target = (await badge.getAttribute("href"))?.slice(1) ?? "";
-    await badge.click();
+    // A link to an area of ownership (shared, or from the other language)
+    // opens it and lands on it.
+    const target = await page
+      .locator("#experience li.area-item")
+      .nth(1)
+      .getAttribute("id");
+    await page.goto(`${BASE}/${lang}#${target}`, { waitUntil: "networkidle" });
     await page.waitForTimeout(1200);
     const landed = await page.evaluate((id) => {
       const el = document.getElementById(id);
       const top = el?.getBoundingClientRect().top ?? -1;
       return [!!el?.querySelector("details[open]"), top >= 0 && top < 200];
     }, target);
-    check(landed[0] && landed[1], `${label}: area badge opens and lands on #${target}`);
+    check(landed[0] && landed[1], `${label}: a link to #${target} opens it and lands on it`);
 
     // One case page and one experience page: they answer, carry an h1,
     // lead back to the item they expand, and don't scroll sideways.

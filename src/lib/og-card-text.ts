@@ -19,7 +19,7 @@ export function caseCard(content: SiteContent, entry: WorkEntry): CaseCard {
   const track = content.experience.find((t) => t.id === entry.track);
   const metric = entry.metrics?.[0];
   const figure = metric
-    ? `${metric.beforeText} → ${metric.afterText}${metric.factor ? `  ${metric.factor}` : ""}`
+    ? `${metric.beforeText} → ${metric.afterText}${metric.factor ? ` (${metric.factor})` : ""}`
     : (entry.outcome ?? entry.steps.result);
   const sep = content.locale === "en" ? " · " : "・";
   return {
@@ -32,6 +32,19 @@ export function caseCard(content: SiteContent, entry: WorkEntry): CaseCard {
   };
 }
 
-/** Every string on the card, for the font script. */
+/** The words on the site's own card, under the name. */
+export function homeCard(content: SiteContent) {
+  const sep = content.locale === "en" ? " · " : "・";
+  return {
+    role: `${content.profile.role}${sep}${content.profile.place}`,
+    positioning: content.profile.positioning,
+  };
+}
+
+/** Every string on the cards, for the font script. */
 export const cardText = (content: SiteContent, entry: WorkEntry) =>
   Object.values(caseCard(content, entry));
+
+/** Every string on the site's own card, for the font script. */
+export const homeText = (content: SiteContent) =>
+  Object.values(homeCard(content));

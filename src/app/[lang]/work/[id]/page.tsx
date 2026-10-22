@@ -5,7 +5,7 @@ import { InView } from "@/components/motion/in-view";
 import { trackHref } from "@/components/sections/experience";
 import { categoryColor, site } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
-import { detailMetadata } from "@/lib/detail-metadata";
+import { detailMetadata, notFoundMetadata } from "@/lib/detail-metadata";
 import { fill } from "@/lib/i18n";
 import type { Locale } from "@/content/types";
 import { CaseBody } from "@/features/work-log/case-body";
@@ -34,7 +34,7 @@ export async function generateMetadata({
 }: PageProps<"/[lang]/work/[id]">): Promise<Metadata> {
   const { lang, id } = await params;
   const found = find(lang, id);
-  if (!found) return {};
+  if (!found) return notFoundMetadata(lang);
   const { entry, content } = found;
   const description =
     lang === "en"
@@ -88,7 +88,6 @@ export default async function CasePage({
   };
 
   const color = `var(${categoryColor[entry.category]})`;
-  const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
     <DetailShell
@@ -117,13 +116,13 @@ export default async function CasePage({
               className="-my-3 inline-flex min-h-11 items-center underline decoration-control underline-offset-4 hover:text-ink hover:decoration-ink"
             >
               {track.short}
+              <span aria-hidden="true" className="ml-1 inline-block no-underline">
+                →
+              </span>
             </a>
           ) : track ? (
             <span>{track.short}</span>
           ) : null}
-          <span className="tabular">
-            {pad(index + 1)} / {pad(entries.length)}
-          </span>
         </p>
         <h1
           id="case-title"
@@ -135,7 +134,7 @@ export default async function CasePage({
         <InView threshold={0.3}>
           <div className="mt-10 border-y border-control py-7 md:mt-12 md:py-9">
             <h2 className="sr-only">{ui.summary}</h2>
-            <CaseSteps entry={entry} ui={ui} heading="h3" />
+            <CaseSteps entry={entry} ui={ui} heading="h3" row />
           </div>
         </InView>
 
@@ -148,7 +147,7 @@ export default async function CasePage({
         <section aria-labelledby="same-track" className="mt-20">
           <h2
             id="same-track"
-            className="coord flex items-center gap-3 after:h-px after:flex-1 after:bg-graticule"
+            className="flex items-center gap-3 text-lg font-bold after:h-px after:flex-1 after:bg-graticule"
           >
             {fill(ui.more, { track: track.short })}
           </h2>
@@ -186,7 +185,7 @@ export default async function CasePage({
           >
             <span className="coord">
               <span aria-hidden="true">← </span>
-              {ui.prev} · {pad(index)}
+              {ui.prev}
             </span>
             <span className="font-semibold text-balance">{prev.title}</span>
           </a>
@@ -199,7 +198,7 @@ export default async function CasePage({
             className="pen-row grid gap-1.5 border-b border-graticule py-5"
           >
             <span className="coord">
-              {ui.next} · {pad(index + 2)}
+              {ui.next}
               <span aria-hidden="true"> →</span>
             </span>
             <span className="font-semibold text-balance">{next.title}</span>

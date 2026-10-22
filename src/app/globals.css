@@ -32,9 +32,6 @@
   --band-9: #6a35c4;
 
   --focus: var(--echo-5);
-  /* Index numbers before they ink in: 4.5:1, so they read as text even
-     before the pen reaches them. */
-  --unread: color-mix(in oklab, var(--ink) 62%, var(--paper));
   --header-h: 3.5rem;
   /* Outline of a control (pill, header button, switch): ≥3:1 on paper and
      on the display surface in both themes (3.2 at the lowest), which
@@ -399,11 +396,7 @@
     scroll-padding-bottom: calc(34svh + 1rem);
   }
 }
-@media (max-width: 63.99rem) {
-  html:has(#systems [data-docked]) .back-to-top {
-    display: none;
-  }
-}
+
 
 /* Mini radar sweeps in the side-project rows: one revolution as the row
    passes through the viewport (scroll-driven, see the @supports block). */
@@ -444,15 +437,6 @@
 }
 .echo-keep {
   background: var(--echo-2);
-}
-.mini-track::after {
-  content: "";
-  position: absolute;
-  top: calc(50% - 0.75px);
-  height: 1.5px;
-  left: calc((100% + 2px) / var(--cells) * var(--keep));
-  right: 0;
-  background: var(--echo-5);
 }
 .metric-before::after {
   content: "";
@@ -569,22 +553,6 @@
 
 /* ---------- Scroll-driven choreography (compositor only) ---------- */
 @supports (animation-timeline: view()) {
-  /* Index numbers ink in as their rows arrive. */
-  @keyframes ink-in {
-    from {
-      color: var(--unread);
-    }
-    to {
-      color: var(--ink);
-    }
-  }
-  /* Experience: the scope index numbers ink in as their rows arrive. */
-  .index-ink {
-    animation: ink-in linear both;
-    animation-timeline: view();
-    animation-range: entry 20% cover 35%;
-  }
-
   /* Side legend: progress line fills with page scroll. */
   @keyframes progress-grow {
     from {
@@ -1078,55 +1046,11 @@
 .log-entry[open] .log-chevron {
   transform: rotate(45deg);
 }
-/* Phones: while a case is open its title stays pinned under the header
-   (or the top edge, when the header has stepped aside), so it can be
-   closed from wherever the reader is. Pinned, it drops to one compact row. */
-@media (max-width: 47.99rem) {
-  .log-entry[open] > summary {
-    position: sticky;
-    top: var(--pin-top, var(--header-h));
-    z-index: 5;
-    padding-block: 0.5rem;
-    background: var(--surface, var(--paper));
-    /* Pinned, the bar reads as the chart's top axis; a soft shadow below
-       shows the case is sliding under it rather than being cut by a line. */
-    box-shadow:
-      0 1px 0 var(--control),
-      0 10px 14px -12px color-mix(in oklab, var(--ink) 45%, transparent);
-    transition: top 0.5s var(--ease-out-expo);
-    /* A control, not text to select: a long press must not start a
-       selection on the bar. */
-    -webkit-user-select: none;
-    user-select: none;
-  }
-  /* At most two lines (every title fits in two at this size, so the bar
-     never cuts one short and never changes height as it pins). The
-     category, track and "start here" open the body instead (CaseSummary). */
-  .log-entry[open] > summary h3 {
-    font-size: var(--text-base);
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    overflow: hidden;
-  }
-  .log-entry[open] > summary :is(.log-meta, .log-plot, .log-featured) {
-    display: none;
-  }
-  /* Anything focused inside an open case scrolls in below the pinned
-     title, not under it. */
-  .log-entry[open] > :not(summary) :is(a, button, summary, input, [tabindex]) {
-    scroll-margin-top: calc(var(--header-h) + 4.75rem);
-  }
-}
-:root[data-header-hidden] {
-  --pin-top: 0px;
-}
 
 /* Without JavaScript the boot script never sets data-motion: honour the
    system setting directly. */
 @media (prefers-reduced-motion: reduce) {
-  :root:not([data-motion]) :is(*, *::before, *::after) {
+  :root:not([data-motion]) :is(*, *::before, *::after, *::details-content) {
     animation: none !important;
     transition-duration: 0.01ms !important;
   }
@@ -1165,8 +1089,8 @@
 /* ==================================================================
    INSTRUMENT KIT — "plotted, not boxed"
    The page is one sheet of chart paper and every visual summary is drawn
-   on it the way the hero radar is: marks on hairlines, coordinate labels,
-   leader lines, numbered stations. Nothing is put in a box. Four inks,
+   on it the way the hero radar is: hairlines, a few plain labels, and
+   numbered stations only where the order matters. Nothing is put in a box. Four inks,
    four jobs: --ink content, --ink-soft secondary text, --control (≥3:1)
    every line that carries meaning, --graticule only for background grid
    and separators. Motion is a pen stroke: complete at rest, one line or
@@ -1177,46 +1101,14 @@
 /* In the components layer, so Tailwind utilities on an element (a colour,
    a size) win over the kit's defaults. */
 @layer components {
-/* Coordinate label: the small caps that annotate a drawing. */
+/* Label: names what follows (a step, a field, a group). Caption size,
+   sentence case, no tracking: a label is read, not decoded. */
 .coord {
-  font-size: var(--text-xs);
-  line-height: 1.4;
+  font-size: var(--text-sm);
+  line-height: 1.5;
   font-weight: 600;
   color: var(--ink-soft);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   font-variant-numeric: tabular-nums;
-}
-:lang(zh) .coord {
-  letter-spacing: 0.02em;
-  text-transform: none;
-}
-/* Index numeral "01": expanded, tabular, like the hero figures. */
-.index {
-  font-size: var(--text-sm);
-  font-weight: 800;
-  font-stretch: 112%;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-soft);
-}
-/* Leader: the short dash from a label to what it labels. */
-.leader {
-  display: inline-block;
-  flex-shrink: 0;
-  width: 0.75rem;
-  height: 1px;
-  background: var(--control);
-  vertical-align: middle;
-}
-/* Ticks under an axis, like the rev meter's ring. */
-.axis-ticks {
-  display: block;
-  height: 5px;
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--control) 0 1px,
-    transparent 1px 10px
-  );
 }
 /* Station: every numbered stop on the site is this one 28px node. */
 .node {
@@ -1242,15 +1134,6 @@
   border-color: var(--echo-2);
   color: var(--on-echo);
 }
-/* A stop beside or around the path: square, hollow, no numeral. */
-.node-side {
-  border-radius: 2px;
-  border-width: 1.5px;
-  border-color: var(--control);
-  width: 0.875rem;
-  height: 0.875rem;
-  margin-inline: 0.4375rem;
-}
 /* Plotted square: category, outcome, "actually". */
 .mark {
   display: inline-block;
@@ -1259,119 +1142,80 @@
   height: 0.625rem;
 }
 
-/* "Go deeper" link, one style everywhere: a leader, the words, an arrow.
-   The leader reaches further on hover. Inline body links keep underlines.
-   It is a standalone control, so its hit area is 44px tall; the padding is
-   taken back by the margin, so it sits in the layout like a line of text. */
+/* Text link to somewhere else on the site, one style everywhere: the
+   words underlined, an arrow after them. It is a standalone control, so
+   its hit area is 44px tall; the padding is taken back by the margin, so
+   it sits in the layout like a line of text. */
 .go {
   display: inline-flex;
   align-items: baseline;
+  min-height: 2.75rem;
   padding-block: 0.625rem;
   margin-block: -0.625rem;
-  font-size: var(--text-sm);
-  line-height: 1.6;
   font-weight: 600;
   color: var(--ink);
-}
-.go::before {
-  content: "";
-  flex-shrink: 0;
-  width: 0.75rem;
-  height: 1px;
-  margin-right: 0.5rem;
-  /* From the baseline up to the middle of the lowercase letters. */
-  translate: 0 -0.32em;
-  background: var(--control);
-  transition:
-    width 0.2s var(--ease-out-expo),
-    background-color 0.2s;
+  text-decoration: underline;
+  text-decoration-color: var(--control);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 0.2s;
 }
 .go::after {
   content: "→";
   flex-shrink: 0;
-  margin-left: 0.5rem;
+  margin-left: 0.4em;
   color: var(--ink-soft);
+  text-decoration: none;
   transition: translate 0.2s var(--ease-out-expo);
 }
-.go:hover::before,
-.go:focus-visible::before {
-  width: 1.25rem;
-  background: var(--ink);
+.go:hover,
+.go:focus-visible {
+  text-decoration-color: var(--ink);
 }
 .go:hover::after {
   translate: 2px 0;
 }
-.go-back::after {
-  content: none;
-}
+/* "Back" in a page's bar: an arrow before the words, no underline. */
 .go-back {
   align-items: center;
   min-height: 2.75rem;
   padding-block: 0;
   margin-block: 0;
+  text-decoration: none;
+}
+.go-back::after {
+  content: none;
 }
 .go-back::before {
   content: "←";
-  width: auto;
-  height: auto;
-  translate: none;
-  background: none;
+  margin-right: 0.5rem;
   color: var(--ink-soft);
+  transition: translate 0.2s var(--ease-out-expo);
 }
 .go-back:hover::before {
-  width: auto;
-  background: none;
   translate: -2px 0;
 }
-/* On the closing panel. */
-.go-inverse {
-  color: var(--on-closing);
+
+/* A plain list: small round bullets in the control ink, hanging. */
+.bullets {
+  list-style: disc;
+  padding-left: 1.25em;
 }
-.go-inverse::before {
-  background: color-mix(in oklab, var(--on-closing) 55%, transparent);
-}
-.go-inverse::after {
-  color: color-mix(in oklab, var(--on-closing) 75%, transparent);
-}
-.go-inverse:is(:hover, :focus-visible)::before {
-  background: var(--on-closing);
+.bullets > li::marker {
+  color: var(--control);
 }
 
-/* Plate: the frame around a picture, with corner ticks. */
+/* Plate: a quiet frame around a screenshot. */
 .plate {
-  --tick: var(--control);
-  position: relative;
   padding: 0.375rem;
   border: 1px solid color-mix(in oklab, var(--control) 60%, var(--paper));
   background: var(--paper-raised);
-}
-.plate::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  pointer-events: none;
-  --l: 0.625rem;
-  --w: 2px;
-  background:
-    linear-gradient(var(--tick), var(--tick)) top left / var(--l) var(--w),
-    linear-gradient(var(--tick), var(--tick)) top left / var(--w) var(--l),
-    linear-gradient(var(--tick), var(--tick)) top right / var(--l) var(--w),
-    linear-gradient(var(--tick), var(--tick)) top right / var(--w) var(--l),
-    linear-gradient(var(--tick), var(--tick)) bottom left / var(--l) var(--w),
-    linear-gradient(var(--tick), var(--tick)) bottom left / var(--w) var(--l),
-    linear-gradient(var(--tick), var(--tick)) bottom right / var(--l) var(--w),
-    linear-gradient(var(--tick), var(--tick)) bottom right / var(--w) var(--l);
-  background-repeat: no-repeat;
 }
 @media (min-width: 48rem) {
   .plate {
     padding: 0.5rem;
   }
 }
-.group:hover .plate {
-  --tick: var(--ink);
-}
-
 /* A row's pen: a 2px rule in the section's band draws along the top edge
    on hover (desktop pointers only). */
 .pen-row {
@@ -1395,8 +1239,8 @@
   }
 }
 
-/* Section heading: a chart title — swatch, title, a rule to the edge and
-   the section's index. The rule scans in with the swatch. */
+/* Section heading: a chart title — swatch, title and a rule to the edge.
+   The rule scans in with the swatch. */
 @supports (animation-timeline: view()) {
   .scan-rule {
     transform-origin: left center;
@@ -1493,129 +1337,13 @@
   }
 }
 
-/* Area badges on a flow: the same coordinate as the list's index, plotted
-   on the drawing. Hollow; filled while pointed at. */
-.area-badge {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  min-width: 2rem;
-  min-height: 1.75rem;
-  padding-inline: 0.375rem;
-  border: 1px solid var(--control);
-  border-radius: 2px;
-  background: var(--paper);
-  color: var(--ink);
-  font-size: 0.75rem;
-  line-height: 1.2;
-  transition:
-    background-color 0.15s,
-    color 0.15s,
-    border-color 0.15s;
-}
-/* Drawn at 28px tall; the hit area reaches 44px without touching the
-   next badge's (badges sit 8px apart). */
-.area-badge::before {
-  content: "";
-  position: absolute;
-  inset: -0.5rem -0.25rem;
-}
-.area-badge-n {
-  font-weight: 800;
-  font-stretch: 112%;
-  font-variant-numeric: tabular-nums;
-}
-.area-badge-name {
-  font-weight: 600;
-  text-align: left;
-}
-.area-badge:hover,
-.area-badge:focus-visible {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
-}
-/* The side lane hangs off the path on a dashed drop. */
-.flow-side {
-  position: relative;
-  border-top: 1px dashed var(--control);
-}
-
-/* ---------- "What I do": readings ---------- */
-@keyframes vs-pop {
-  from {
-    opacity: 0;
-    scale: 0.4;
-  }
-}
+/* ---------- Pen strokes ---------- */
 @keyframes draw-x {
   from {
     scale: 0 1;
   }
 }
-@keyframes draw-y {
-  from {
-    scale: 1 0;
-  }
-}
-.vs-arrow {
-  transform-origin: left;
-}
-.vs-actually::after {
-  content: "";
-  position: absolute;
-  bottom: -0.375rem;
-  left: 1.75rem;
-  right: 0;
-  height: 2px;
-  background: var(--echo-5);
-  transform-origin: left;
-  scale: 0 1;
-  transition: scale 0.25s var(--ease-out-expo);
-}
-@media (min-width: 48rem) {
-  .vs-actually::after {
-    left: 3.25rem;
-  }
-}
-@media (hover: hover) and (pointer: fine) {
-  .vs-row:hover .vs-actually::after {
-    scale: 1 1;
-  }
-}
-.vs-row:focus-visible .vs-actually::after {
-  scale: 1 1;
-}
-:root:not([data-motion="reduced"]) [data-in] .vs-row {
-  & .vs-mark {
-    animation: vs-pop 0.22s var(--ease-out-expo)
-      calc(0.25s + var(--i, 0) * 0.12s) both;
-  }
-  & .vs-arrow {
-    animation: draw-x 0.22s var(--ease-out-expo)
-      calc(0.1s + var(--i, 0) * 0.12s) both;
-  }
-}
-@media (max-width: 47.99rem) {
-  .vs-arrow {
-    transform-origin: top;
-  }
-  :root:not([data-motion="reduced"]) [data-in] .vs-row .vs-arrow {
-    animation-name: draw-y;
-  }
-}
-
 /* ---------- Work log ---------- */
-/* Stat tiles and case steps: the rule under a figure draws on arrival. */
-:root:not([data-motion="reduced"]) [data-in] .tile-rule {
-  animation: draw-x 0.3s var(--ease-out-expo) calc(var(--i, 0) * 0.08s) both;
-}
-.tile-rule {
-  transform-origin: left;
-}
-
 /* Case steps: a line from node to node with an arrowhead at the next
    node; vertical on phones, a row from md. */
 .case-step:not(:last-child)::after {
@@ -1628,7 +1356,7 @@
   background: var(--control);
 }
 @media (min-width: 48rem) {
-  .case-step:not(:last-child)::after {
+  .case-steps-row .case-step:not(:last-child)::after {
     left: 2.125rem;
     right: -1rem;
     top: calc(0.875rem - 0.75px);
@@ -1636,7 +1364,7 @@
     width: auto;
     height: 1.5px;
   }
-  .case-step:not(:first-child)::before {
+  .case-steps-row .case-step:not(:first-child)::before {
     content: "";
     position: absolute;
     left: -0.875rem;
@@ -1670,17 +1398,6 @@
 /* A jump's target holds the keyboard's place without a ring around it. */
 .focus-point:focus {
   outline: none;
-}
-
-/* Areas: an open or targeted area shows its index as a selected
-   coordinate. */
-.area-item :is(details[open], :target) .index,
-.area-item:target .index {
-  background: var(--ink);
-  color: var(--paper);
-  border-radius: 2px;
-  /* The ink-in timeline animates colour; it would paint ink on ink. */
-  animation: none;
 }
 
 /* Principles: the section's pen draws each entry's rule on arrival. */

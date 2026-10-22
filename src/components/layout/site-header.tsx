@@ -6,7 +6,6 @@ import type { Locale } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { useActiveSection } from "@/lib/hooks/use-active-section";
 import { useReturningHeader } from "@/lib/hooks/use-returning-header";
-import { BackToTop } from "./back-to-top";
 import type { NavItem } from "./nav-item";
 
 /**
@@ -37,6 +36,7 @@ interface SiteHeaderProps {
   menu: { open: string; close: string; current: string };
   motion: { label: string; on: string; off: string };
   language: { label: string; href: string; hrefLang: Locale };
+  /** Name of the wordmark link once it leads back to the top. */
   backToTop: string;
 }
 
@@ -69,15 +69,6 @@ export function SiteHeader({
     }`;
   };
 
-  // Lets pinned elements (an open case's title) sit under the header, or
-  // at the top edge while the header is away.
-  useEffect(() => {
-    document.documentElement.toggleAttribute(
-      "data-header-hidden",
-      hidden && !open,
-    );
-  }, [hidden, open]);
-
   useEffect(() => {
     if (!open) return;
     // Escape from inside the menu hands focus back to its button.
@@ -90,7 +81,7 @@ export function SiteHeader({
       if (inMenu) menuButton.current?.focus();
     };
     const onWide = () => {
-      if (window.matchMedia("(min-width: 64rem)").matches) setOpen(false);
+      if (window.matchMedia("(min-width: 80rem)").matches) setOpen(false);
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onWide);
@@ -101,7 +92,6 @@ export function SiteHeader({
   }, [open]);
 
   return (
-    <>
     <header
       // Tabbing out of the open menu closes it, so focus never sits on the
       // page behind the scrim.
@@ -121,26 +111,35 @@ export function SiteHeader({
         aria-hidden="true"
         hidden={!open}
         onClick={() => setOpen(false)}
-        className="fixed inset-x-0 top-[var(--header-h)] bottom-0 bg-paper/70 backdrop-blur-[2px] lg:hidden"
+        className="fixed inset-x-0 top-[var(--header-h)] bottom-0 bg-paper/70 backdrop-blur-[2px] xl:hidden"
       />
       <nav
         aria-label={navLabel}
         className="mx-auto flex h-full max-w-[90rem] items-center justify-between gap-6 px-5 md:px-10"
       >
+        {/* The wordmark is the way back to the top. Far down the page (when
+            the header comes back on a scroll up) it says so with an arrow,
+            instead of a floating button laid over the text. */}
         <a
           href="#top"
-          className="text-lg font-extrabold tracking-tight font-name font-expanded"
+          aria-label={far ? `${backToTop}: ${name}` : undefined}
+          className="inline-flex min-h-11 items-center gap-1.5 text-lg font-extrabold tracking-tight font-name font-expanded"
         >
+          {far ? (
+            <span aria-hidden="true" className="text-base text-ink-soft">
+              ↑
+            </span>
+          ) : null}
           {name}
         </a>
-        <ul className="hidden items-center gap-5 text-sm lg:flex xl:gap-6">
+        <ul className="hidden items-center gap-6 text-sm xl:flex">
           {nav.map((s) => (
             <li key={s.id}>
               <a
                 href={`#${s.id}`}
                 aria-current={active === s.id ? "location" : undefined}
                 className={cn(
-                  "relative py-2 whitespace-nowrap transition-colors",
+                  "relative -mx-1 px-1 py-2 whitespace-nowrap transition-colors",
                   active === s.id ? "text-ink" : "text-ink-soft hover:text-ink",
                 )}
               >
@@ -158,9 +157,11 @@ export function SiteHeader({
           ))}
         </ul>
         <div className="flex items-center gap-3 text-sm sm:gap-4">
-          {/* Below lg the switch lives in the menu panel, which leaves the
-              bar room to name the section being read. */}
-          <span className="hidden lg:contents">
+          {/* Below xl the switch lives in the menu panel, which leaves the
+              bar room to name the section being read. The section links
+              need the full width of xl to stay on one line with the
+              reader's own text spacing (WCAG 1.4.12). */}
+          <span className="hidden xl:contents">
             <MotionToggle
               label={motion.label}
               on={motion.on}
@@ -185,7 +186,7 @@ export function SiteHeader({
             }
             onClick={() => setOpen((o) => !o)}
             // Drawn at 28px, but the ::before stretches the tap target to 44.
-            className="relative inline-flex items-center gap-2 py-1 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] rounded-full border border-control px-3 font-semibold whitespace-nowrap transition-colors hover:border-ink lg:hidden"
+            className="relative inline-flex items-center gap-2 py-1 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[''] rounded-full border border-control px-3 font-semibold whitespace-nowrap transition-colors hover:border-ink xl:hidden"
           >
             {!open && current ? (
               <>
@@ -208,12 +209,15 @@ export function SiteHeader({
           {/* The menu panel sits right after its button, inside the nav
               landmark, so the tab order runs button, sections, motion,
               language. The fixed header is still its containing block. */}
-      <div
+          <div
             id="section-menu"
+            // Focusable, so a tap on the panel's own padding keeps focus in
+            // the header and doesn't count as leaving the menu.
+            tabIndex={-1}
             hidden={!open}
-            className="absolute inset-x-0 top-full border-b border-graticule bg-paper px-5 pt-2 pb-6 md:px-10 lg:hidden"
+            className="absolute inset-x-0 top-full border-b border-graticule bg-paper px-5 pt-2 pb-6 outline-none md:px-10 xl:hidden"
           >
-            <ul className="mx-auto grid max-w-[90rem] gap-x-8 sm:grid-cols-2">
+            <ul className="mx-auto grid max-w-[90rem] gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
               {nav.map((s) => (
                 <li key={s.id}>
                   <a
@@ -264,9 +268,6 @@ export function SiteHeader({
           </a>
         </div>
       </nav>
-
     </header>
-    <BackToTop label={backToTop} shown={far && !hidden && !open} />
-    </>
   );
 }

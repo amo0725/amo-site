@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
-import { locales } from "@/content";
+import { defaultLocale, getContent, isLocale, locales } from "@/content";
 import type { Locale, SiteContent } from "@/content/types";
+
+/**
+ * Title of a case or body of work that doesn't exist, the same as every
+ * other 404 on the site, and kept out of the index.
+ */
+export function notFoundMetadata(lang: string): Metadata {
+  const c = getContent(isLocale(lang) ? lang : defaultLocale);
+  return {
+    title: `404 · ${c.ui.notFound.title}`,
+    robots: { index: false },
+  };
+}
 
 /**
  * Metadata for a page that expands one item (a case, a body of work). A

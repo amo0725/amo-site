@@ -3,7 +3,6 @@
 import type { Locale } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { useReturningHeader } from "@/lib/hooks/use-returning-header";
-import { BackToTop } from "./back-to-top";
 
 interface DetailHeaderProps {
   back: { label: string; href: string };
@@ -11,7 +10,6 @@ interface DetailHeaderProps {
   name: string;
   role: string;
   language: { label: string; href: string; hrefLang: Locale };
-  backToTop: string;
 }
 
 /**
@@ -51,11 +49,9 @@ export function DetailHeader({
   name,
   role,
   language,
-  backToTop,
 }: DetailHeaderProps) {
-  const { hidden, far } = useReturningHeader();
+  const { hidden } = useReturningHeader();
   return (
-    <>
       <header
         className={cn(
           "sticky top-0 z-40 border-b border-graticule bg-paper px-5 transition-[translate] duration-300 ease-[var(--ease-out-expo)] md:px-10",
@@ -85,7 +81,5 @@ export function DetailHeader({
           </div>
         </div>
       </header>
-      <BackToTop label={backToTop} shown={far && !hidden} />
-    </>
   );
 }

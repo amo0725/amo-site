@@ -5,18 +5,16 @@ import { sectionMeta } from "@/config/site";
 import type { SectionCopy, SideProject, UiStrings } from "@/content/types";
 
 /**
- * The product itself, on a plate: a screenshot of the real app in a frame
- * with corner ticks, one shape for every project (16:10; a shorter 2:1 crop
- * of the top on phones, where the plate is full width), and a caption row
- * "FIG. 01 · demo data". A phone screen stands upright in the middle.
+ * The product itself, on a plate: a screenshot of the real app in a quiet
+ * frame, one shape for every project (16:10; a shorter 2:1 crop of the top
+ * on phones, where the plate is full width), with a "demo data" caption
+ * where it applies. A phone screen stands upright in the middle.
  */
 function Plate({
   shot,
-  index,
   note,
 }: {
   shot: NonNullable<SideProject["shot"]>;
-  index: number;
   note: string;
 }) {
   const phone = shot.device === "phone";
@@ -34,7 +32,7 @@ function Plate({
   return (
     <figure>
       <div className="plate">
-        <div className="relative aspect-[2/1] max-w-full overflow-hidden bg-surface-display outline outline-1 -outline-offset-1 outline-graticule md:aspect-[16/10]">
+        <div className="relative aspect-[2/1] max-w-full overflow-hidden bg-surface-display md:aspect-[16/10]">
           {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text -- getImageProps supplies src, srcSet and alt */}
           <img
             {...img}
@@ -46,10 +44,9 @@ function Plate({
           />
         </div>
       </div>
-      <figcaption className="coord mt-2 flex items-center justify-between gap-3">
-        <span>FIG. {String(index + 1).padStart(2, "0")}</span>
-        {shot.demo ? <span>{note}</span> : null}
-      </figcaption>
+      {shot.demo ? (
+        <figcaption className="mt-2 text-sm text-ink-soft">{note}</figcaption>
+      ) : null}
     </figure>
   );
 }
@@ -84,18 +81,18 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
         </SectionHeading>
 
         <ul className="border-t border-graticule">
-          {projects.map((project, i) => (
+          {projects.map((project) => (
             <li
               key={project.id}
               className="group pen-row grid gap-6 border-b border-graticule py-10 md:grid-cols-12 md:gap-10 md:py-14"
             >
               <div className="md:col-span-5">
                 {project.shot ? (
-                  <Plate shot={project.shot} index={i} note={ui.shotNote} />
+                  <Plate shot={project.shot} note={ui.shotNote} />
                 ) : null}
               </div>
               <div className="md:col-span-7 md:pt-1">
-                <h3 className="text-2xl leading-[1.05] font-extrabold font-expanded md:text-[2rem]">
+                <h3 className="text-xl leading-tight font-extrabold font-expanded md:text-2xl">
                   {project.href ? (
                     <a
                       href={project.href}
@@ -116,27 +113,22 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
                   )}
                 </h3>
                 <p className="coord mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
-                  {project.status ? (
-                    <span className="flex items-center gap-2">
-                      <span
-                        aria-hidden="true"
-                        className="mark bg-control"
-                      />
-                      {project.status}
-                    </span>
-                  ) : null}
+                  {project.status ? <span>{project.status}</span> : null}
                   {project.href ? (
                     <a
                       href={project.href}
                       target="_blank"
                       rel="noopener"
-                      className="-my-3 inline-flex min-h-11 items-center normal-case underline decoration-control underline-offset-4 hover:text-ink"
+                      className="-my-3 inline-flex min-h-11 items-center underline decoration-control underline-offset-4 hover:text-ink"
                     >
                       {repoLabel(project.href)}
+                      <span aria-hidden="true" className="ml-1 no-underline">
+                        ↗
+                      </span>
                     </a>
                   ) : null}
                   {project.alias && project.alias !== project.name ? (
-                    <span className="normal-case">{project.alias}</span>
+                    <span>{project.alias}</span>
                   ) : null}
                   {project.year ? <span>{project.year}</span> : null}
                 </p>
@@ -154,15 +146,9 @@ export function Projects({ projects, copy, ui }: ProjectsProps) {
                       </span>
                     }
                   >
-                    <ul className="mt-3 space-y-1.5 text-ink-soft">
+                    <ul className="bullets mt-3 space-y-1.5 pb-2">
                       {project.details.map((d) => (
-                        <li key={d} className="flex gap-3">
-                          <span
-                            aria-hidden="true"
-                            className="leader mt-[0.85em]"
-                          />
-                          {d}
-                        </li>
+                        <li key={d}>{d}</li>
                       ))}
                     </ul>
                   </Fold>

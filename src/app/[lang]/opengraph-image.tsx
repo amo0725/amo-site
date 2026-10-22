@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getContent, isLocale, locales } from "@/content";
 import { CELL, cells, fontBytes, loadFonts, OG_SIZE } from "@/lib/og";
+import { homeCard } from "@/lib/og-card-text";
 
 export const size = OG_SIZE;
 export const contentType = "image/png";
@@ -24,10 +25,11 @@ export default async function Image({
 }: {
   params: Promise<{ lang: string }>;
 }) {
-  await params;
-  const { regular, heavy } = await loadFonts();
-  // The OG font only carries Latin glyphs, so the subtitle uses the English role line.
-  const { profile } = getContent("en");
+  const { lang } = await params;
+  const { regular, heavy, cjk } = await loadFonts();
+  // In the visitor's language; the Chinese lines use the cut Noto Sans TC
+  // face (scripts/og-font.mjs keeps it in step with this text).
+  const card = homeCard(getContent(isLocale(lang) ? lang : "en"));
 
   return new ImageResponse(
     <div
@@ -81,7 +83,7 @@ export default async function Image({
             marginTop: 32,
           }}
         >
-          {`${profile.role} · ${profile.place}`}
+          {card.role}
         </div>
         <div
           style={{
@@ -92,7 +94,7 @@ export default async function Image({
             maxWidth: 660,
           }}
         >
-          {profile.positioning}
+          {card.positioning}
         </div>
       </div>
     </div>,
@@ -111,6 +113,8 @@ export default async function Image({
           weight: 800,
           style: "normal",
         },
+        { name: "Noto Sans TC", data: fontBytes(cjk), weight: 800, style: "normal" },
+        { name: "Noto Sans TC", data: fontBytes(cjk), weight: 400, style: "normal" },
       ],
     },
   );

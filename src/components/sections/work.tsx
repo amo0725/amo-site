@@ -8,7 +8,6 @@ import type {
   WorkEntry,
 } from "@/content/types";
 import { InlineScript } from "@/components/ui/inline-script";
-import { fill } from "@/lib/i18n";
 import { CaseSummary } from "@/features/work-log/case-steps";
 import { openCasesScript } from "@/features/work-log/open-cases";
 import { toLogEntry } from "@/features/work-log/log-entry";
@@ -34,7 +33,6 @@ export function Work({
   locale,
 }: WorkProps) {
   const meta = sectionMeta("work");
-  const featured = entries.filter((e) => e.featured).map((e) => e.id);
   return (
     <section
       id={meta.id}
@@ -64,23 +62,7 @@ export function Work({
             bodies={Object.fromEntries(
               entries.map((e) => [
                 e.id,
-                <CaseSummary
-                  key={e.id}
-                  entry={e}
-                  ui={ui}
-                  locale={locale}
-                  context={{
-                    category: categories[e.category],
-                    color: colors[e.category],
-                    track: tracks.find((t) => t.id === e.track)?.label,
-                    featured: e.featured
-                      ? fill(ui.featured, {
-                          n: featured.indexOf(e.id) + 1,
-                          of: featured.length,
-                        })
-                      : undefined,
-                  }}
-                />,
+                <CaseSummary key={e.id} entry={e} ui={ui} locale={locale} />,
               ]),
             )}
           />

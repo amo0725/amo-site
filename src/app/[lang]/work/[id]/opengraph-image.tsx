@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { notFound } from "next/navigation";
 import { categoryColor } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
 import type { WorkCategory } from "@/content/types";
@@ -61,6 +62,7 @@ export default async function Image({
 }) {
   const { lang, id } = await params;
   const found = find(lang, id);
+  if (!found) notFound();
   const { regular, heavy, cjk } = await loadFonts();
   const card = found?.card;
   const color = found ? pen(found.entry.category) : ECHO[0];

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Builds the small Traditional Chinese face the case share cards use
+ * Builds the small Traditional Chinese face the share cards use
  * (src/assets/fonts/og-cjk-700.woff) and the list of characters it covers
  * (og-cjk-chars.json). The card generator falls back to the English title
  * for any zh title with a character outside that list, so a new case still
@@ -34,9 +34,12 @@ export async function resolve(specifier, context, next) {
 );
 
 const { zhTW } = await import("../src/content/zh-TW.ts");
-const { cardText } = await import("../src/lib/og-card-text.ts");
+const { cardText, homeText } = await import("../src/lib/og-card-text.ts");
 
-const text = zhTW.work.entries.flatMap((entry) => cardText(zhTW, entry)).join("");
+const text = [
+  ...zhTW.work.entries.flatMap((entry) => cardText(zhTW, entry)),
+  ...homeText(zhTW),
+].join("");
 const chars = [...new Set([...text].filter((c) => c.codePointAt(0) > 0x2000))]
   .sort()
   .join("");

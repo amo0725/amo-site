@@ -24,13 +24,24 @@ export function useReturningHeader(): ReturningHeader {
   useEffect(() => {
     let last = window.scrollY;
     let frame = 0;
+    // Scrolling the page does not hide the header until the reader has
+    // moved it themselves: a landing on a #link (or a restored position)
+    // must not arrive with the header gone and its space left empty.
+    let armed = false;
+    const arm = () => {
+      armed = true;
+    };
+    const inputs = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+    inputs.forEach((type) =>
+      window.addEventListener(type, arm, { passive: true, once: true }),
+    );
     const onScroll = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         const y = window.scrollY;
         let hidden: boolean | null = null;
         if (Math.abs(y - last) > 6) {
-          hidden = y > last && y > 240;
+          hidden = armed && y > last && y > 240;
           last = y;
         }
         const scrolled = y > 24;
@@ -49,6 +60,7 @@ export function useReturningHeader(): ReturningHeader {
     onScroll();
     return () => {
       window.removeEventListener("scroll", onScroll);
+      inputs.forEach((type) => window.removeEventListener(type, arm));
       cancelAnimationFrame(frame);
     };
   }, []);

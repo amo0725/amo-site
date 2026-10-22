@@ -8,7 +8,7 @@ import {
 } from "@/components/sections/experience";
 import { categoryColor } from "@/config/site";
 import { getContent, isLocale, locales } from "@/content";
-import { detailMetadata } from "@/lib/detail-metadata";
+import { detailMetadata, notFoundMetadata } from "@/lib/detail-metadata";
 import type { Locale } from "@/content/types";
 import { AreaList } from "@/features/experience/area-list";
 import { TrackFlowView } from "@/features/experience/track-flow";
@@ -37,7 +37,7 @@ export async function generateMetadata({
 }: PageProps<"/[lang]/experience/[id]">): Promise<Metadata> {
   const { lang, id } = await params;
   const found = find(lang, id);
-  if (!found) return {};
+  if (!found) return notFoundMetadata(lang);
   const { track, content } = found;
   return detailMetadata({
     content,
@@ -71,7 +71,7 @@ export default async function TrackPage({
       otherPath={`/${other}/experience/${id}`}
     >
       <article aria-labelledby="track-title">
-        <TrackKicker index={index} color={color} />
+        <TrackKicker color={color} />
         <h1
           id="track-title"
           className="text-[2.25rem] leading-[0.95] font-extrabold font-expanded md:text-6xl [:lang(zh)_&]:leading-[1.15]"
@@ -79,7 +79,7 @@ export default async function TrackPage({
           {track.short}
         </h1>
         {track.tagline ? (
-          <p className="mt-4 max-w-[44rem] text-ink-soft md:text-lg">
+          <p className="mt-4 max-w-[44rem] md:text-lg">
             {track.tagline}
           </p>
         ) : null}
@@ -97,7 +97,7 @@ export default async function TrackPage({
           <div>
             <div className="space-y-4 md:text-lg">
               <p>{track.domain}</p>
-              <p className="text-ink-soft">{track.context}</p>
+              <p>{track.context}</p>
             </div>
             <dl className="mt-8 grid gap-1">
               <dt className="coord">{ui.role}</dt>
@@ -105,7 +105,7 @@ export default async function TrackPage({
             </dl>
             <p className="mt-8 leading-relaxed">{track.summary}</p>
 
-            <h2 className="coord mt-14 mb-3 flex items-center gap-3 after:h-px after:flex-1 after:bg-graticule">
+            <h2 className="mt-14 mb-3 flex items-center gap-3 text-lg font-bold after:h-px after:flex-1 after:bg-graticule">
               {ui.scope}
             </h2>
             <AreaList track={track} ui={ui} open />

@@ -36,11 +36,6 @@ export function NotFoundView({ content: c }: { content: SiteContent }) {
               </a>
             </li>
             <li>
-              <a href={home} className="go">
-                {t.home}
-              </a>
-            </li>
-            <li>
               <a href={`${home}#contact`} className="go">
                 {t.contact}
               </a>

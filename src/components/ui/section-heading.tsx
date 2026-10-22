@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { sections } from "@/config/site";
 import { cn } from "@/lib/cn";
 
 interface SectionHeadingProps {
@@ -10,17 +9,17 @@ interface SectionHeadingProps {
   lead?: ReactNode;
   /** Text for sections drawn on the end panel (--closing). */
   inverted?: boolean;
-  /** Narrow column (a sticky side heading): no rule or index. */
+  /** Narrow column (a sticky side heading): no rule. */
   compact?: boolean;
   className?: string;
 }
 
 /**
  * Section title as a chart title: the swatch (matching the section's band
- * in the side legend), the title, and from md up a rule to the edge with
- * the section's index. Swatch and rule sweep in like a radar scan as the
- * title arrives (pure CSS, .scan-swatch / .scan-rule); the text itself is
- * always shown.
+ * in the side legend), the title, and from md up a rule to the edge.
+ * Swatch and rule sweep in like a radar scan as the title arrives (pure
+ * CSS, .scan-swatch / .scan-rule); the text itself is always shown. No
+ * section number: nothing refers to sections by number.
  */
 export function SectionHeading({
   id,
@@ -31,8 +30,6 @@ export function SectionHeading({
   compact = false,
   className,
 }: SectionHeadingProps) {
-  const n = sections.findIndex((s) => s.id === id);
-  const index = n >= 0 ? String(n + 1).padStart(2, "0") : null;
   return (
     <header className={cn("mb-8 md:mb-14", className)}>
       <h2
@@ -46,26 +43,13 @@ export function SectionHeading({
         />
         <span>{children}</span>
         {!compact ? (
-          <>
-            <span
-              aria-hidden="true"
-              className={cn(
-                "scan-rule ml-2 hidden h-px flex-1 md:block",
-                inverted ? "bg-on-closing/25" : "bg-graticule",
-              )}
-            />
-            {index ? (
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "coord hidden md:inline",
-                  inverted && "text-on-closing/70",
-                )}
-              >
-                {index}
-              </span>
-            ) : null}
-          </>
+          <span
+            aria-hidden="true"
+            className={cn(
+              "scan-rule ml-2 hidden h-px flex-1 md:block",
+              inverted ? "bg-on-closing/25" : "bg-graticule",
+            )}
+          />
         ) : null}
       </h2>
       {lead ? (

@@ -5,20 +5,20 @@ import { AnimatePresence, LayoutGroup } from "motion/react";
 // set into the first-load bundle and defeats LazyMotion.
 import * as m from "motion/react-m";
 import {
+  useEffect,
   useState,
   useSyncExternalStore,
   type ReactNode,
   type SyntheticEvent,
 } from "react";
-import type { UiStrings, WorkCategory } from "@/content/types";
+import type { Metric, UiStrings, WorkCategory } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { fill } from "@/lib/i18n";
 import { useMotionPreference } from "@/lib/motion/preference";
 import { PhoneFold } from "@/components/ui/phone-fold";
 import { caseAnchor } from "./case-steps";
-import { MiniBar } from "./mini-bar";
 import type { WorkLogEntry } from "./log-entry";
-import { OPEN_CASES_KEY } from "./open-cases";
+import { applyOpenCases, OPEN_CASES_KEY } from "./open-cases";
 
 export interface TrackOption {
   id: string;
@@ -167,7 +167,7 @@ function FilterGroup({
               <span>{opt.label}</span>
               <span
                 className={cn(
-                  "text-xs font-bold tabular",
+                  "text-sm font-semibold tabular",
                   on ? "text-paper/70" : "text-ink-soft",
                 )}
               >
@@ -178,6 +178,21 @@ function FilterGroup({
         })}
       </div>
     </div>
+  );
+}
+
+/** "6.3 s → 44 ms (143×)": the measured change. */
+function Outcome({ metric, to }: { metric: Metric; to: string }) {
+  return (
+    <>
+      {metric.beforeText}
+      <span aria-hidden="true"> → </span>
+      <span className="sr-only"> {to} </span>
+      {metric.afterText}
+      {metric.factor ? (
+        <span className="font-normal text-ink-soft"> ({metric.factor})</span>
+      ) : null}
+    </>
   );
 }
 
@@ -222,6 +237,12 @@ export function WorkLog({
   // is nothing to animate, and measuring a dozen rows on load forces a
   // layout of the whole page while it is still hydrating.
   const [filtered, setFiltered] = useState(false);
+  // If React had to render the rows again on the client (they no longer
+  // carry the pre-paint script's mark), decide which are open once more.
+  useEffect(() => {
+    const row = document.querySelector("#work details.log-entry");
+    if (row && !row.hasAttribute("data-pre")) applyOpenCases(OPEN_CASES_KEY);
+  }, []);
   // Motion's reducedMotion setting only drops transforms and layout, so the
   // clip-path wipes are switched off here.
   const reduced = useMotionPreference() === "reduced";
@@ -240,7 +261,6 @@ export function WorkLog({
   const typeCounts = count(entries, (e) => e.category);
   const trackCounts = count(entries, (e) => e.track);
   const trackLabel = new Map(tracks.map((t) => [t.id, t.label]));
-  const featured = entries.filter((e) => e.featured).map((e) => e.id);
 
   const typeOptions: FilterOption[] = [
     { value: ALL, label: ui.all, count: entries.length },
@@ -331,25 +351,21 @@ export function WorkLog({
                 onToggle={onCaseToggle}
               >
                 {/* One grid for every row, so the list reads as a table:
-                    category, title, a fixed plot column (the before/after
-                    strip or the outcome) and the toggle. Phones: title and
-                    toggle, then the category, then the plot full width. */}
-                <summary className="pen-row grid grid-cols-[1fr_auto] items-start gap-x-4 py-5 md:grid-cols-[7rem_1fr_15rem_1.5rem] md:gap-x-8 md:py-6 xl:grid-cols-[7rem_1fr_18rem_1.5rem]">
+                    category, title, the outcome and the toggle. From 90rem
+                    the outcome has a column of its own; below that it sits
+                    under the title, so the title keeps the width to read in
+                    two lines (the list shares the row with the filters from
+                    lg). Phones: title and toggle, then the category, then
+                    the outcome full width. */}
+                <summary className="pen-row grid grid-cols-[1fr_auto] items-start gap-x-4 py-5 md:grid-cols-[7rem_1fr_1.5rem] md:gap-x-8 md:py-6 min-[90rem]:grid-cols-[7rem_1fr_18rem_1.5rem]">
                   <span className="hidden items-center gap-2 pt-[0.3rem] text-sm text-ink-soft md:col-start-1 md:row-start-1 md:flex">
                     <CategoryMark color={colors[entry.category]} />
                     {categories[entry.category]}
                   </span>
                   <span className="col-start-1 row-start-1 block md:col-start-2">
                     {entry.featured ? (
-                      <span className="log-featured coord mb-1.5 flex items-center gap-2 text-echo-2-ink">
-                        <span
-                          aria-hidden="true"
-                          className="mark rounded-full bg-echo-2"
-                        />
-                        {fill(ui.featured, {
-                          n: featured.indexOf(entry.id) + 1,
-                          of: featured.length,
-                        })}
+                      <span className="log-featured mb-1 block text-sm font-semibold text-echo-2-ink">
+                        {ui.featured}
                       </span>
                     ) : null}
                     <h3 className="text-lg font-semibold text-balance md:text-xl">
@@ -363,26 +379,18 @@ export function WorkLog({
                       <span>{trackLabel.get(entry.track)}</span>
                     </span>
                   </span>
-                  <span className="log-plot col-span-2 col-start-1 row-start-2 mt-3 md:col-span-1 md:col-start-3 md:row-start-1 md:mt-0 md:pt-[0.35rem]">
+                  {/* The outcome, as text: the measured change, or what it
+                      came to. */}
+                  <span className="log-plot col-span-2 col-start-1 row-start-2 mt-2 font-semibold tabular md:col-span-1 md:col-start-2 min-[90rem]:col-start-3 min-[90rem]:row-start-1 min-[90rem]:mt-0 min-[90rem]:pt-[0.2rem]">
                     {entry.metrics?.[0] ? (
-                      <MiniBar metric={entry.metrics[0]} to={ui.to} />
-                    ) : entry.outcome ? (
-                      <span className="flex items-start gap-2 text-sm font-semibold">
-                        <span
-                          aria-hidden="true"
-                          className="mark mt-[0.4em] bg-echo-2"
-                        />
-                        <span
-                          aria-hidden="true"
-                          className="leader mt-[0.72em] -ml-1 w-2.5"
-                        />
-                        <span>{entry.outcome}</span>
-                      </span>
-                    ) : null}
+                      <Outcome metric={entry.metrics[0]} to={ui.to} />
+                    ) : (
+                      entry.outcome
+                    )}
                   </span>
                   <span
                     aria-hidden="true"
-                    className="log-chevron col-start-2 row-start-1 text-2xl leading-none font-light text-ink-soft md:col-start-4"
+                    className="log-chevron col-start-2 row-start-1 text-2xl leading-none font-light text-ink-soft md:col-start-3 min-[90rem]:col-start-4"
                   >
                     +
                   </span>

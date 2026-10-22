@@ -57,10 +57,10 @@ export interface SignalContent {
   /** The one-line claim the pairs back up. */
   claim: string;
   pairs: readonly SignalPair[];
-  /** How a problem like these is traced, as steps; the last is the fix. */
-  trail: readonly string[];
-  /** Working context, as short tags (teams, language, who he translates for). */
-  context: readonly string[];
+  /** How a problem like these is traced and fixed, as one sentence. */
+  trace: string;
+  /** Working context: teams, language, who I translate for. */
+  context: string;
 }
 
 export interface ContactInfo {
@@ -110,8 +110,6 @@ export interface TrackFlow {
 /** One area of ownership inside a body of work. */
 export interface ScopeArea {
   title: string;
-  /** Two or three words, for the badge on the flow drawing. */
-  short?: string;
   body: string;
   metric?: Metric;
   /** What the work protected, removed or made impossible. May carry a number; not a measurement. */
@@ -370,19 +368,9 @@ export interface UiStrings {
     ctaContact: string;
     /** The same, on phones. */
     ctaContactShort: string;
-    /** Link to the reel. */
-    ctaReel: string;
     motionLabel: string;
     motionOn: string;
     motionOff: string;
-  };
-  signal: {
-    looks: string;
-    actually: string;
-    trail: string;
-    context: string;
-    /** On each reading: where it links. */
-    see: string;
   };
   experience: {
     /** Link to a track's own page. */
@@ -391,8 +379,6 @@ export interface UiStrings {
     around: string;
     /** The list of areas of ownership. {count} */
     areas: string;
-    /** Area badges on a flow node: "{n}" → accessible name. */
-    area: string;
     role: string;
     scope: string;
     stack: string;
@@ -404,6 +390,8 @@ export interface UiStrings {
     back: string;
     /** Spoken between a before and an after figure. */
     to: string;
+    /** After a run-in label ("Impact: …"). */
+    colon: string;
   };
   projects: {
     /** Phone fold over a project's build notes. */
@@ -443,7 +431,7 @@ export interface UiStrings {
     stack: string;
     /** On a case page: back to the list. */
     back: string;
-    /** Marker on the featured cases. {n}, {of} */
+    /** Marker on the featured cases. */
     featured: string;
     /** On a case page: the other cases of its track. {track} */
     more: string;

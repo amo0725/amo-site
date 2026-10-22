@@ -38,6 +38,9 @@ export function SiteFooter({ profile, ui }: SiteFooterProps) {
             className="-my-3 inline-flex min-h-11 items-center underline underline-offset-4 hover:text-on-closing"
           >
             {ui.backToTop}
+            <span aria-hidden="true" className="ml-1 inline-block no-underline">
+              ↑
+            </span>
           </a>
         </div>
       </div>

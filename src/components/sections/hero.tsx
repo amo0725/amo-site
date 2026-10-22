@@ -100,7 +100,7 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
                 <dt className="text-xl leading-none font-extrabold whitespace-nowrap text-echo-2 tabular md:text-2xl">
                   {p.figure}
                 </dt>
-                <dd className="mt-1.5 text-[0.8125rem] leading-snug text-ink-soft [word-break:keep-all] [overflow-wrap:anywhere] md:mt-0 md:text-base md:text-balance md:text-ink">
+                <dd className="mt-1.5 text-sm leading-snug text-ink-soft [word-break:keep-all] [overflow-wrap:anywhere] md:mt-0 md:text-base md:text-balance md:text-ink">
                   <span className="md:hidden">{p.short}</span>
                   <span className="hidden md:inline">{p.label}</span>
                 </dd>
@@ -139,7 +139,7 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
               rel="me noopener"
               className="group inline-flex h-12 items-center gap-1.5 px-2 font-semibold"
             >
-              <span className="underline decoration-graticule decoration-2 underline-offset-4 transition-colors group-hover:decoration-ink">
+              <span className="underline decoration-control decoration-1 underline-offset-[0.3em] transition-colors group-hover:decoration-ink">
                 {ui.ctaGithub}
               </span>
               <span
@@ -151,13 +151,11 @@ export function Hero({ profile, ui, caseCount, githubHref }: HeroProps) {
             </a>
           </div>
           {/* The stack, for readers scanning for keywords, when the screen
-              is tall enough; from md the reel is one click away beside it. */}
-          <div className="load-wipe load-wipe-early mt-4 flex max-w-[38rem] flex-wrap items-baseline gap-x-6 gap-y-1 md:mt-5 [@media(max-height:760px)]:hidden">
-            <p className="text-[0.8125rem] text-ink-soft">{profile.focus}</p>
-            <a href="#reel" className="go hidden md:inline-flex">
-              {ui.ctaReel}
-            </a>
-          </div>
+              is tall enough. No entrance: it may appear or go as the
+              window's height changes. */}
+          <p className="mt-4 max-w-[38rem] text-sm text-ink-soft md:mt-5 [@media(max-height:760px)]:hidden">
+            {profile.focus}
+          </p>
         </div>
       </div>
     </section>

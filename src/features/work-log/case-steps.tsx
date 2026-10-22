@@ -8,20 +8,25 @@ export const caseHref = (locale: Locale, id: string) =>
 export const caseAnchor = (id: string) => `case-${id}`;
 
 /**
- * A case in four steps, symptom to result, plotted as four stations with
- * arrowed connectors; the result is the one filled (green) station. The
- * steps rise in one after another when the case opens (.case-step), all
- * within half a second; at rest and with motion off they are simply there.
+ * A case in four steps, symptom to result, as four numbered stations on a
+ * line; the result is the one filled (green) station. In the list they run
+ * down one column, so each step reads as a full line of text; on a case's
+ * own page they sit side by side from md up. The steps rise in one after
+ * another when the case opens (.case-step), all within half a second; at
+ * rest and with motion off they are simply there.
  */
 export function CaseSteps({
   entry,
   ui,
   heading: Heading = "h4",
+  row = false,
 }: {
   entry: WorkEntry;
   ui: UiStrings["work"];
   /** The steps' label level: h4 under a case in the list, h3 on its page. */
   heading?: "h3" | "h4";
+  /** Side by side from md up (a case's own page). */
+  row?: boolean;
 }) {
   const steps = [
     { key: "symptom", label: ui.symptom, text: entry.steps.symptom },
@@ -30,13 +35,23 @@ export function CaseSteps({
     { key: "result", label: ui.result, text: entry.steps.result },
   ];
   return (
-    <ol className="case-steps grid gap-0 md:grid-cols-4 md:gap-x-8">
+    <ol
+      className={
+        row
+          ? "case-steps case-steps-row grid gap-0 md:grid-cols-4 md:gap-x-8"
+          : "case-steps grid max-w-[44rem] gap-0"
+      }
+    >
       {steps.map((step, i) => {
         const last = i === steps.length - 1;
         return (
           <li
             key={step.key}
-            className="case-step relative grid content-start grid-cols-[1.75rem_1fr] gap-x-3 pb-5 md:grid-cols-1 md:gap-y-3 md:pb-0"
+            className={
+              row
+                ? "case-step relative grid content-start grid-cols-[1.75rem_1fr] gap-x-3 pb-5 md:grid-cols-1 md:gap-y-3 md:pb-0"
+                : "case-step relative grid content-start grid-cols-[1.75rem_1fr] gap-x-3 pb-5"
+            }
             style={{ "--i": i } as React.CSSProperties}
           >
             <span
@@ -50,8 +65,8 @@ export function CaseSteps({
               <p
                 className={
                   last
-                    ? "mt-1 font-semibold md:max-w-[18em]"
-                    : "mt-1 md:max-w-[18em]"
+                    ? `mt-0.5 font-semibold ${row ? "md:max-w-[18em]" : ""}`
+                    : `mt-0.5 ${row ? "md:max-w-[18em]" : ""}`
                 }
               >
                 {step.text}
@@ -65,9 +80,8 @@ export function CaseSteps({
 }
 
 /**
- * The lesson as an annotation: a coordinate label with its leader, then the
- * sentence by a green mark. In the list the label sits in the category
- * column; on a case page it heads the line.
+ * The lesson: its label, then the sentence, set larger. In the list the
+ * label sits in the category column from md up.
  */
 export function Lesson({
   text,
@@ -82,16 +96,12 @@ export function Lesson({
     <figure
       className={
         inColumn
-          ? "grid gap-2 md:col-span-2 md:grid-cols-[7rem_1fr] md:gap-x-8"
-          : "grid gap-2"
+          ? "grid gap-1 md:col-span-2 md:grid-cols-[7rem_1fr] md:gap-x-8"
+          : "grid gap-1"
       }
     >
-      <figcaption className="coord flex items-center gap-2 md:pt-[0.35rem]">
-        {label}
-        <span aria-hidden="true" className="leader" />
-      </figcaption>
-      <blockquote className="flex gap-3">
-        <span aria-hidden="true" className="mark mt-[0.55em] bg-echo-2" />
+      <figcaption className="coord md:pt-[0.3rem]">{label}</figcaption>
+      <blockquote>
         <p className="max-w-[30em] text-lg font-semibold tracking-tight text-balance md:text-xl">
           {text}
         </p>
@@ -104,46 +114,18 @@ export function Lesson({
  * What an open case shows in the list: the four steps, the lesson, and the
  * way to the full write-up. A server component, handed to the client list
  * as a finished node.
- *
- * On phones the open case's title is pinned as one compact line, so the
- * category and track it showed while closed open the body instead.
  */
 export function CaseSummary({
   entry,
   ui,
   locale,
-  context,
 }: {
   entry: WorkEntry;
   ui: UiStrings["work"];
   locale: Locale;
-  context: {
-    category: string;
-    color: string;
-    track?: string;
-    /** "Start here · 1/3" on a featured case. */
-    featured?: string;
-  };
 }) {
   return (
-    <div className="grid gap-y-7 pt-4 pb-9 md:grid-cols-[7rem_1fr] md:gap-x-8 md:pt-0">
-      <p className="coord -mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 md:hidden">
-        {context.featured ? (
-          <span className="flex basis-full items-center gap-2 text-echo-2-ink">
-            <span aria-hidden="true" className="mark rounded-full bg-echo-2" />
-            {context.featured}
-          </span>
-        ) : null}
-        <span className="flex items-center gap-2">
-          <span
-            aria-hidden="true"
-            className="mark"
-            style={{ background: `var(${context.color})` }}
-          />
-          {context.category}
-        </span>
-        {context.track ? <span>{context.track}</span> : null}
-      </p>
+    <div className="grid gap-y-7 pt-1 pb-9 md:grid-cols-[7rem_1fr] md:gap-x-8 md:pt-0">
       <div className="md:col-start-2">
         <CaseSteps entry={entry} ui={ui} />
       </div>

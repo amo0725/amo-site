@@ -127,13 +127,14 @@ export function RevMeter({ name, note, ui }: RevMeterProps) {
       style={{ "--rev": 0, "--needle": `${START}deg` } as React.CSSProperties}
     >
       <h3
-        // Sized to its column so the title still fits on one line at full
-        // revs, when it is about 1.36x wider than at idle.
-        className="rev-name text-[min(7.5rem,14cqw)] leading-[0.85] tracking-[-0.03em] whitespace-nowrap"
+        // An item title like the others (below the section heading), and
+        // narrow enough to stay on one line at full revs, when it is about
+        // 1.36x wider than at idle.
+        className="rev-name text-[min(var(--text-xl),14cqw)] leading-[0.9] tracking-[-0.02em] whitespace-nowrap md:text-[min(var(--text-2xl),14cqw)]"
       >
         {name}
       </h3>
-      <p className="mt-6 max-w-[26rem] text-ink-soft">{note}</p>
+      <p className="mt-4 max-w-[26rem]">{note}</p>
 
       <div className="mt-8 flex flex-wrap items-center gap-6">
         <svg

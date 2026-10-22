@@ -46,7 +46,6 @@ export function DetailShell({
           href: otherPath,
           hrefLang: other,
         }}
-        backToTop={ui.footer.backToTop}
       />
       <main
         id="main"

@@ -204,7 +204,7 @@ export function GraphView({
                 className={cn(
                   "absolute -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border whitespace-nowrap select-none active:cursor-grabbing",
                   "transition-[opacity,background-color,color,box-shadow,scale] duration-300 ease-out",
-                  "px-3 py-1 text-[0.8rem] md:px-4 md:py-1.5 md:text-sm",
+                  "px-3 py-1 text-sm md:px-4 md:py-1.5",
                   // Nodes set aside by a selection step back in colour, not
                   // opacity, so their names stay readable (4.5:1 and up).
                   hub

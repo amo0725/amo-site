@@ -78,7 +78,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         />
         {/* Suspense boundaries let React hydrate below-the-fold sections in separate, interruptible tasks. */}
         <Suspense fallback={null}>
-          <Signal signal={c.signal} copy={c.sections.signal} ui={c.ui.signal} />
+          <Signal signal={c.signal} copy={c.sections.signal} />
         </Suspense>
         <Suspense fallback={null}>
           <Work

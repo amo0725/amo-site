@@ -1,12 +1,10 @@
-import { InView } from "@/components/motion/in-view";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
-import type { SectionCopy, SignalContent, UiStrings } from "@/content/types";
+import type { SectionCopy, SignalContent } from "@/content/types";
 
 interface SignalProps {
   signal: SignalContent;
   copy: SectionCopy;
-  ui: UiStrings["signal"];
 }
 
 /**
@@ -54,16 +52,12 @@ function RangeRings() {
 }
 
 /**
- * What I do, shown as evidence, plotted rather than boxed: four readings,
- * each a hollow mark "looks fine" joined by a leader arrow to a red mark
- * "actually", the whole row linking to the case where it happened. Then
- * the trace path drawn with the same stations as the experience flow, and
- * the working context as a legend. Every word is there from the start; on
- * arrival the arrows draw and the red marks ink in, once.
+ * What I do, said plainly: the claim, four times it was true (each what
+ * looked fine and what was actually broken, in one sentence that links to
+ * where it happened), how I trace and fix such things, and how I work.
  */
-export function Signal({ signal, copy, ui }: SignalProps) {
+export function Signal({ signal, copy }: SignalProps) {
   const meta = sectionMeta("signal");
-  const last = signal.trail.length - 1;
   // overflow-clip, not overflow-hidden: a hidden box is a scroll container,
   // and every view() timeline inside it would bind to it and stay frozen.
   return (
@@ -78,120 +72,38 @@ export function Signal({ signal, copy, ui }: SignalProps) {
           <SectionHeading id={meta.id} colorVar={meta.colorVar}>
             {copy.label}
           </SectionHeading>
-          <p className="max-w-[24em] text-[1.375rem] leading-[1.45] font-semibold tracking-tight text-balance md:text-[2.15rem]">
+          <p className="max-w-[24em] text-[1.375rem] leading-[1.45] font-semibold tracking-tight text-balance md:text-[2.15rem] [:lang(zh)_&]:leading-[1.5]">
             {signal.claim}
           </p>
 
-          <InView threshold={0.1}>
-            {/* One grid for all four rows (subgrid), so the "looks fine"
-                column is as wide as its longest reading and the leader
-                arrow runs all the way to the "actually" column. */}
-            <ul className="mt-8 border-b border-graticule md:mt-12 md:grid md:grid-cols-[minmax(0,auto)_minmax(3rem,1fr)_minmax(0,auto)]">
-              {signal.pairs.map((pair, i) => (
-                <li
-                  key={pair.href}
-                  className="md:col-span-3 md:grid md:grid-cols-subgrid"
-                  style={{ "--i": i } as React.CSSProperties}
+          <ul className="mt-8 max-w-[44rem] border-t border-graticule md:mt-12">
+            {signal.pairs.map((pair) => (
+              <li key={pair.href} className="border-b border-graticule">
+                <a
+                  href={pair.href}
+                  className="vs-row group grid grid-cols-[0.625rem_1fr] items-baseline gap-x-4 py-4 md:text-lg"
                 >
-                  <a
-                    href={pair.href}
-                    className="vs-row group relative grid gap-y-1 border-t border-graticule py-3.5 md:col-span-3 md:grid-cols-subgrid md:items-start md:gap-x-0 md:py-5"
-                  >
-                    <span className="grid grid-cols-[1rem_1fr] items-start gap-x-3">
-                      <span
-                        aria-hidden="true"
-                        className="mt-[0.3rem] size-2.5 rounded-full border-[1.5px] border-control"
-                      />
-                      <span className="grid gap-0.5">
-                        <span className="coord">{ui.looks}</span>
-                        <span className="text-ink-soft">{pair.looks}</span>
-                      </span>
+                  <span aria-hidden="true" className="mark bg-echo-5" />
+                  <span>
+                    <span className="text-ink-soft">{pair.looks}</span>
+                    {pair.looks.endsWith("，") ? "" : " "}
+                    <span className="font-semibold underline decoration-control decoration-1 underline-offset-[0.3em] transition-colors group-hover:decoration-ink">
+                      {pair.actually}
                     </span>
-                    {/* The leader between the two readings: down on
-                        phones, across from md up. */}
                     <span
                       aria-hidden="true"
-                      className="relative ml-[0.3rem] h-3 w-px md:mt-[1.65rem] md:ml-4 md:h-px md:w-auto"
+                      className="ml-1.5 inline-block text-ink-soft transition-transform group-hover:translate-x-0.5"
                     >
-                      <span className="vs-arrow absolute inset-0 bg-control" />
-                      <span className="absolute -bottom-1 -left-[3px] hidden border-x-[3.5px] border-t-[5px] border-x-transparent border-t-control max-md:block" />
-                      <span className="absolute top-[-3.5px] -right-px hidden border-y-[3.5px] border-l-[5px] border-y-transparent border-l-control md:block" />
+                      →
                     </span>
-                    <span className="vs-actually relative grid grid-cols-[1rem_1fr] items-start gap-x-3 md:pl-6">
-                      <span
-                        aria-hidden="true"
-                        className="vs-mark mark mt-[0.3rem] bg-echo-5"
-                      />
-                      <span className="grid gap-0.5">
-                        <span className="coord text-echo-5-ink">
-                          {ui.actually}
-                        </span>
-                        <span className="font-semibold">
-                          {pair.actually}
-                        </span>
-                        {/* Says the row is a way in, not only a reading. */}
-                        <span className="coord flex items-center gap-1.5 text-ink">
-                          {ui.see}
-                          <span
-                            aria-hidden="true"
-                            className="text-ink-soft transition-transform group-hover:translate-x-0.5"
-                          >
-                            →
-                          </span>
-                        </span>
-                      </span>
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </InView>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
 
-          <figure className="mt-12 md:mt-16">
-            <figcaption className="coord">{ui.trail}</figcaption>
-            <InView threshold={0.25}>
-              <ol
-                className="flow-path relative mt-5 grid gap-3.5 md:gap-7"
-                style={{ "--stops": signal.trail.length } as React.CSSProperties}
-              >
-                {signal.trail.map((step, i) => (
-                  <li
-                    key={step}
-                    className="flow-stop relative grid grid-cols-[1.75rem_1fr] items-center gap-x-3 md:grid-cols-1 md:items-start md:gap-y-2.5"
-                    style={{ "--i": i } as React.CSSProperties}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={i === last ? "node node-live" : "node"}
-                    >
-                      {i + 1}
-                    </span>
-                    <span
-                      className={
-                        i === last
-                          ? "max-w-[18em] font-bold text-balance"
-                          : "text-sm font-semibold"
-                      }
-                    >
-                      {step}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </InView>
-          </figure>
-
-          <div className="mt-12 md:mt-14">
-            <h3 className="coord">{ui.context}</h3>
-            <ul className="mt-3 grid gap-x-10 gap-y-2 md:grid-cols-2">
-              {signal.context.map((item) => (
-                <li key={item} className="flex gap-3">
-                  <span aria-hidden="true" className="leader mt-[0.85em]" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <p className="mt-10 max-w-[40rem] md:text-lg">{signal.trace}</p>
+          <p className="mt-4 max-w-[40rem]">{signal.context}</p>
         </div>
       </div>
     </section>

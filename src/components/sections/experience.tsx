@@ -1,4 +1,3 @@
-import { InView } from "@/components/motion/in-view";
 import { PhoneFold } from "@/components/ui/phone-fold";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { sectionMeta } from "@/config/site";
@@ -26,58 +25,38 @@ export const trackHref = (locale: Locale, id: string) =>
   `/${locale}/experience/${id}`;
 
 /**
- * Headline figures under a track's title, as readings on a scale: a ruled
- * axis with ticks, the figure in expanded tabular numerals, its label. The
- * rule draws once on arrival.
+ * Headline figures under a track's title: the figure, then what it counts,
+ * each on a hairline.
  */
 export function TrackStats({ track }: { track: ExperienceTrack }) {
   if (!track.stats?.length) return null;
   return (
-    <InView threshold={0.4}>
-      <dl className="mt-7 grid max-w-[30rem] grid-cols-3 gap-3 md:gap-4">
-        {track.stats.map((s, i) => (
-          <div
-            key={s.label}
-            className="grid content-start"
-            style={{ "--i": i } as React.CSSProperties}
-          >
-            <dt className="order-2 mt-1.5 text-xs leading-snug text-balance text-ink-soft">
-              {s.label}
-            </dt>
-            <dd className="order-1 grid">
-              <span
-                aria-hidden="true"
-                className="tile-rule block h-0.5 bg-ink"
-              />
-              <span aria-hidden="true" className="axis-ticks" />
-              <span className="mt-2 text-xl leading-none font-extrabold tabular font-expanded 2xl:text-[1.75rem]">
-                {s.figure}
-              </span>
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </InView>
+    <dl className="mt-7 grid max-w-[30rem] grid-cols-3 gap-4">
+      {track.stats.map((s) => (
+        <div
+          key={s.label}
+          className="grid content-start border-t border-graticule pt-3"
+        >
+          <dt className="order-2 mt-1.5 text-sm leading-snug text-balance text-ink-soft">
+            {s.label}
+          </dt>
+          <dd className="order-1 text-xl leading-none font-extrabold tabular font-expanded">
+            {s.figure}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
-/** A track's kicker: its pen colour, its index, and a short rule. */
-export function TrackKicker({
-  index,
-  color,
-}: {
-  index: number;
-  color: string;
-}) {
+/** A track's kicker: a short rule in its pen colour. */
+export function TrackKicker({ color }: { color: string }) {
   return (
-    <p aria-hidden="true" className="mb-5 flex items-center gap-3">
-      <span className="mark" style={{ background: color }} />
-      <span className="index">{String(index + 1).padStart(2, "0")}</span>
-      <span
-        className="grow-x h-0.5 w-16 origin-left"
-        style={{ background: color }}
-      />
-    </p>
+    <span
+      aria-hidden="true"
+      className="grow-x mb-5 block h-0.5 w-16 origin-left"
+      style={{ background: color }}
+    />
   );
 }
 
@@ -110,10 +89,10 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                 className="grid gap-8 md:gap-10 lg:grid-cols-12"
               >
                 <header className="lg:col-span-5 lg:self-start xl:col-span-4 lg:sticky lg:top-[calc(var(--header-h)+2rem)]">
-                  <TrackKicker index={t} color={color} />
+                  <TrackKicker color={color} />
                   <h3
                     id={`xp-${track.id}`}
-                    className="text-[2rem] leading-[0.95] font-extrabold font-expanded [overflow-wrap:anywhere] sm:text-4xl md:text-5xl lg:text-[2.5rem] xl:text-5xl"
+                    className="text-xl leading-tight font-extrabold font-expanded [overflow-wrap:anywhere] md:text-2xl"
                   >
                     {track.short}
                   </h3>
@@ -141,7 +120,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                       opens it at its area). From md up it is shown. */}
                   <PhoneFold
                     className="mt-8 md:mt-10"
-                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:mb-3 md:border-0 md:py-0 md:text-xs md:tracking-[0.08em] md:text-ink-soft md:uppercase"
+                    summaryClassName="flex items-center justify-between border-y border-graticule py-3 text-sm font-semibold md:mb-3 md:border-0 md:py-0 md:text-sm md:text-ink-soft"
                     summary={fill(ui.areas, { count: track.areas.length })}
                   >
                     <AreaList track={track} ui={ui} />
@@ -149,7 +128,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
 
                   <PhoneFold
                     className="md:mt-6"
-                    summaryClassName="flex items-center justify-between border-b border-graticule py-4 text-sm font-semibold md:border-0 md:py-0 md:text-xs md:tracking-[0.08em] md:text-ink-soft md:uppercase"
+                    summaryClassName="flex items-center justify-between border-b border-graticule py-4 text-sm font-semibold md:border-0 md:py-0 md:text-sm md:text-ink-soft"
                     summary={
                       <span>
                         {ui.stack}
@@ -179,7 +158,7 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                 <article key={track.id} aria-labelledby={`xp-${track.id}`}>
                   <h4
                     id={`xp-${track.id}`}
-                    className="text-2xl font-extrabold font-expanded"
+                    className="text-xl font-extrabold font-expanded"
                   >
                     {track.short}
                   </h4>
@@ -197,23 +176,15 @@ export function Experience({ tracks, copy, ui, locale }: ExperienceProps) {
                       </span>
                     }
                   >
-                    <p className="mt-3 max-w-[36rem] text-ink-soft md:mt-0">
+                    <p className="mt-3 max-w-[36rem] md:mt-0">
                       {track.summary}
                     </p>
                     {track.areas.length > 0 ? (
-                      <ul className="mt-4 space-y-2 text-ink-soft">
+                      <ul className="bullets mt-4 space-y-2">
                         {track.areas.map((area) => (
-                          <li key={area.title} className="flex gap-3">
-                            <span
-                              aria-hidden="true"
-                              className="leader mt-[0.85em]"
-                            />
-                            <span>
-                              <span className="font-semibold text-ink">
-                                {area.title}
-                              </span>{" "}
-                              {area.body}
-                            </span>
+                          <li key={area.title}>
+                            <span className="font-semibold">{area.title}</span>{" "}
+                            {area.body}
                           </li>
                         ))}
                       </ul>

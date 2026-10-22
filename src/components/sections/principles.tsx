@@ -162,27 +162,17 @@ export function Principles({ principles, copy, ui }: PrinciplesProps) {
                   style={{ background: `var(${meta.colorVar})` }}
                 />
                 <PhoneFold
-                  summaryClassName="grid grid-cols-[1.75rem_2rem_1fr_auto] items-center gap-x-3 py-4 md:grid-cols-[1fr_auto] md:gap-y-5 md:py-0"
+                  summaryClassName="grid grid-cols-[2rem_1fr_auto] items-center gap-x-4 py-4 md:grid-cols-1 md:gap-y-4 md:py-0"
                   summary={
                     <>
-                      <span
-                        aria-hidden="true"
-                        className="index md:col-start-1 md:row-start-1 md:self-start"
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <Glyph
-                        id={p.id}
-                        i={i}
-                        className="size-8 md:col-start-2 md:row-start-1 md:size-14"
-                      />
-                      <h3 className="text-lg leading-tight font-extrabold text-balance font-expanded md:col-span-2 md:row-start-2 md:max-w-[11em] md:text-xl md:leading-[1.15]">
+                      <Glyph id={p.id} i={i} className="size-8 md:size-12" />
+                      <h3 className="text-lg leading-snug font-extrabold text-balance font-expanded md:max-w-[11em] md:text-xl">
                         {p.title}
                       </h3>
                     </>
                   }
                 >
-                  <p className="pb-3 text-ink-soft md:mt-3 md:pb-0">{p.body}</p>
+                  <p className="pb-3 md:mt-3 md:pb-0">{p.body}</p>
                   <p className="grid gap-1 pb-5 text-sm md:mt-5 md:pb-0">
                     <span className="coord">{ui.evidence}</span>
                     <a href={p.evidence.href} className="go justify-self-start">

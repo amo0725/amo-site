@@ -81,9 +81,22 @@ export function AnchorSettle() {
       getLenis()?.resize();
     };
 
-    // A jump made here must not be landed again by the hashchange it causes.
-    let clickedAt = -Infinity;
+    // A jump made here must not be landed again by the hashchange it
+    // causes (only the native path sets location.hash; Lenis pushes state,
+    // which fires none). Any other hash change is still handled.
+    let jumpedTo: string | null = null;
     const go = (id: string, target: HTMLElement | null, keyboard: boolean) => {
+      // Back to the top: no #top left in the address (a reload would then
+      // land on it and lay out the whole page for nothing).
+      if (id === "top") {
+        if (location.hash) {
+          history.replaceState(null, "", location.pathname + location.search);
+        }
+        const lenis = getLenis();
+        if (lenis) lenis.scrollTo(0);
+        else window.scrollTo({ top: 0 });
+        return;
+      }
       if (target) {
         reveal(target);
         measureUpTo(target);
@@ -108,6 +121,7 @@ export function AnchorSettle() {
       } else if (location.hash === `#${id}`) {
         (target ?? document.documentElement).scrollIntoView();
       } else {
+        jumpedTo = id;
         location.hash = id;
       }
     };
@@ -128,7 +142,6 @@ export function AnchorSettle() {
       const target = id === "top" ? null : document.getElementById(id);
       if (id !== "top" && !target) return;
       e.preventDefault();
-      clickedAt = performance.now();
       const keyboard = e.detail === 0;
       requestAnimationFrame(() =>
         window.setTimeout(() => go(id, target, keyboard), 0),
@@ -204,8 +217,12 @@ export function AnchorSettle() {
     const onHash = () => {
       const fromHistory = traversing;
       traversing = false;
-      if (performance.now() - clickedAt < 1000) return;
       const next = decodeURIComponent(location.hash.slice(1));
+      if (next === jumpedTo) {
+        jumpedTo = null;
+        return;
+      }
+      jumpedTo = null;
       const el = next && next !== "top" ? document.getElementById(next) : null;
       if (!el) return;
       reveal(el);

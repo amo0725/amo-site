@@ -8,7 +8,7 @@ import { Lesson } from "./case-steps";
 /** A write-up heading: a coordinate label with a rule to the column edge. */
 function Heading({ children }: { children: ReactNode }) {
   return (
-    <h2 className="coord flex items-center gap-3 after:h-px after:flex-1 after:bg-graticule">
+    <h2 className="flex items-center gap-3 text-lg font-bold after:h-px after:flex-1 after:bg-graticule">
       {children}
     </h2>
   );
@@ -82,12 +82,9 @@ export function CaseBody({
         ) : null}
         <section className="space-y-3">
           <Heading>{ui.actions}</Heading>
-          <ul className="space-y-2">
+          <ul className="bullets space-y-2">
             {entry.actions.map((action) => (
-              <li key={action} className="flex gap-3">
-                <span aria-hidden="true" className="leader mt-[0.85em]" />
-                {action}
-              </li>
+              <li key={action}>{action}</li>
             ))}
           </ul>
         </section>

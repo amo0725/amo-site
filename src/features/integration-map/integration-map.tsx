@@ -115,7 +115,7 @@ export function IntegrationMap({
           <button
             type="button"
             onClick={() => select(selectedId)}
-            className="float-right -mt-1 ml-3 inline-flex min-h-11 items-center gap-1.5 rounded-full border border-control px-3 text-sm font-semibold hover:border-ink lg:hidden"
+            className="relative z-10 float-right -mt-1 ml-3 inline-flex min-h-11 items-center gap-1.5 rounded-full border border-control bg-surface-display px-3 text-sm font-semibold hover:border-ink lg:hidden"
           >
             {ui.close}
             <span aria-hidden="true" className="text-lg leading-none font-light">
